@@ -1,3 +1,6 @@
+document.addEventListener("DOMContentLoaded", () => {
+  fetchAnime("naruto", "");
+});
 console.log("browse.js is loaded");
 const searchBtn = document.getElementById("searchBtn");
 const searchInput = document.getElementById("searchInput");
