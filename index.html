@@ -2,77 +2,105 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Anime Portal</title>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Galactico&display=swap"
-    rel="stylesheet"
-  />
-  <link rel="stylesheet" href="style.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AnimeHub</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500&family=Poppins&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background-color: #121212;
+      color: #ffffff;
+    }
+
+    header {
+      background-color: #1f1f1f;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header h1 {
+      font-family: 'Oswald', sans-serif;
+      font-size: 2rem;
+      color: #f97316;
+    }
+
+    nav a {
+      color: #fff;
+      margin-left: 2rem;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    nav a:hover {
+      color: #f97316;
+    }
+
+    .hero {
+      padding: 5rem 2rem;
+      text-align: center;
+      background: url('https://wallpaperaccess.com/full/87301.jpg') no-repeat center/cover;
+    }
+
+    .hero h2 {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      color: #fff;
+      text-shadow: 2px 2px 10px #000;
+    }
+
+    .hero p {
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+      color: #f3f3f3;
+      text-shadow: 1px 1px 5px #000;
+    }
+
+    .hero a {
+      background-color: #f97316;
+      color: #fff;
+      padding: 1rem 2rem;
+      border-radius: 5px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: background 0.3s;
+    }
+
+    .hero a:hover {
+      background-color: #fb923c;
+    }
+
+    footer {
+      text-align: center;
+      padding: 1rem;
+      background-color: #1f1f1f;
+      margin-top: 3rem;
+      font-size: 0.9rem;
+    }
+  </style>
 </head>
+
 <body>
   <header>
-    <div class="container">
-      <h1 class="logo">AnimePortal</h1>
-
-      <nav>
-        <ul class="nav-links">
-          <li><a href="#" class="nav-link active" data-target="home">Home</a></li>
-          <li><a href="#" class="nav-link" data-target="browse">Browse</a></li>
-          <li><a href="#" class="nav-link" data-target="watchlist">Watchlist</a></li>
-        </ul>
-      </nav>
-
-      <button id="dark-mode-toggle" aria-label="Toggle dark mode">🌙</button>
-    </div>
+    <h1>AnimeHub</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="browse.html">Browse</a>
+    </nav>
   </header>
 
-  <main>
-    <section id="home" class="tab-content active">
-      <div class="carousel">
-        <div class="carousel-inner">
-          <div class="carousel-item active">
-            <img src="one-piece.jpg" alt="One Piece" />
-            <div class="carousel-caption">
-              <h2>One Piece</h2>
-              <p>Join Luffy and crew on an epic adventure for the One Piece!</p>
-            </div>
-          </div>
-          <div class="carousel-item">
-            <img src="demon-slayer.jpg" alt="Demon Slayer" />
-            <div class="carousel-caption">
-              <h2>Demon Slayer</h2>
-              <p>Follow Tanjiro’s journey to save his sister and defeat demons.</p>
-            </div>
-          </div>
-          <div class="carousel-item">
-            <img src="jujutsu-kaisen.jpg" alt="Jujutsu Kaisen" />
-            <div class="carousel-caption">
-              <h2>Jujutsu Kaisen</h2>
-              <p>Experience high-stakes battles with sorcerers and curses.</p>
-            </div>
-          </div>
-        </div>
-        <button class="carousel-control prev">&#10094;</button>
-        <button class="carousel-control next">&#10095;</button>
-      </div>
-    </section>
-
-    <section id="browse" class="tab-content">
-      <h2>Browse Anime (coming soon!)</h2>
-      <p>This section will have search and filter powered by Jikan API.</p>
-    </section>
-
-    <section id="watchlist" class="tab-content">
-      <h2>Your Watchlist (coming soon!)</h2>
-      <p>Save your favorite anime here.</p>
-    </section>
-  </main>
+  <section class="hero">
+    <h2>Welcome to AnimeHub</h2>
+    <p>Your one-stop destination for the latest anime shows, movies, and more.</p>
+    <a href="browse.html">Start Browsing</a>
+  </section>
 
   <footer>
-    <p>© 2025 AnimePortal - Built with ❤️</p>
+    &copy; 2025 AnimeHub. All rights reserved.
   </footer>
-
-  <script src="app.js"></script>
 </body>
 </html>
