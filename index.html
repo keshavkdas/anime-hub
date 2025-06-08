@@ -101,13 +101,14 @@
     }
 
     .anime-card {
-      min-width: 200px;
+      min-width: 220px;
       background-color: #1f1f1f;
       border-radius: 10px;
       overflow: hidden;
       flex-shrink: 0;
       box-shadow: 0 4px 15px rgba(255, 255, 255, 0.05);
       transition: transform 0.3s;
+      position: relative;
     }
 
     .anime-card:hover {
@@ -125,6 +126,26 @@
       font-size: 1rem;
       text-align: center;
       color: #fff;
+    }
+
+    .anime-actions {
+      display: flex;
+      justify-content: space-around;
+      padding: 0.5rem;
+    }
+
+    .anime-actions button {
+      padding: 0.4rem 0.6rem;
+      background: #f97316;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+
+    .anime-actions button:hover {
+      background: #fb923c;
     }
 
     footer {
@@ -152,11 +173,10 @@
     <a href="browse.html">Start Browsing</a>
   </section>
 
-  <!-- 🔥 Trending Anime Section -->
   <section class="trending-section">
     <h2>🔥 Top Trending Anime</h2>
     <div class="anime-scroll" id="trendingAnime">
-      <!-- Anime cards will be injected here by JS -->
+      <!-- Anime cards will be injected here -->
     </div>
   </section>
 
@@ -177,11 +197,31 @@
           <div class="anime-card">
             <img src="${anime.images.jpg.image_url}" alt="${anime.title}" />
             <h3>${anime.title}</h3>
+            <div class="anime-actions">
+              <button onclick="playTrailer('${anime.title}')">▶ Trailer</button>
+              <button onclick="addToFavorites('${anime.title}', '${anime.images.jpg.image_url}')">❤️ Favorite</button>
+            </div>
           </div>
         `).join("");
       } catch (err) {
         container.innerHTML = "<p>Error loading trending anime.</p>";
         console.error(err);
+      }
+    }
+
+    function playTrailer(title) {
+      const query = encodeURIComponent(title + " trailer");
+      window.open(`https://www.youtube.com/results?search_query=${query}`, '_blank');
+    }
+
+    function addToFavorites(title, image) {
+      const favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
+      if (!favorites.find(item => item.title === title)) {
+        favorites.push({ title, image });
+        localStorage.setItem("favorites", JSON.stringify(favorites));
+        alert(`${title} added to favorites!`);
+      } else {
+        alert(`${title} is already in favorites.`);
       }
     }
 
