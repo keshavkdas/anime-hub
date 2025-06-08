@@ -354,11 +354,19 @@
   }
 
   function addToFavorites(title, imageUrl) {
-    const favs = JSON.parse(localStorage.getItem('favorites')) || [];
-    favs.push({ title, imageUrl });
-    localStorage.setItem('favorites', JSON.stringify(favs));
-    alert(`${title} added to favorites!`);
+  let favs = JSON.parse(localStorage.getItem('favorites')) || [];
+
+  // Check if already added by unique anime ID or title (whichever you have)
+  if (favs.some(fav => fav.id === anime.id)) {
+    alert('This anime is already in your favorites!');
+    return;
   }
+
+  favs.push({ title, imageUrl });
+  localStorage.setItem('favorites', JSON.stringify(favs));
+  alert('Added to favorites!');
+}
+
 
   document.addEventListener("DOMContentLoaded", () => {
     loadTrendingAnime();
