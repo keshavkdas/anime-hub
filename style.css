@@ -1,5 +1,5 @@
 body {
-  font-family: 'Segoe UI', sans-serif;
+  font-family: 'Open Sans', sans-serif;
   margin: 0;
   padding: 0;
   background: #121212;
@@ -16,6 +16,11 @@ header nav a {
   margin: 0 1em;
   text-decoration: none;
   color: #f39c12;
+  font-family: 'Montserrat', sans-serif;
+}
+
+h1, h2, h3 {
+  font-family: 'Galactico', sans-serif;
 }
 
 .hero {
@@ -26,6 +31,7 @@ header nav a {
 
 section {
   padding: 2em;
+  text-align: center;
 }
 
 h2 {
@@ -35,17 +41,20 @@ h2 {
 .anime-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1em;
+  gap: 1.5em;
+  margin-top: 1em;
 }
 
-.anime-grid img {
+.anime-grid img, #random-anime-img {
   width: 100%;
+  max-width: 300px;
   height: auto;
   border-radius: 12px;
+  transition: transform 0.3s ease;
 }
 
-.anime-grid h3 {
-  margin: 0.5em 0;
+.anime-grid img:hover, #random-anime-img:hover {
+  transform: scale(1.05);
 }
 
 a {
@@ -53,9 +62,37 @@ a {
   text-decoration: none;
 }
 
+button {
+  background-color: #f39c12;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+button:hover {
+  background-color: #e67e22;
+}
+
 footer {
   text-align: center;
   background: #1f1f1f;
   padding: 1em;
   font-size: 0.9em;
+  margin-top: 2em;
+}
+
+/* Scroll animation */
+.fade-in {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
 }
