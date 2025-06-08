@@ -1,4 +1,4 @@
-console.log("browse.js is loaded");
+console.log("browse.js loaded");
 
 const searchBtn = document.getElementById("searchBtn");
 const searchInput = document.getElementById("searchInput");
@@ -34,6 +34,7 @@ async function fetchAnime(query, genre) {
           <h3>${anime.title}</h3>
           <p><strong>Score:</strong> ${anime.score || "N/A"}</p>
           <p><strong>Type:</strong> ${anime.type}</p>
+          <p><strong>Episodes:</strong> ${anime.episodes || "?"}</p>
         </div>
       </div>
     `).join("");
