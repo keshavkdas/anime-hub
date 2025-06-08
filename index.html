@@ -2,64 +2,67 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Anime Hub</title>
   <link rel="stylesheet" href="style.css" />
-  <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Galactico&display=swap" rel="stylesheet">
 </head>
 <body>
   <header>
     <h1>Anime Hub</h1>
     <nav>
-      <a href="#">Home</a>
-      <a href="#top-anime">Top Anime</a>
-      <a href="#merch">Merch</a>
-      <a href="#news">News</a>
+      <a href="#" class="tab" data-target="home">Home</a>
+      <a href="#" class="tab" data-target="top-anime">Top Anime</a>
+      <a href="#" class="tab" data-target="merch">Merch</a>
+      <a href="#" class="tab" data-target="news">News</a>
     </nav>
   </header>
 
-  <section class="hero fade-in">
-    <h2>Welcome to Anime Hub</h2>
-    <p>Your daily dose of anime reviews, news & merch</p>
+  <section id="home" class="tab-content active fade-in">
+    <div class="hero">
+      <h2>Welcome to Anime Hub</h2>
+      <p>Your daily dose of anime reviews, news & merch</p>
+    </div>
   </section>
 
-  <section id="top-anime" class="fade-in">
+  <section id="top-anime" class="tab-content fade-in">
     <h2>🔥 Top Anime</h2>
     <div class="anime-grid">
       <div>
-        <img src="one-piece.jpg" alt="One Piece" />
+        <img src="images/one-piece.jpg" alt="One Piece" />
         <h3>One Piece</h3>
-        <p>Explore the Grand Line with Luffy & the Straw Hats!</p>
+        <p class="short">Explore the Grand Line with Luffy... <span class="more">and his Straw Hat crew as they chase the One Piece treasure!</span> <a href="#" class="toggle">Read more</a></p>
       </div>
       <div>
-        <img src="demon-slayer.jpg" alt="Demon Slayer" />
+        <img src="images/demon-slayer.jpg" alt="Demon Slayer" />
         <h3>Demon Slayer</h3>
-        <p>Follow Tanjiro on his quest to save Nezuko.</p>
+        <p class="short">Follow Tanjiro on his quest... <span class="more">to save Nezuko and defeat powerful demons in Taisho-era Japan.</span> <a href="#" class="toggle">Read more</a></p>
       </div>
     </div>
   </section>
 
   <section id="random" class="fade-in">
     <h2>🎴 Anime of the Moment</h2>
-    <img id="random-anime-img" src="" alt="Random anime image" />
-    <br>
-    <button onclick="loadRandom()">Next Image</button>
+    <div class="carousel">
+      <img id="random-anime-img" src="" alt="Random anime image" />
+      <div>
+        <button onclick="loadRandom()">Next Image</button>
+      </div>
+    </div>
   </section>
 
-  <section id="merch" class="fade-in">
+  <section id="merch" class="tab-content fade-in">
     <h2>🛒 Anime Merch</h2>
-    <p>Support your favorite series. These are affiliate links!</p>
     <div class="anime-grid">
       <div>
-        <img src="merch.jpg" alt="Anime Merch" />
+        <img src="images/merch.jpg" alt="Anime Merch" />
         <h3>One Piece Hoodie</h3>
         <a href="https://amzn.to/YOUR_AFFILIATE_LINK" target="_blank">Buy Now</a>
       </div>
     </div>
   </section>
 
-  <section id="news" class="fade-in">
+  <section id="news" class="tab-content fade-in">
     <h2>📰 Latest Anime News</h2>
     <ul id="news-list">
       <li><a href="#">One Piece Episode 1100 Recap</a></li>
@@ -72,27 +75,6 @@
     <p>© 2025 Anime Hub | Built with ❤️ for anime fans</p>
   </footer>
 
-  <!-- JavaScript -->
-  <script>
-    function loadRandom() {
-      fetch('https://nekos.best/api/v2/neko')
-        .then(response => response.json())
-        .then(data => {
-          const imgUrl = data.results[0].url;
-          document.getElementById('random-anime-img').src = imgUrl;
-        });
-    }
-
-    loadRandom(); // Load on page load
-
-    // Scroll reveal
-    window.addEventListener('scroll', () => {
-      document.querySelectorAll('.fade-in').forEach(el => {
-        if (el.getBoundingClientRect().top < window.innerHeight - 100) {
-          el.classList.add('visible');
-        }
-      });
-    });
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
