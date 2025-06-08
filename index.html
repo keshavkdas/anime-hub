@@ -325,20 +325,27 @@
   }
 
   function autoScrollSlider(container) {
-    let scrollAmount = 0;
-    const scrollStep = 2;
-    const delay = 30;
+    let scrollStep = 1;       // scroll speed in pixels
+    let scrollPos = 0;
 
-    setInterval(() => {
-      container.scrollLeft += scrollStep;
-      scrollAmount += scrollStep;
+  // Clone the content to create seamless infinite scroll
+  const clone = container.innerHTML;
+  container.innerHTML += clone;
 
-      if (container.scrollLeft + container.clientWidth >= container.scrollWidth) {
-        container.scrollLeft = 0;
-        scrollAmount = 0;
-      }
-    }, delay);
+  const maxScroll = container.scrollWidth / 2;
+
+  function step() {
+    scrollPos += scrollStep;
+    if (scrollPos >= maxScroll) {
+      scrollPos = 0;
+    }
+    container.scrollLeft = scrollPos;
+    requestAnimationFrame(step);
   }
+
+  requestAnimationFrame(step);
+}
+
 
   function playTrailer(title) {
     const query = encodeURIComponent(`${title} anime trailer`);
