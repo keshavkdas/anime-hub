@@ -2,79 +2,77 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Anime Hub</title>
-  <link rel="stylesheet" href="style.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Galactico&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Anime Portal</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Galactico&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
   <header>
-    <h1>Anime Hub</h1>
-    <nav>
-      <a href="#" class="tab" data-target="home">Home</a>
-      <a href="#" class="tab" data-target="top-anime">Top Anime</a>
-      <a href="#" class="tab" data-target="merch">Merch</a>
-      <a href="#" class="tab" data-target="news">News</a>
-    </nav>
+    <div class="container">
+      <h1 class="logo">AnimePortal</h1>
+
+      <nav>
+        <ul class="nav-links">
+          <li><a href="#" class="nav-link active" data-target="home">Home</a></li>
+          <li><a href="#" class="nav-link" data-target="browse">Browse</a></li>
+          <li><a href="#" class="nav-link" data-target="watchlist">Watchlist</a></li>
+        </ul>
+      </nav>
+
+      <button id="dark-mode-toggle" aria-label="Toggle dark mode">🌙</button>
+    </div>
   </header>
 
-  <section id="home" class="tab-content active fade-in">
-    <div class="hero">
-      <h2>Welcome to Anime Hub</h2>
-      <p>Your daily dose of anime reviews, news & merch</p>
-    </div>
-  </section>
-
-  <section id="top-anime" class="tab-content fade-in">
-    <h2>🔥 Top Anime</h2>
-    <div class="anime-grid">
-      <div>
-        <img src="one-piece.jpg" alt="One Piece" />
-        <h3>One Piece</h3>
-        <p class="short">Explore the Grand Line with Luffy... <span class="more">and his Straw Hat crew as they chase the One Piece treasure!</span> <a href="#" class="toggle">Read more</a></p>
+  <main>
+    <section id="home" class="tab-content active">
+      <div class="carousel">
+        <div class="carousel-inner">
+          <div class="carousel-item active">
+            <img src="images/one-piece.jpg" alt="One Piece" />
+            <div class="carousel-caption">
+              <h2>One Piece</h2>
+              <p>Join Luffy and crew on an epic adventure for the One Piece!</p>
+            </div>
+          </div>
+          <div class="carousel-item">
+            <img src="images/demon-slayer.jpg" alt="Demon Slayer" />
+            <div class="carousel-caption">
+              <h2>Demon Slayer</h2>
+              <p>Follow Tanjiro’s journey to save his sister and defeat demons.</p>
+            </div>
+          </div>
+          <div class="carousel-item">
+            <img src="images/jujutsu-kaisen.jpg" alt="Jujutsu Kaisen" />
+            <div class="carousel-caption">
+              <h2>Jujutsu Kaisen</h2>
+              <p>Experience high-stakes battles with sorcerers and curses.</p>
+            </div>
+          </div>
+        </div>
+        <button class="carousel-control prev">&#10094;</button>
+        <button class="carousel-control next">&#10095;</button>
       </div>
-      <div>
-        <img src="demon-slayer.jpg" alt="Demon Slayer" />
-        <h3>Demon Slayer</h3>
-        <p class="short">Follow Tanjiro on his quest... <span class="more">to save Nezuko and defeat powerful demons in Taisho-era Japan.</span> <a href="#" class="toggle">Read more</a></p>
-      </div>
-    </div>
-  </section>
+    </section>
 
-  <section id="random" class="fade-in">
-    <h2>🎴 Anime of the Moment</h2>
-    <div class="carousel">
-      <img id="random-anime-img" src="" alt="Random anime image" />
-      <div>
-        <button onclick="loadRandom()">Next Image</button>
-      </div>
-    </div>
-  </section>
+    <section id="browse" class="tab-content">
+      <h2>Browse Anime (coming soon!)</h2>
+      <p>This section will have search and filter powered by Jikan API.</p>
+    </section>
 
-  <section id="merch" class="tab-content fade-in">
-    <h2>🛒 Anime Merch</h2>
-    <div class="anime-grid">
-      <div>
-        <img src="merch.jpg" alt="Anime Merch" />
-        <h3>One Piece Hoodie</h3>
-        <a href="https://amzn.to/YOUR_AFFILIATE_LINK" target="_blank">Buy Now</a>
-      </div>
-    </div>
-  </section>
-
-  <section id="news" class="tab-content fade-in">
-    <h2>📰 Latest Anime News</h2>
-    <ul id="news-list">
-      <li><a href="#">One Piece Episode 1100 Recap</a></li>
-      <li><a href="#">Demon Slayer Season 4 Spoilers</a></li>
-      <li><a href="#">Jujutsu Kaisen Movie 2 Announced</a></li>
-    </ul>
-  </section>
+    <section id="watchlist" class="tab-content">
+      <h2>Your Watchlist (coming soon!)</h2>
+      <p>Save your favorite anime here.</p>
+    </section>
+  </main>
 
   <footer>
-    <p>© 2025 Anime Hub | Built with ❤️ for anime fans</p>
+    <p>© 2025 AnimePortal - Built with ❤️</p>
   </footer>
 
-  <script src="script.js"></script>
+  <script src="js/app.js"></script>
 </body>
 </html>
