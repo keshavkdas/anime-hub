@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Browse Anime</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header>
+    <div class="container">
+      <h1 class="logo">AnimePortal</h1>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="browse.html" class="active">Browse</a></li>
+          <li><a href="#">Watchlist</a></li>
+        </ul>
+      </nav>
+      <button id="dark-mode-toggle">🌙</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <h2>Search Anime</h2>
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="Search anime..." />
+      <button id="searchBtn">Search</button>
+    </div>
+
+    <div class="filter">
+      <label for="genre">Filter by Genre:</label>
+      <select id="genre">
+        <option value="">All</option>
+        <option value="1">Action</option>
+        <option value="2">Adventure</option>
+        <option value="4">Comedy</option>
+        <option value="7">Drama</option>
+        <option value="10">Fantasy</option>
+        <option value="14">Horror</option>
+        <option value="22">Romance</option>
+        <option value="24">Sci-Fi</option>
+      </select>
+    </div>
+
+    <div id="results" class="anime-grid"></div>
+  </main>
+
+  <footer>
+    <p>© 2025 AnimePortal</p>
+  </footer>
+
+  <script src="js/app.js"></script>
+  <script src="js/browse.js"></script>
+</body>
+</html>
