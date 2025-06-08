@@ -128,6 +128,25 @@
       color: #fff;
     }
 
+    .anime-list-section {
+  padding: 2rem;
+  background-color: #121212;
+}
+
+.anime-list-section h2 {
+  color: white;
+  margin-bottom: 1rem;
+  font-size: 1.6rem;
+  text-align: center;
+}
+
+.anime-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+}
+
+
     .anime-actions {
       display: flex;
       justify-content: space-between;
@@ -228,6 +247,12 @@
     </nav>
   </header>
 
+  <section class="hero">
+    <h2>Welcome to AnimeHub</h2>
+    <p>Your one-stop destination for the latest anime shows, movies, and more.</p>
+    <a href="browse.html">Start Browsing</a>
+  </section>
+
   <section class="top-anime-slider">
   <h2>🔥 Top 10 Anime This Week</h2>
   <div class="slider-container" id="topAnimeSlider">
@@ -235,19 +260,20 @@
   </div>
   </section>
 
-
-  <section class="hero">
-    <h2>Welcome to AnimeHub</h2>
-    <p>Your one-stop destination for the latest anime shows, movies, and more.</p>
-    <a href="browse.html">Start Browsing</a>
-  </section>
-
-  <section class="trending-section">
+<!--   <section class="trending-section">
     <h2>🔥 Top Trending Anime</h2>
     <div class="anime-scroll" id="trendingAnime">
-      <!-- Anime cards will be injected here -->
+      <!-- Anime cards will be injected here 
     </div>
+  </section>  -->
+
+  <section class="anime-list-section">
+  <h2>✨ Explore More Anime</h2>
+  <div id="animeContainer" class="anime-list">
+    <!-- Main trending anime cards will appear here -->
+  </div>
   </section>
+
 
   <footer>
     &copy; 2025 AnimeHub. All rights reserved.
