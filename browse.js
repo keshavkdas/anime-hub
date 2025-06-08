@@ -1,20 +1,18 @@
-document.addEventListener("DOMContentLoaded", () => {
-  fetchAnime("naruto", "");
-});
 console.log("browse.js is loaded");
+
 const searchBtn = document.getElementById("searchBtn");
 const searchInput = document.getElementById("searchInput");
 const genreSelect = document.getElementById("genre");
 const resultsContainer = document.getElementById("results");
 
+document.addEventListener("DOMContentLoaded", () => {
+  fetchAnime("naruto", "");
+});
+
 searchBtn.addEventListener("click", () => {
   const query = searchInput.value.trim();
   const genre = genreSelect.value;
-  if (query) {
-    fetchAnime(query, genre);
-  } else {
-    resultsContainer.innerHTML = "<p>Please enter a search term.</p>";
-  }
+  fetchAnime(query || "naruto", genre);
 });
 
 async function fetchAnime(query, genre) {
@@ -29,19 +27,18 @@ async function fetchAnime(query, genre) {
       return;
     }
 
-    resultsContainer.innerHTML = data.data
-      .map(anime => `
-        <div class="anime-card">
-          <img src="${anime.images.jpg.image_url}" alt="${anime.title}" />
-          <div class="anime-info">
-            <h3>${anime.title}</h3>
-            <p><strong>Score:</strong> ${anime.score || "N/A"}</p>
-            <p><strong>Type:</strong> ${anime.type}</p>
-          </div>
+    resultsContainer.innerHTML = data.data.map(anime => `
+      <div class="anime-card">
+        <img src="${anime.images.jpg.image_url}" alt="${anime.title}" />
+        <div class="anime-info">
+          <h3>${anime.title}</h3>
+          <p><strong>Score:</strong> ${anime.score || "N/A"}</p>
+          <p><strong>Type:</strong> ${anime.type}</p>
         </div>
-      `).join("");
-  } catch (error) {
-    resultsContainer.innerHTML = "<p>Error loading anime. Please try again.</p>";
-    console.error("Error fetching anime:", error);
+      </div>
+    `).join("");
+  } catch (err) {
+    resultsContainer.innerHTML = "<p>Error loading anime. Try again later.</p>";
+    console.error(err);
   }
 }
