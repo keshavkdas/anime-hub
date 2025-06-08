@@ -8,15 +8,15 @@ body {
 
 header {
   background: #1f1f1f;
-  padding: 1em;
   text-align: center;
+  padding: 1em;
 }
 
-header nav a {
-  margin: 0 1em;
-  text-decoration: none;
+nav a {
+  margin: 0 0.7em;
   color: #f39c12;
   font-family: 'Montserrat', sans-serif;
+  text-decoration: none;
 }
 
 h1, h2, h3 {
@@ -25,8 +25,8 @@ h1, h2, h3 {
 
 .hero {
   padding: 2em;
-  background: #272727;
   text-align: center;
+  background: #272727;
 }
 
 section {
@@ -34,32 +34,33 @@ section {
   text-align: center;
 }
 
-h2 {
-  color: #f39c12;
-}
-
 .anime-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 1.5em;
   margin-top: 1em;
 }
 
-.anime-grid img, #random-anime-img {
+.anime-grid img,
+.carousel img {
   width: 100%;
-  max-width: 300px;
+  max-width: 250px;
   height: auto;
   border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.5);
   transition: transform 0.3s ease;
 }
 
-.anime-grid img:hover, #random-anime-img:hover {
+.anime-grid img:hover,
+.carousel img:hover {
   transform: scale(1.05);
 }
 
-a {
-  color: #f39c12;
-  text-decoration: none;
+.carousel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 button {
@@ -67,10 +68,10 @@ button {
   color: #fff;
   border: none;
   padding: 10px 20px;
+  margin-top: 1em;
   border-radius: 6px;
   font-weight: bold;
   cursor: pointer;
-  margin-top: 10px;
 }
 
 button:hover {
@@ -78,14 +79,30 @@ button:hover {
 }
 
 footer {
-  text-align: center;
   background: #1f1f1f;
   padding: 1em;
   font-size: 0.9em;
+  text-align: center;
   margin-top: 2em;
 }
 
-/* Scroll animation */
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+/* Read more toggle */
+.short .more {
+  display: none;
+}
+.short.expanded .more {
+  display: inline;
+}
+
+/* Scroll effect */
 .fade-in {
   opacity: 0;
   transform: translateY(20px);
@@ -95,4 +112,11 @@ footer {
 .fade-in.visible {
   opacity: 1;
   transform: translateY(0);
+}
+
+@media (max-width: 600px) {
+  .anime-grid {
+    flex-direction: column;
+    align-items: center;
+  }
 }
