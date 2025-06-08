@@ -280,6 +280,26 @@
     &copy; 2025 AnimeHub. All rights reserved.
   </footer>
 
+  <div id="toast" style="
+  visibility: hidden;
+  min-width: 250px;
+  background-color: #f97316;
+  color: white;
+  text-align: center;
+  border-radius: 4px;
+  padding: 12px;
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-weight: bold;
+  font-size: 16px;
+  z-index: 1000;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+  ">
+  Added to favorites!
+</div>
+
   <script>
   async function loadTrendingAnime() {
     const container = document.getElementById("animeContainer");
@@ -353,18 +373,31 @@
     window.open(`https://www.youtube.com/results?search_query=${query}`, '_blank');
   }
 
+  function showToast(message) {
+  const toast = document.getElementById('toast');
+  toast.textContent = message;
+  toast.style.visibility = 'visible';
+  toast.style.opacity = '1';
+
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.visibility = 'hidden';
+  }, 2500); // Toast shows for 2.5 seconds
+  }
+
+
   function addToFavorites(title, imageUrl) {
   let favs = JSON.parse(localStorage.getItem('favorites')) || [];
 
   // Check if already added by unique anime ID or title (whichever you have)
-  if (favs.some(fav => fav.id === anime.id)) {
-    alert('This anime is already in your favorites!');
+  if (favs.some(fav => fav.title === title)) {
+    showToast('This anime is already in your favorites!');
     return;
   }
 
   favs.push({ title, imageUrl });
   localStorage.setItem('favorites', JSON.stringify(favs));
-  alert('Added to favorites!');
+  showToast('Added to favorites!');
 }
 
 
