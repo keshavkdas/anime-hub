@@ -32,12 +32,14 @@
       text-decoration: underline;
     }
     .favorites-list {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      display: flex;        /* Use flexbox */
+      flex-wrap: wrap;      /* Allow multiple rows */
       gap: 1rem;
       margin-top: 1rem;
+      justify-content: flex-start; /* Align items to left */
     }
     .fav-card {
+      flex: 0 0 180px;
       background-color: #222;
       border-radius: 10px;
       overflow: hidden;
