@@ -169,6 +169,53 @@
       margin-top: 3rem;
       font-size: 0.9rem;
     }
+
+    .top-anime-slider {
+      padding: 2rem;
+      background-color: #1f1f1f;
+    }
+
+    .top-anime-slider h2 {
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+      color: #f97316;
+      text-align: center;
+    }
+
+    .slider-container {
+      display: flex;
+      overflow-x: auto;
+      gap: 1rem;
+      scroll-behavior: smooth;
+      padding-bottom: 1rem;
+    }
+
+    .slider-container::-webkit-scrollbar {
+      display: none;
+    }
+
+    .slider-card {
+      min-width: 160px;
+      flex-shrink: 0;
+      background-color: #2a2a2a;
+      border-radius: 8px;
+      overflow: hidden;
+      text-align: center;
+      color: white;
+      transition: transform 0.3s;
+    }
+
+    .slider-card img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+    }
+
+    .slider-card h3 {
+      padding: 0.5rem;
+      font-size: 0.9rem;
+    }
+
   </style>
 </head>
 
@@ -180,6 +227,14 @@
       <a href="browse.html">Browse</a>
     </nav>
   </header>
+
+  <section class="top-anime-slider">
+  <h2>🔥 Top 10 Anime This Week</h2>
+  <div class="slider-container" id="topAnimeSlider">
+    <!-- Top anime will be inserted here by JS -->
+  </div>
+  </section>
+
 
   <section class="hero">
     <h2>Welcome to AnimeHub</h2>
@@ -199,48 +254,83 @@
   </footer>
 
   <script>
-    async function loadTrendingAnime() {
-      const container = document.getElementById("trendingAnime");
-      container.innerHTML = "<p>Loading...</p>";
+  async function loadTrendingAnime() {
+    const container = document.getElementById("animeContainer");
 
-      try {
-        const res = await fetch("https://api.jikan.moe/v4/top/anime?limit=10");
-        const data = await res.json();
+    try {
+      const res = await fetch("https://api.jikan.moe/v4/top/anime?limit=12");
+      const data = await res.json();
 
-        container.innerHTML = data.data.map(anime => `
-          <div class="anime-card">
-            <img src="${anime.images.jpg.image_url}" alt="${anime.title}" />
-            <h3>${anime.title}</h3>
-            <div class="anime-actions">
-              <button class="trailer-btn" onclick="playTrailer('${anime.title}')">▶ Watch Trailer</button>
-              <button class="heart-btn" onclick="addToFavorites('${anime.title}', '${anime.images.jpg.image_url}')">❤️</button>
-            </div>
+      container.innerHTML = data.data.map(anime => `
+        <div class="anime-card">
+          <img src="${anime.images.jpg.image_url}" alt="${anime.title}" />
+          <h3>${anime.title}</h3>
+          <div class="anime-actions">
+            <button class="trailer-btn" onclick="playTrailer('${anime.title}')">▶ Watch Trailer</button>
+            <button class="heart-btn" onclick="addToFavorites('${anime.title}', '${anime.images.jpg.image_url}')">❤️</button>
           </div>
-        `).join("");
+        </div>
+      `).join("");
+    } catch (err) {
+      container.innerHTML = "<p>Error loading trending anime.</p>";
+      console.error(err);
+    }
+  }
 
-      } catch (err) {
-        container.innerHTML = "<p>Error loading trending anime.</p>";
-        console.error(err);
+  async function loadTopAnimeSlider() {
+    const container = document.getElementById("topAnimeSlider");
+
+    try {
+      const res = await fetch("https://api.jikan.moe/v4/top/anime?limit=10");
+      const data = await res.json();
+
+      container.innerHTML = data.data.map(anime => `
+        <div class="slider-card">
+          <img src="${anime.images.jpg.image_url}" alt="${anime.title}">
+          <h3>${anime.title}</h3>
+        </div>
+      `).join("");
+    } catch (err) {
+      container.innerHTML = "<p>Error loading top anime.</p>";
+      console.error(err);
+    }
+
+    autoScrollSlider(container);
+  }
+
+  function autoScrollSlider(container) {
+    let scrollAmount = 0;
+    const scrollStep = 2;
+    const delay = 30;
+
+    setInterval(() => {
+      container.scrollLeft += scrollStep;
+      scrollAmount += scrollStep;
+
+      if (container.scrollLeft + container.clientWidth >= container.scrollWidth) {
+        container.scrollLeft = 0;
+        scrollAmount = 0;
       }
-    }
+    }, delay);
+  }
 
-    function playTrailer(title) {
-      const query = encodeURIComponent(title + " trailer");
-      window.open(`https://www.youtube.com/results?search_query=${query}`, '_blank');
-    }
+  function playTrailer(title) {
+    const query = encodeURIComponent(`${title} anime trailer`);
+    window.open(`https://www.youtube.com/results?search_query=${query}`, '_blank');
+  }
 
-    function addToFavorites(title, image) {
-      const favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
-      if (!favorites.find(item => item.title === title)) {
-        favorites.push({ title, image });
-        localStorage.setItem("favorites", JSON.stringify(favorites));
-        alert(`${title} added to favorites!`);
-      } else {
-        alert(`${title} is already in favorites.`);
-      }
-    }
+  function addToFavorites(title, imageUrl) {
+    const favs = JSON.parse(localStorage.getItem('favorites')) || [];
+    favs.push({ title, imageUrl });
+    localStorage.setItem('favorites', JSON.stringify(favs));
+    alert(`${title} added to favorites!`);
+  }
 
-    document.addEventListener("DOMContentLoaded", loadTrendingAnime);
-  </script>
+  document.addEventListener("DOMContentLoaded", () => {
+    loadTrendingAnime();
+    loadTopAnimeSlider();
+  });
+</script>
+
 </body>
 </html>
