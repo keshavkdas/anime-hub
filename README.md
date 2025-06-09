@@ -1,5 +1,4 @@
 # Anime-hub
-# AnimeHub
 
 AnimeHub is a responsive and dynamic anime website that showcases trending and currently airing anime with a visually appealing carousel and infinite scroll anime listing. It fetches live data from the [Jikan API](https://jikan.moe/) (MyAnimeList unofficial API) to display the latest anime information, including images, synopsis, episode count, and trailers.
 
