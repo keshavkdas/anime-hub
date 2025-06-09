@@ -349,44 +349,43 @@
     showToast('Added to favorites!');
   }
 
-  async function loadTopAnimeSlider() {
-    const container = document.getElementById("topAnimeSlider");
+  // Splide top anime carousel
+  const splideScript = document.createElement('script');
+  splideScript.src = "https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.3/dist/js/splide.min.js";
+  splideScript.onload = () => {
+    fetch("https://api.jikan.moe/v4/top/anime?limit=10")
+      .then(res => res.json())
+      .then(data => {
+        const list = document.getElementById("splideList");
+        data.data.forEach(anime => {
+          const li = document.createElement("li");
+          li.className = "splide__slide";
+          li.innerHTML = `
+            <div class="slider-card">
+              <img src="${anime.images.jpg.image_url}" alt="${anime.title}">
+              <h3>${anime.title}</h3>
+            </div>
+          `;
+          list.appendChild(li);
+        });
 
-    try {
-      const res = await fetch("https://api.jikan.moe/v4/top/anime?limit=10");
-      const data = await res.json();
-
-      container.innerHTML = data.data.map(anime => `
-        <div class="slider-card">
-          <img src="${anime.images.jpg.image_url}" alt="${anime.title}">
-          <h3>${anime.title}</h3>
-        </div>
-      `).join("");
-
-      autoScrollSlider(container);
-    } catch (err) {
-      container.innerHTML = "<p>Error loading top anime.</p>";
-    }
-  }
-
-  function autoScrollSlider(container) {
-    let scrollStep = 1;
-    let scrollPos = 0;
-    const clone = container.innerHTML;
-    container.innerHTML += clone;
-    const maxScroll = container.scrollWidth / 2;
-
-    function step() {
-      scrollPos += scrollStep;
-      if (scrollPos >= maxScroll) {
-        scrollPos = 0;
-      }
-      container.scrollLeft = scrollPos;
-      requestAnimationFrame(step);
-    }
-
-    requestAnimationFrame(step);
-  }
+        new Splide('#topAnimeSlider', {
+          type   : 'loop',
+          perPage: 4,
+          autoplay: true,
+          interval: 2500,
+          arrows: true,
+          pagination: false,
+          gap: '1rem',
+          breakpoints: {
+            1024: { perPage: 3 },
+            768: { perPage: 2 },
+            480: { perPage: 1 }
+          }
+        }).mount();
+      });
+  };
+  document.body.appendChild(splideScript);
 
   // Infinite Scroll Listener
   window.addEventListener("scroll", () => {
@@ -395,51 +394,10 @@
       loadTrendingAnime();
     }
   });
-  // Load Splide.js script
-const splideScript = document.createElement('script');
-splideScript.src = "https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.3/dist/js/splide.min.js";
-splideScript.onload = () => {
-  fetch("https://api.jikan.moe/v4/top/anime?limit=10")
-    .then(res => res.json())
-    .then(data => {
-      const list = document.getElementById("splideList");
-      data.data.forEach(anime => {
-        const li = document.createElement("li");
-        li.className = "splide__slide";
-        li.innerHTML = `
-          <div class="slider-card">
-            <img src="${anime.images.jpg.image_url}" alt="${anime.title}">
-            <h3>${anime.title}</h3>
-          </div>
-        `;
-        list.appendChild(li);
-      });
-
-      // Init Splide
-      new Splide('#topAnimeSlider', {
-        type   : 'loop',
-        perPage: 4,
-        autoplay: true,
-        interval: 2500,
-        arrows: true,
-        pagination: false,
-        breakpoints: {
-          768: {
-            perPage: 2,
-          },
-          480: {
-            perPage: 1,
-          }
-        }
-      }).mount();
-    });
-};
-document.body.appendChild(splideScript);
-
 
   document.addEventListener("DOMContentLoaded", () => {
     loadTrendingAnime();
-    loadTopAnimeSlider();
   });
 </script>
+
 
