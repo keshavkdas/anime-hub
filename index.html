@@ -142,8 +142,9 @@
 
 .anime-list {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 1.5rem;
+  margin-top: 1rem;
 }
 
 
@@ -301,27 +302,68 @@
 </div>
 
   <script>
+  let currentPage = 1;
+  let isLoading = false;
+
   async function loadTrendingAnime() {
     const container = document.getElementById("animeContainer");
+    if (isLoading) return;
+    isLoading = true;
 
     try {
-      const res = await fetch("https://api.jikan.moe/v4/top/anime?limit=12");
+      const res = await fetch(`https://api.jikan.moe/v4/top/anime?page=${currentPage}`);
       const data = await res.json();
 
-      container.innerHTML = data.data.map(anime => `
-        <div class="anime-card">
+      data.data.forEach(anime => {
+        const card = document.createElement('div');
+        card.classList.add('anime-card');
+        card.innerHTML = `
           <img src="${anime.images.jpg.image_url}" alt="${anime.title}" />
           <h3>${anime.title}</h3>
           <div class="anime-actions">
             <button class="trailer-btn" onclick="playTrailer('${anime.title}')">▶ Watch Trailer</button>
             <button class="heart-btn" onclick="addToFavorites('${anime.title}', '${anime.images.jpg.image_url}')">❤️</button>
           </div>
-        </div>
-      `).join("");
+        `;
+        container.appendChild(card);
+      });
+
+      currentPage++;
     } catch (err) {
-      container.innerHTML = "<p>Error loading trending anime.</p>";
-      console.error(err);
+      console.error("Failed to load anime:", err);
+    } finally {
+      isLoading = false;
     }
+  }
+
+  function playTrailer(title) {
+    const query = encodeURIComponent(`${title} anime trailer`);
+    window.open(`https://www.youtube.com/results?search_query=${query}`, '_blank');
+  }
+
+  function showToast(message) {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.style.visibility = 'visible';
+    toast.style.opacity = '1';
+
+    setTimeout(() => {
+      toast.style.opacity = '0';
+      toast.style.visibility = 'hidden';
+    }, 2500);
+  }
+
+  function addToFavorites(title, imageUrl) {
+    let favs = JSON.parse(localStorage.getItem('favorites')) || [];
+
+    if (favs.some(fav => fav.title === title)) {
+      showToast('This anime is already in your favorites!');
+      return;
+    }
+
+    favs.push({ title, imageUrl });
+    localStorage.setItem('favorites', JSON.stringify(favs));
+    showToast('Added to favorites!');
   }
 
   async function loadTopAnimeSlider() {
@@ -337,69 +379,39 @@
           <h3>${anime.title}</h3>
         </div>
       `).join("");
+
+      autoScrollSlider(container);
     } catch (err) {
       container.innerHTML = "<p>Error loading top anime.</p>";
-      console.error(err);
     }
-
-    autoScrollSlider(container);
   }
 
   function autoScrollSlider(container) {
-    let scrollStep = 1;       // scroll speed in pixels
+    let scrollStep = 1;
     let scrollPos = 0;
+    const clone = container.innerHTML;
+    container.innerHTML += clone;
+    const maxScroll = container.scrollWidth / 2;
 
-  // Clone the content to create seamless infinite scroll
-  const clone = container.innerHTML;
-  container.innerHTML += clone;
-
-  const maxScroll = container.scrollWidth / 2;
-
-  function step() {
-    scrollPos += scrollStep;
-    if (scrollPos >= maxScroll) {
-      scrollPos = 0;
+    function step() {
+      scrollPos += scrollStep;
+      if (scrollPos >= maxScroll) {
+        scrollPos = 0;
+      }
+      container.scrollLeft = scrollPos;
+      requestAnimationFrame(step);
     }
-    container.scrollLeft = scrollPos;
+
     requestAnimationFrame(step);
   }
 
-  requestAnimationFrame(step);
-}
-
-
-  function playTrailer(title) {
-    const query = encodeURIComponent(`${title} anime trailer`);
-    window.open(`https://www.youtube.com/results?search_query=${query}`, '_blank');
-  }
-
-  function showToast(message) {
-  const toast = document.getElementById('toast');
-  toast.textContent = message;
-  toast.style.visibility = 'visible';
-  toast.style.opacity = '1';
-
-  setTimeout(() => {
-    toast.style.opacity = '0';
-    toast.style.visibility = 'hidden';
-  }, 2500); // Toast shows for 2.5 seconds
-  }
-
-
-  function addToFavorites(title, imageUrl) {
-  let favs = JSON.parse(localStorage.getItem('favorites')) || [];
-
-  // Check if already added by unique anime ID or title (whichever you have)
-  if (favs.some(fav => fav.title === title)) {
-    showToast('This anime is already in your favorites!');
-    return;
-  }
-
-  favs.push({ title, imageUrl });
-  localStorage.setItem('favorites', JSON.stringify(favs));
-  showToast('Added to favorites!');
-}
-
+  // Infinite Scroll Listener
+  window.addEventListener("scroll", () => {
+    const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+    if (scrollTop + clientHeight >= scrollHeight - 10) {
+      loadTrendingAnime();
+    }
+  });
 
   document.addEventListener("DOMContentLoaded", () => {
     loadTrendingAnime();
@@ -407,5 +419,3 @@
   });
 </script>
 
-</body>
-</html>
