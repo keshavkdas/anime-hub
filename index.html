@@ -249,15 +249,14 @@
   </section>
 
 
-  <section class="hianime-carousel-section" style="padding:2rem; background:#1f1f1f; text-align:center;">
-  <h2 style="color:#f97316; margin-bottom:1rem;">🔥 Top Anime this week</h2>
-  <div id="hianimeCarousel" style="position:relative; max-width:600px; margin:0 auto; overflow:hidden; border-radius:8px;">
+  <section class="hianime-carousel-section" style="padding: 0; margin: 0;">
+  <h2 style="color:#f97316; text-align:center; padding: 1.5rem 0;">🔥 Top Anime this week</h2>
+  <div id="hianimeCarousel" style="position:relative; width:100%; overflow:hidden;">
     <div id="carouselTrack" style="display:flex; transition:transform 0.5s ease-in-out;"></div>
-    <button id="prevBtn" style="position:absolute; top:50%; left:10px; transform:translateY(-50%); background:rgba(0,0,0,0.5); color:#fff; border:none; font-size:2rem; padding:5px 10px; cursor:pointer; border-radius:50%;">&#10094;</button>
-    <button id="nextBtn" style="position:absolute; top:50%; right:10px; background:rgba(0,0,0,0.5); color:#fff; border:none; font-size:2rem; padding:5px 10px; cursor:pointer; border-radius:50%;">&#10095;</button>
+    <button id="prevBtn" style="position:absolute; top:50%; left:20px; transform:translateY(-50%); background:rgba(0,0,0,0.4); color:#fff; border:none; font-size:2rem; padding:5px 12px; cursor:pointer; border-radius:50%;">&#10094;</button>
+    <button id="nextBtn" style="position:absolute; top:50%; right:20px; background:rgba(0,0,0,0.4); color:#fff; border:none; font-size:2rem; padding:5px 12px; cursor:pointer; border-radius:50%;">&#10095;</button>
   </div>
   </section>
-
 
   <section class="anime-list-section">
   <h2>✨ Explore More Anime</h2>
@@ -406,28 +405,29 @@
     loadTrendingAnime();
   });
 </script>
-  <script>
+  
+<script>
 (async function() {
   const track = document.getElementById('carouselTrack');
   const prevBtn = document.getElementById('prevBtn');
   const nextBtn = document.getElementById('nextBtn');
 
-  // Fetch top 10 anime (same as your existing API)
   try {
     const res = await fetch('https://api.jikan.moe/v4/top/anime?limit=10');
     const data = await res.json();
 
-    // Create one slide per anime
     data.data.forEach(anime => {
       const slide = document.createElement('div');
-      slide.style.minWidth = '100%';
+      slide.style.minWidth = '100vw';  // Full screen width
       slide.style.boxSizing = 'border-box';
       slide.style.position = 'relative';
       slide.style.color = '#fff';
 
+      const imageUrl = anime.images.jpg.large_image_url || anime.images.jpg.image_url;
+
       slide.innerHTML = `
-        <img src="${anime.images.jpg.image_url}" alt="${anime.title}" style="width:100%; height:350px; object-fit:cover; border-radius:8px;">
-        <h3 style="position:absolute; bottom:15px; left:20px; right:20px; background:rgba(0,0,0,0.5); padding:10px; border-radius:5px; font-size:1.2rem; text-align:center;">${anime.title}</h3>
+        <img src="${imageUrl}" alt="${anime.title}" style="width:100vw; height:500px; object-fit:cover;">
+        <h3 style="position:absolute; bottom:20px; left:20px; right:20px; background:rgba(0,0,0,0.6); padding:12px; border-radius:5px; font-size:1.5rem; text-align:center;">${anime.title}</h3>
       `;
 
       track.appendChild(slide);
@@ -437,7 +437,7 @@
     const totalSlides = track.children.length;
 
     function updateCarousel() {
-      track.style.transform = `translateX(-${currentIndex * 100}%)`;
+      track.style.transform = `translateX(-${currentIndex * 100}vw)`;
     }
 
     let autoSlide = setInterval(() => {
