@@ -349,7 +349,7 @@
     showToast('Added to favorites!');
   }
 
-  // Splide top anime carousel
+  // Load top anime slider
   const splideScript = document.createElement('script');
   splideScript.src = "https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.3/dist/js/splide.min.js";
   splideScript.onload = () => {
@@ -371,26 +371,26 @@
 
         new Splide('#topAnimeSlider', {
           type   : 'loop',
-          perPage: 4,
+          perPage: 5,
           autoplay: true,
           interval: 2500,
           arrows: true,
           pagination: false,
           gap: '1rem',
           breakpoints: {
-            1024: { perPage: 3 },
-            768: { perPage: 2 },
-            480: { perPage: 1 }
+            1024: { perPage: 4 },
+            768: { perPage: 3 },
+            480: { perPage: 2 }
           }
         }).mount();
       });
   };
   document.body.appendChild(splideScript);
 
-  // Infinite Scroll Listener
+  // Infinite scroll loading
   window.addEventListener("scroll", () => {
     const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
-    if (scrollTop + clientHeight >= scrollHeight - 10) {
+    if (scrollTop + clientHeight >= scrollHeight - 20) {
       loadTrendingAnime();
     }
   });
