@@ -253,15 +253,6 @@
     <a href="browse.html">Start Browsing</a>
   </section>
 
-  <section class="top-anime-slider-section">
-  <h2>Top Anime</h2>
-  <div id="topAnimeSlider" class="splide">
-    <div class="splide__track">
-      <ul class="splide__list" id="splideList"></ul>
-    </div>
-  </div>
-  </section>
-
   <section class="hianime-carousel-section" style="padding: 0; margin: 0;">
   <h2 style="color:#f97316; text-align:center; padding: 1.5rem 0;">🔥 Top Anime this week</h2>
   <div id="hianimeCarousel" style="position:relative; width:100%; overflow:hidden;">
@@ -420,17 +411,21 @@
     
   });
 </script>
-  
-<script>
+
+<script>  
 ;(async () => {
   const track = document.getElementById('carouselTrack');
   const prevBtn = document.getElementById('prevBtn');
   const nextBtn = document.getElementById('nextBtn');
 
   try {
-    const res = await fetch('https://api.jikan.moe/v4/season/now');
+    // Fetch the currently airing season anime (limit 10)
+    const res = await fetch('https://api.jikan.moe/v4/seasons/now?limit=10');
     const data = await res.json();
-    const shows = data.data.slice(0, 10); // Top 10 airing anime
+    const shows = data.data;
+
+    // Clear previous content (if any)
+    track.innerHTML = '';
 
     shows.forEach(anime => {
       const slide = document.createElement('div');
@@ -454,7 +449,7 @@
         ">
           <h2 style="font-size:2.5rem; margin:0 0 1rem;">${anime.title}</h2>
           <p style="font-size:1rem; line-height:1.5; max-height:5em; overflow:hidden;">
-            ${anime.synopsis ? anime.synopsis.split('. ').slice(0,2).join('. ') + '.' : ''}
+            ${anime.synopsis ? anime.synopsis.split('. ').slice(0,2).join('. ') + '.' : 'No description available.'}
           </p>
           <p style="margin:1rem 0; font-size:0.9rem;"><strong>Episodes:</strong> ${anime.episodes ?? '—'}</p>
           <button onclick="playTrailer('${anime.title}')" style="
@@ -472,6 +467,7 @@
 
     let idx = 0, total = track.children.length;
     function slideTo(i) {
+      track.style.transition = 'transform 0.5s ease-in-out';
       track.style.transform = `translateX(-${i * 100}vw)`;
     }
 
@@ -495,7 +491,9 @@
     console.error('Carousel error:', e);
   }
 })();
+
 </script>
+
 
 
 
