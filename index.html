@@ -211,6 +211,8 @@
       color: white;
       transition: transform 0.3s;
       height: 270px;
+      position: relative;
+      cursor: pointer;
     }
     .slider-card img {
       width: 100%;
@@ -218,8 +220,13 @@
       object-fit: cover;
     }
     .slider-card h3 {
-      padding: 0.5rem;
-      font-size: 0.9rem;
+      position: absolute;
+      bottom: 8px;
+      left: 8px;
+      right: 8px;
+      font-size: 1rem;
+      color: #fff;
+      text-shadow: 0 0 8px black;
     }
 
   </style>
