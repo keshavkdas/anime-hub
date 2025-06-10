@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Anime Details</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="favicon.ico" />
+</head>
+<body>
+  <div class="anime-detail-container" id="animeDetails"></div>
+
+  <script>
+    async function fetchAnimeDetails() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const animeId = urlParams.get('id');
+      const container = document.getElementById("animeDetails");
+
+      try {
+        const res = await fetch(`https://api.jikan.moe/v4/anime/${animeId}`);
+        const { data } = await res.json();
+
+        container.innerHTML = `
+          <div class="anime-detail">
+            <img src="${data.images.jpg.large_image_url}" alt="${data.title}">
+            <div class="anime-info">
+              <h1>${data.title}</h1>
+              <p><strong>Synopsis:</strong> ${data.synopsis || 'No synopsis available.'}</p>
+              <p><strong>Type:</strong> ${data.type}</p>
+              <p><strong>Episodes:</strong> ${data.episodes}</p>
+              <p><strong>Status:</strong> ${data.status}</p>
+              <p><strong>Score:</strong> ${data.score || 'N/A'}</p>
+              <p><strong>Aired:</strong> ${data.aired.string}</p>
+              <p><strong>Genres:</strong> ${data.genres.map(g => g.name).join(', ')}</p>
+              <button onclick="window.open('https://www.youtube.com/results?search_query=${encodeURIComponent(data.title + ' trailer')}','_blank')">▶ Watch Trailer</button>
+            </div>
+          </div>
+        `;
+      } catch (err) {
+        container.innerHTML = "<p>Failed to load anime details. Try again later.</p>";
+      }
+    }
+
+    fetchAnimeDetails();
+  </script>
+</body>
+</html>
