@@ -314,7 +314,7 @@
         card.classList.add('anime-card');
         card.innerHTML = `
           <img src="${anime.images.jpg.image_url}" alt="${anime.title}" />
-          <h3>${anime.title}</h3>
+          <h3><a href="anime.html?id=${anime.mal_id}">${anime.title}</a></h3>
           <div class="anime-actions">
             <button class="trailer-btn" onclick="playTrailer('${anime.title}')">▶ Watch Trailer</button>
             <button class="heart-btn" onclick="addToFavorites('${anime.title}', '${anime.images.jpg.image_url}')">❤️</button>
