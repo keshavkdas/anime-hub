@@ -39,10 +39,6 @@
       line-height: 1.6;
     }
 
-    .info {
-      margin-top: 1rem;
-    }
-
     .back-link {
       display: inline-block;
       margin-bottom: 1rem;
@@ -54,10 +50,28 @@
     .back-link:hover {
       text-decoration: underline;
     }
+
+    button {
+      margin-top: 1rem;
+      background-color: #f97316;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 5px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #fb923c;
+    }
   </style>
 </head>
 <body>
-  <div class="anime-detail-container" id="animeDetails"></div>
+  <div class="anime-details-container" id="animeDetails">
+    <a href="index.html" class="back-link">← Back to Home</a>
+    <p>Loading anime details...</p>
+  </div>
 
   <script>
     async function fetchAnimeDetails() {
@@ -70,23 +84,23 @@
         const { data } = await res.json();
 
         container.innerHTML = `
-          <div class="anime-detail">
-            <img src="${data.images.jpg.large_image_url}" alt="${data.title}">
-            <div class="anime-info">
-              <h1>${data.title}</h1>
-              <p><strong>Synopsis:</strong> ${data.synopsis || 'No synopsis available.'}</p>
-              <p><strong>Type:</strong> ${data.type}</p>
-              <p><strong>Episodes:</strong> ${data.episodes}</p>
-              <p><strong>Status:</strong> ${data.status}</p>
-              <p><strong>Score:</strong> ${data.score || 'N/A'}</p>
-              <p><strong>Aired:</strong> ${data.aired.string}</p>
-              <p><strong>Genres:</strong> ${data.genres.map(g => g.name).join(', ')}</p>
-              <button onclick="window.open('https://www.youtube.com/results?search_query=${encodeURIComponent(data.title + ' trailer')}','_blank')">▶ Watch Trailer</button>
-            </div>
-          </div>
+          <a href="index.html" class="back-link">← Back to Home</a>
+          <img src="${data.images.jpg.large_image_url}" alt="${data.title}">
+          <h1>${data.title}</h1>
+          <p><strong>Synopsis:</strong> ${data.synopsis || 'No synopsis available.'}</p>
+          <p><strong>Type:</strong> ${data.type}</p>
+          <p><strong>Episodes:</strong> ${data.episodes}</p>
+          <p><strong>Status:</strong> ${data.status}</p>
+          <p><strong>Score:</strong> ${data.score || 'N/A'}</p>
+          <p><strong>Aired:</strong> ${data.aired.string}</p>
+          <p><strong>Genres:</strong> ${data.genres.map(g => g.name).join(', ')}</p>
+          <button onclick="window.open('https://www.youtube.com/results?search_query=${encodeURIComponent(data.title + ' trailer')}', '_blank')">▶ Watch Trailer</button>
         `;
       } catch (err) {
-        container.innerHTML = "<p>Failed to load anime details. Try again later.</p>";
+        container.innerHTML = `
+          <a href="index.html" class="back-link">← Back to Home</a>
+          <p>Failed to load anime details. Please try again later.</p>
+        `;
       }
     }
 
