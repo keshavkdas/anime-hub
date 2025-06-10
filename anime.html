@@ -163,14 +163,18 @@ button:hover {
       const urlParams = new URLSearchParams(window.location.search);
       const animeId = urlParams.get('id');
       const container = document.getElementById("animeDetails");
-      const synopsis = data.synopsis || 'No synopsis available.';
-      const shortSynopsis = synopsis.length > 200 ? `${synopsis.substring(0, 200)}...` : synopsis;
+      container.innerHTML = `
+        <div class="loading-spinner"></div>
+        <p>Loading anime details...</p>
+        `;
 
       try {
         const res = await fetch(`https://api.jikan.moe/v4/anime/${animeId}`);
         const { data } = await res.json();
         const embedUrl = data.trailer?.embed_url 
           || `https://www.youtube.com/embed?listType=search&list=${encodeURIComponent(data.title + ' trailer')}`;
+        const synopsis = data.synopsis || 'No synopsis available.';
+        const shortSynopsis = synopsis.length > 200 ? `${synopsis.substring(0, 200)}...` : synopsis;
 
         container.innerHTML = `
           <div class="anime-detail-header">
