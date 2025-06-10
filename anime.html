@@ -8,63 +8,107 @@
 
   <style>
     body {
-      background-color: #0f172a;
-      font-family: Arial, sans-serif;
-      color: white;
-      margin: 0;
-      padding: 0;
-    }
+  background-color: #0f172a;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #e2e8f0;
+  margin: 0;
+  padding: 0;
+}
 
-    .anime-details-container {
-      max-width: 1000px;
-      margin: 2rem auto;
-      padding: 2rem;
-      background-color: #1e293b;
-      border-radius: 8px;
-    }
+.anime-details-container {
+  max-width: 1100px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: #1e293b;
+  border-radius: 16px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.4);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
 
-    .anime-details-container img {
-      max-width: 100%;
-      border-radius: 10px;
-      margin-bottom: 1.5rem;
-    }
+.anime-detail-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
 
-    h1 {
-      font-size: 2.5rem;
-      margin-bottom: 1rem;
-      color: #f97316;
-    }
+.anime-detail-header img {
+  max-width: 300px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
 
-    p {
-      line-height: 1.6;
-    }
+.anime-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
 
-    .back-link {
-      display: inline-block;
-      margin-bottom: 1rem;
-      color: #f97316;
-      text-decoration: none;
-      font-weight: bold;
-    }
+.anime-info h1 {
+  font-size: 2.75rem;
+  color: #f97316;
+  margin: 0;
+}
 
-    .back-link:hover {
-      text-decoration: underline;
-    }
+.anime-info p {
+  line-height: 1.6;
+  font-size: 1rem;
+  margin: 0;
+}
 
-    button {
-      margin-top: 1rem;
-      background-color: #f97316;
-      color: white;
-      border: none;
-      padding: 10px 15px;
-      border-radius: 5px;
-      font-size: 1rem;
-      cursor: pointer;
-    }
+.back-link {
+  display: inline-block;
+  margin-bottom: 1rem;
+  color: #f97316;
+  text-decoration: none;
+  font-weight: bold;
+  transition: all 0.2s ease;
+}
 
-    button:hover {
-      background-color: #fb923c;
-    }
+.back-link:hover {
+  text-decoration: underline;
+}
+
+button {
+  background-color: #f97316;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 1rem;
+  width: fit-content;
+}
+
+button:hover {
+  background-color: #fb923c;
+}
+
+@media (max-width: 768px) {
+  .anime-detail-header {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .anime-detail-header img {
+    max-width: 100%;
+  }
+
+  .anime-info h1 {
+    font-size: 2rem;
+    text-align: center;
+  }
+
+  .anime-info {
+    align-items: center;
+    text-align: center;
+  }
+}
+
   </style>
 </head>
 <body>
@@ -85,16 +129,20 @@
 
         container.innerHTML = `
           <a href="index.html" class="back-link">← Back to Home</a>
-          <img src="${data.images.jpg.large_image_url}" alt="${data.title}">
-          <h1>${data.title}</h1>
-          <p><strong>Synopsis:</strong> ${data.synopsis || 'No synopsis available.'}</p>
-          <p><strong>Type:</strong> ${data.type}</p>
-          <p><strong>Episodes:</strong> ${data.episodes}</p>
-          <p><strong>Status:</strong> ${data.status}</p>
-          <p><strong>Score:</strong> ${data.score || 'N/A'}</p>
-          <p><strong>Aired:</strong> ${data.aired.string}</p>
-          <p><strong>Genres:</strong> ${data.genres.map(g => g.name).join(', ')}</p>
-          <button onclick="window.open('https://www.youtube.com/results?search_query=${encodeURIComponent(data.title + ' trailer')}', '_blank')">▶ Watch Trailer</button>
+          <div class="anime-detail-header">
+            <img src="${data.images.jpg.large_image_url}" alt="${data.title}">
+            <div class="anime-info">
+              <h1>${data.title}</h1>
+              <p><strong>Synopsis:</strong> ${data.synopsis || 'No synopsis available.'}</p>
+              <p><strong>Type:</strong> ${data.type}</p>
+              <p><strong>Episodes:</strong> ${data.episodes}</p>
+              <p><strong>Status:</strong> ${data.status}</p>
+              <p><strong>Score:</strong> ${data.score || 'N/A'}</p>
+              <p><strong>Aired:</strong> ${data.aired.string}</p>
+              <p><strong>Genres:</strong> ${data.genres.map(g => g.name).join(', ')}</p>
+              <button onclick="window.open('https://www.youtube.com/results?search_query=${encodeURIComponent(data.title + ' trailer')}', '_blank')">▶ Watch Trailer</button>
+            </div>
+          </div>
         `;
       } catch (err) {
         container.innerHTML = `
