@@ -113,7 +113,6 @@ button:hover {
 </head>
 <body>
   <div class="anime-details-container" id="animeDetails">
-    <a href="index.html" class="back-link">← Back to Home</a>
     <p>Loading anime details...</p>
   </div>
 
@@ -126,9 +125,10 @@ button:hover {
       try {
         const res = await fetch(`https://api.jikan.moe/v4/anime/${animeId}`);
         const { data } = await res.json();
+        const embedUrl = data.trailer?.embed_url 
+          || `https://www.youtube.com/embed?listType=search&list=${encodeURIComponent(data.title + ' trailer')}`;
 
         container.innerHTML = `
-          <a href="index.html" class="back-link">← Back to Home</a>
           <div class="anime-detail-header">
             <img src="${data.images.jpg.large_image_url}" alt="${data.title}">
             <div class="anime-info">
@@ -140,8 +140,18 @@ button:hover {
               <p><strong>Score:</strong> ${data.score || 'N/A'}</p>
               <p><strong>Aired:</strong> ${data.aired.string}</p>
               <p><strong>Genres:</strong> ${data.genres.map(g => g.name).join(', ')}</p>
-              <button onclick="window.open('https://www.youtube.com/results?search_query=${encodeURIComponent(data.title + ' trailer')}', '_blank')">▶ Watch Trailer</button>
+              <button onclick="window.open('${data.url}', '_blank')">🔗 View on MyAnimeList</button>
             </div>
+          </div>
+
+          <div class="anime-trailer">
+            <h2>Official Trailer</h2>
+            <iframe 
+              src="${embedUrl}" 
+              frameborder="0" 
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+              allowfullscreen
+            ></iframe>
           </div>
         `;
       } catch (err) {
