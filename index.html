@@ -317,9 +317,9 @@
     const now = Date.now();
 
     const cached = localStorage.getItem(KEY);
-    const last = localStorage.getItem(TIME);
+    const lastFetch = localStorage.getItem(TIME);
 
-    if (cached && last && (now - parseInt(last)) < weekMs) {
+    if (cached && lastFetch && (now - parseInt(lastFetch)) < weekMs) {
       allAnime = JSON.parse(cached);
       console.log("✅ Using cached anime list.");
     } else {
@@ -327,18 +327,26 @@
         const res = await fetch('https://api.jikan.moe/v4/top/anime?limit=30');
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const json = await res.json();
-        if (!Array.isArray(json.data)) {
-          throw new Error("Invalid response structure.");
+
+        if (Array.isArray(json.data)) {
+          allAnime = shuffleArray(json.data.filter(a => a.images?.jpg?.image_url));
+        } else {
+          console.warn("⚠️ Unexpected API format; using empty list.");
+          allAnime = [];
         }
 
-        allAnime = shuffleArray(json.data);
         localStorage.setItem(KEY, JSON.stringify(allAnime));
         localStorage.setItem(TIME, now.toString());
-        console.log("✅ Fetched and cached new anime list.");
+        console.log(`✅ Fetched and cached ${allAnime.length} anime items.`);
       } catch (err) {
-        console.error("❌ Fetch error:", err);
-        container.innerHTML = '<p style="color:white;">⚠️ Unable to load anime. Try again later.</p>';
-        return;
+        console.error("❌ Fetch failed:", err);
+        if (cached) {
+          allAnime = JSON.parse(cached);
+          console.warn("♻️ Using stale cached data due to fetch error.");
+        } else {
+          container.innerHTML = '<p style="color:white;">⚠️ Unable to load anime. Try again later.</p>';
+          return;
+        }
       }
     }
 
@@ -349,13 +357,14 @@
 
   function loadMoreAnime() {
     const container = document.getElementById("animeContainer");
+
     if (isLoading || currentIndex >= allAnime.length) return;
 
-    console.log(`🔁 Loading items ${currentIndex}–${currentIndex + itemsPerLoad}`);
+    console.log(`📦 Adding items ${currentIndex}–${currentIndex + itemsPerLoad}`);
     isLoading = true;
 
-    const batch = allAnime.slice(currentIndex, currentIndex + itemsPerLoad);
-    batch.forEach(anime => {
+    const slice = allAnime.slice(currentIndex, currentIndex + itemsPerLoad);
+    slice.forEach(anime => {
       const card = document.createElement('div');
       card.className = 'anime-card';
       card.innerHTML = `
@@ -368,7 +377,7 @@
       container.appendChild(card);
     });
 
-    currentIndex += batch.length;
+    currentIndex += slice.length;
     isLoading = false;
   }
 
@@ -398,17 +407,14 @@
         left: 50%;
         transform: translateX(-50%);
         background:#333;color:#fff;
-        padding:10px 20px;
-        border-radius:5px;
-        opacity:0;
-        transition:opacity0.5s;
-        z-index:9999;
+        padding:10px 20px;border-radius:5px;
+        opacity:0;transition:opacity 0.5s;z-index:9999;
       `;
       document.body.appendChild(toast);
     }
     toast.textContent = msg;
     toast.style.opacity = 1;
-    setTimeout(() => { toast.style.opacity = 0 }, 2000);
+    setTimeout(() => (toast.style.opacity = 0), 2000);
   }
 
   window.addEventListener("scroll", () => {
@@ -420,6 +426,7 @@
 
   document.addEventListener("DOMContentLoaded", fetchWeeklyAnime);
 </script>
+
 
 
 <script>  
