@@ -5,76 +5,90 @@ const searchInput = document.getElementById("searchInput");
 const genreSelect = document.getElementById("genre");
 const resultsContainer = document.getElementById("results");
 
+let currentPage = 1;
+let isLoading = false;
+let hasMore = true;
+let currentQuery = "";
+let currentGenre = "";
+
+// Initial load of trending anime
 document.addEventListener("DOMContentLoaded", () => {
-  fetchTrendingAnime();
+  loadAnime();
 });
 
+// Search button click
 searchBtn.addEventListener("click", () => {
-  const query = searchInput.value.trim();
-  const genre = genreSelect.value;
-
-  if (!query && !genre) {
-    fetchTrendingAnime();
-  } else {
-    fetchFilteredAnime(query, genre);
-  }
+  currentQuery = searchInput.value.trim();
+  currentGenre = genreSelect.value;
+  currentPage = 1;
+  hasMore = true;
+  resultsContainer.innerHTML = "";
+  loadAnime();
 });
 
-async function fetchTrendingAnime() {
-  resultsContainer.innerHTML = "<p>Loading trending anime...</p>";
-  try {
-    const res = await fetch("https://api.jikan.moe/v4/top/anime?limit=12");
-    const data = await res.json();
+// Load anime (trending or filtered)
+async function loadAnime() {
+  if (isLoading || !hasMore) return;
+  isLoading = true;
+  resultsContainer.insertAdjacentHTML("beforeend", "<p id='loading'>Loading...</p>");
 
-    if (!data.data || data.data.length === 0) {
-      resultsContainer.innerHTML = "<p>No trending anime found.</p>";
-      return;
+  try {
+    let url = `https://api.jikan.moe/v4/anime?page=${currentPage}&limit=12`;
+
+    if (currentQuery) {
+      url += `&q=${encodeURIComponent(currentQuery)}`;
     }
 
-    renderAnimeCards(data.data);
-  } catch (err) {
-    resultsContainer.innerHTML = "<p>Error loading anime. Try again later.</p>";
-    console.error(err);
-  }
-}
-
-async function fetchFilteredAnime(query, genre) {
-  resultsContainer.innerHTML = "<p>Loading filtered results...</p>";
-  try {
-    let url = `https://api.jikan.moe/v4/anime?q=${query}&limit=12`;
-    if (genre) url += `&genres=${genre}`;
+    if (currentGenre) {
+      url += `&genres=${currentGenre}`;
+    }
 
     const res = await fetch(url);
     const data = await res.json();
+    document.getElementById("loading").remove();
 
     if (!data.data || data.data.length === 0) {
-      resultsContainer.innerHTML = "<p>No anime found for your search.</p>";
+      if (currentPage === 1) {
+        resultsContainer.innerHTML = "<p>No anime found.</p>";
+      }
+      hasMore = false;
       return;
     }
 
-    renderAnimeCards(data.data);
+    data.data.forEach(anime => {
+      const card = document.createElement("div");
+      card.className = "anime-card";
+      card.innerHTML = `
+        <a href="anime.html?id=${anime.mal_id}">
+          <img src="${anime.images.jpg.image_url}" alt="${anime.title}" />
+          <div class="anime-info">
+            <h3>${anime.title}</h3>
+            <p><strong>Score:</strong> ${anime.score || "N/A"}</p>
+            <p><strong>Type:</strong> ${anime.type}</p>
+            <p><strong>Episodes:</strong> ${anime.episodes || "?"}</p>
+          </div>
+        </a>
+      `;
+      resultsContainer.appendChild(card);
+    });
+
+    currentPage++;
+    hasMore = data.pagination.has_next_page;
   } catch (err) {
-    resultsContainer.innerHTML = "<p>Error loading anime. Try again later.</p>";
-    console.error(err);
+    console.error("Error fetching anime:", err);
+    document.getElementById("loading")?.remove();
+    if (currentPage === 1) {
+      resultsContainer.innerHTML = "<p>Error loading anime. Try again later.</p>";
+    }
+  } finally {
+    isLoading = false;
   }
 }
 
-function renderAnimeCards(animeList) {
-  resultsContainer.innerHTML = animeList.map(anime => {
-    const genres = anime.genres.map(g => `<span class="genre-tag">${g.name}</span>`).join(" ");
-    return `
-      <div class="anime-card">
-        <a href="anime.html?id=${anime.mal_id}">
-          <img src="${anime.images.jpg.image_url}" alt="${anime.title}" />
-        </a>
-        <div class="anime-info">
-          <h3>${anime.title}</h3>
-          <p><strong>Score:</strong> ${anime.score || "N/A"}</p>
-          <p><strong>Type:</strong> ${anime.type}</p>
-          <p><strong>Episodes:</strong> ${anime.episodes || "?"}</p>
-          <div class="genres">${genres}</div>
-        </div>
-      </div>
-    `;
-  }).join("");
-}
+// Infinite scroll
+window.addEventListener("scroll", () => {
+  const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+  if (scrollTop + clientHeight >= scrollHeight - 50) {
+    loadAnime();
+  }
+});
