@@ -110,12 +110,21 @@
     }
 
     .anime-info p {
-      color: #ddd;
+      color: #fff;
       text-decoration: none;
       margin: 4px 0;
       font-size: 14px;
-      line-height: 1.4;
     }
+
+    /* This removes underline and blue color from all links inside anime cards */
+    .anime-card a,
+    .anime-card a:visited,
+    .anime-card a:hover,
+    .anime-card a:active {
+      color: inherit;
+      text-decoration: none;
+    }
+
 
     .anime-info p strong {
       display: inline-block;
