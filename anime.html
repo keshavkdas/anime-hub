@@ -148,6 +148,84 @@ button:hover {
     text-align: center;
   }
 }
+.character-bubbles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.character-bubble {
+  background-color: #1f1f1f;
+  border: 2px solid #f97316;
+  border-radius: 50%;
+  width: 100px;
+  height: 100px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 0.7rem;
+  color: white;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.6);
+  transition: transform 0.2s;
+  position: relative;
+  display: flex;
+  overflow-x: auto;
+  gap: 1rem;
+  padding: 1rem 0;
+  scrollbar-width: thin;
+  scrollbar-color: #f97316 #1f1f1f;
+}
+
+.character-bubbles::-webkit-scrollbar {
+  height: 8px;
+}
+
+.character-bubbles::-webkit-scrollbar-track {
+  background: #1f1f1f;
+}
+
+.character-bubbles::-webkit-scrollbar-thumb {
+  background-color: #f97316;
+  border-radius: 4px;
+}
+
+.character-bubble:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 20px rgba(255, 121, 18, 0.8);
+}
+
+.character-bubble img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.character-bubble span {
+  position: absolute;
+  bottom: -15px;
+  background-color: rgba(0,0,0,0.7);
+  padding: 2px 6px;
+  border-radius: 8px;
+  font-size: 0.6rem;
+  color: #f97316;
+}
+h2 {
+  margin-top: 2rem;
+  color: #f97316;
+  font-size: 1.4rem;
+  border-bottom: 2px solid #333;
+  padding-bottom: 0.5rem;
+}
+
+
 
   </style>
 </head>
@@ -203,12 +281,27 @@ button:hover {
               allowfullscreen
             ></iframe>
           </div>
+          <h2>Characters</h2>
+          <div id="characterContainer" class="character-bubbles"></div>
+
         `;
         document.querySelector('.read-more-btn')?.addEventListener('click', (e) => {
         const textEl = e.target.previousElementSibling;
         textEl.textContent = synopsis;
         e.target.remove();
         });
+        // Fetch and render characters
+const characterRes = await fetch(`https://api.jikan.moe/v4/anime/${data.mal_id}/characters`);
+const characterData = await characterRes.json();
+
+const characterContainer = document.getElementById('characterContainer');
+characterContainer.innerHTML = characterData.data.slice(0, 10).map(c => `
+  <div class="character-bubble">
+    <img src="${c.character.images.jpg.image_url}" alt="${c.character.name}">
+    <span>${c.character.name}</span>
+  </div>
+`).join('');
+
         
       } catch (err) {
         container.innerHTML = `
