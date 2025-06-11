@@ -287,7 +287,7 @@ const characterContainer = document.getElementById('characterContainer');
 characterContainer.innerHTML = characters.map(char => `
   <div class="character-bubble">
     <img src="${char.character.images.jpg.image_url}" alt="${char.character.name}" />
-    <div>${char.character.name}</div>
+    <div class="character-name">${char.character.name}</div>
   </div>
 `).join('');
 
