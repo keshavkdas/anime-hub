@@ -155,39 +155,23 @@
 }
 
 
-    .anime-actions {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0.5rem 1rem;
-    }
-    .trailer-btn {
-      padding: 0.5rem 1rem;
-      background-color: #f97316;
-      color: white;
-      border-radius: 6px;
-      font-weight: bold;
-      border: none;
-      font-size: 0.9rem;
-      cursor: pointer;
-  }
+  .favorite-bubble {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: #ff4c4c;
+  border-radius: 50%;
+  padding: 0.5rem;
+  font-size: 1.2rem;
+  cursor: pointer;
+  z-index: 2;
+  transition: transform 0.2s;
+}
+.favorite-bubble:hover {
+  transform: scale(1.2);
+}
 
-  .trailer-btn:hover {
-    background-color: #fb923c;
-  }
-
-  .heart-btn {
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    color: #ff4c4c;
-    cursor: pointer;
-    transition: transform 0.2s;
-  }
-
-  .heart-btn:hover {
-    transform: scale(1.2);
-  }
     
     footer {
       text-align: center;
@@ -316,13 +300,11 @@
            <div class="anime-card">
             <a href="anime.html?id=${anime.mal_id}">
               <img src="${anime.images.jpg.image_url}" alt="${anime.title}">
+              <div class="favorite-bubble" onclick="addToFavorites('${anime.title}', '${anime.images.jpg.image_url}')">❤️</div>
             </a>
             <h3>${anime.title}</h3>
           </div>
-          <div class="anime-actions">
-            <button class="trailer-btn" onclick="playTrailer('${anime.title}')">▶ Watch Trailer</button>
-            <button class="heart-btn" onclick="addToFavorites('${anime.title}', '${anime.images.jpg.image_url}')">❤️</button>
-          </div>
+          <div class="favorite-bubble" onclick="addToFavorites('${anime.title}', '${anime.images.jpg.image_url}')">❤️</div>
         `;
         container.appendChild(card);
       });
