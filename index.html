@@ -466,14 +466,14 @@
       ${anime.synopsis ? anime.synopsis.split('. ').slice(0,2).join('. ') + '.' : ''}
     </p>
     <p style="margin:1rem 0; font-size:0.9rem;"><strong>Episodes:</strong> ${anime.episodes ?? '—'}</p>
-    <button onclick="playTrailer('${anime.title}')" style="
+     <a href="details.html?id=${anime.mal_id}" style="
       background:#f97316; color:#fff; border:none;
       padding:0.8rem 1.5rem; font-size:1rem; border-radius:6px;
       cursor:pointer;
       max-width: 180px;
     ">
-      ▶ Watch Trailer
-    </button>
+      🔍 Dive In
+    </a>
   </div>
 `;
 
