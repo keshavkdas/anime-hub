@@ -34,8 +34,9 @@
     }
     .favorites-list {
       display: grid;
-      grid-template-columns: repeat(4, 1fr); /* 4 cards per row */
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
       gap: 1rem;
+      align-items: stretch;
       margin-top: 1rem;
     }
 
@@ -58,12 +59,15 @@
     }
     .fav-card {
   background-color: #222;
+  height: 100%;
+  box-sizing: border-box;
   border-radius: 10px;
   overflow: hidden;
   box-shadow: 0 4px 10px rgba(0,0,0,0.7);
   display: flex;
   flex-direction: column;
   align-items: center;
+  align-self: stretch;
   padding: 0.5rem;
   transition: transform 0.2s ease;
 }
@@ -75,17 +79,20 @@
 
 .fav-card img {
   width: 100%;
-  height: 250px;
+  height: 100%;
   object-fit: cover;
   border-radius: 8px;
 }
 
     .fav-card h3 {
-      margin: 0;
+      margin: 0.5rem 0 0;
       font-size: 1.1rem;
       color: #f97316;
+      min-height: 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       text-align: center;
-      flex-grow: 1;
     }
     .remove-btn {
       background-color: transparent;
