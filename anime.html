@@ -316,23 +316,53 @@ button:hover {
 
         // Trailer
         if (data.trailer && data.trailer.embed_url && data.trailer.embed_url.includes("youtube.com")) {
-        const fallbackLink = data.trailer.url; // Direct YouTube page
+  const trailerId = `trailer-${Date.now()}`;
 
-        container.insertAdjacentHTML('beforeend', `
+  container.insertAdjacentHTML('beforeend', `
+    <div class="anime-trailer" id="${trailerId}">
+      <h2>Trailer</h2>
+      <iframe 
+        src="${data.trailer.embed_url}" 
+        frameborder="0" 
+        allowfullscreen 
+        width="100%" 
+        height="500px">
+      </iframe>
+    </div>
+  `);
+
+  // Wait and check if iframe loaded correctly
+  setTimeout(() => {
+    const iframe = document.querySelector(`#${trailerId} iframe`);
+    const trailerDiv = document.getElementById(trailerId);
+
+    try {
+      const isVisible = iframe && iframe.contentWindow?.document?.body?.children.length > 0;
+      if (!isVisible) throw new Error("Not visible");
+    } catch (err) {
+      // Remove broken trailer and insert fallback thumbnail
+      trailerDiv?.remove();
+      const fallbackImg = data.trailer?.images?.maximum_image_url || data.images.jpg.large_image_url;
+
+      container.insertAdjacentHTML("beforeend", `
         <div class="anime-trailer">
-          <h2>Trailer</h2>
-          <iframe 
-            src="${data.trailer.embed_url}" 
-            frameborder="0" 
-            allowfullscreen 
-            onerror="this.style.display='none'; this.parentElement.innerHTML += 
-            '<p style=\\'color:#aaa;\\'>Trailer not playable. <a href=\\'${fallbackLink}\\' target=\\'_blank\\' style=\\'color:#f97316;\\'>Watch on YouTube</a></p>';">
-          </iframe>
+          <h2>Trailer Unavailable</h2>
+          <img src="${fallbackImg}" alt="Epic Poster" style="width:100%; border-radius:10px; box-shadow: 0 0 10px rgba(0,0,0,0.3); margin-top:1rem;">
         </div>
       `);
-      } else {
-        container.insertAdjacentHTML('beforeend', `<p style="color:#aaa;margin-top:1rem;">Trailer not available.</p>`);
-      }
+    }
+  }, 3000);
+} else {
+  // No trailer link, show fallback thumbnail
+  const fallbackImg = data.trailer?.images?.maximum_image_url || data.images.jpg.large_image_url;
+  container.insertAdjacentHTML("beforeend", `
+    <div class="anime-trailer">
+      <h2>Trailer Unavailable</h2>
+      <img src="${fallbackImg}" alt="Epic Poster" style="width:100%; border-radius:10px; box-shadow: 0 0 10px rgba(0,0,0,0.3); margin-top:1rem;">
+    </div>
+  `);
+}
+
 
 
         // Characters
