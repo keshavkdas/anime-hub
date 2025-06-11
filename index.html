@@ -311,46 +311,52 @@
 
   async function fetchWeeklyAnime() {
     const container = document.getElementById("animeContainer");
-    const KEY = 'weeklyTrendingAnime', TIME = 'weeklyTrendingAnimeTimestamp';
-    const week = 7*24*60*60*1000;
+    const KEY = 'weeklyTrendingAnime';
+    const TIME = 'weeklyTrendingAnimeTimestamp';
+    const weekMs = 7 * 24 * 60 * 60 * 1000;
     const now = Date.now();
-    const cached = localStorage.getItem(KEY), last = localStorage.getItem(TIME);
 
-    if (cached && last && (now - parseInt(last)) < week) {
+    const cached = localStorage.getItem(KEY);
+    const last = localStorage.getItem(TIME);
+
+    if (cached && last && (now - parseInt(last)) < weekMs) {
       allAnime = JSON.parse(cached);
-      console.log("Using cached weekly trending anime.");
+      console.log("Reusing cached anime list.");
     } else {
       try {
         const res = await fetch('https://api.jikan.moe/v4/top/anime?limit=30');
-        const data = await res.json();
-        if (!data || !data.data) throw new Error("No data found.");
-        allAnime = shuffleArray(data.data);
+        if (!res.ok) throw new Error(`response status ${res.status}`);
+        const json = await res.json();
+        if (!Array.isArray(json.data)) throw new Error("Invalid data format");
+        allAnime = shuffleArray(json.data);
+
         localStorage.setItem(KEY, JSON.stringify(allAnime));
         localStorage.setItem(TIME, now.toString());
-        console.log("Fetched and cached new trending anime.");
+        console.log("Fetched weekly anime and updated cache.");
       } catch (err) {
         console.error("Fetch failed:", err);
-        container.innerHTML = '<p style="color:white;">⚠️ Could not load anime. Try again later.</p>';
+        container.innerHTML = '<p style="color:white;">⚠️ Unable to load anime. Please try later.</p>';
         return;
       }
     }
 
     container.innerHTML = '';
     currentIndex = 0;
-    loadMoreAnime(); // Load initial batch
+    loadMoreAnime();
   }
 
   function loadMoreAnime() {
     const container = document.getElementById("animeContainer");
     if (isLoading || currentIndex >= allAnime.length) return;
 
-    console.log(`Loading more: currentIndex=${currentIndex}, total=${allAnime.length}`);
-    isLoading = true;
+    console.log(`Loading items ${currentIndex} to ${currentIndex + itemsPerLoad}`);
 
-    const slice = allAnime.slice(currentIndex, currentIndex + itemsPerLoad);
-    slice.forEach(anime => {
+    isLoading = true;
+    const batch = allAnime.slice(currentIndex, currentIndex + itemsPerLoad);
+    
+    batch.forEach(anime => {
       const card = document.createElement('div');
-      card.classList.add('anime-card');
+      card.className = 'anime-card';
       card.innerHTML = `
         <a href="anime.html?id=${anime.mal_id}">
           <img src="${anime.images.jpg.image_url}" alt="${anime.title}">
@@ -361,7 +367,7 @@
       container.appendChild(card);
     });
 
-    currentIndex += itemsPerLoad;
+    currentIndex += batch.length;
     isLoading = false;
   }
 
@@ -370,42 +376,23 @@
   }
 
   function addToFavorites(title, imageUrl) {
-    let favs = JSON.parse(localStorage.getItem('favorites')) || [];
-    if (favs.some(f => f.title === title)) {
-      showToast('Already in favorites!');
-      return;
-    }
-    favs.push({ title, imageUrl });
-    localStorage.setItem('favorites', JSON.stringify(favs));
-    showToast('Added to favorites!');
-  }
-
-  function showToast(msg) {
-    const toast = document.getElementById('toast') || document.createElement('div');
-    toast.id = 'toast';
-    toast.style.cssText = `
-      position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-      background: #333; color: #fff; padding: 10px 20px; border-radius: 5px;
-      opacity: 0; transition: opacity 0.5s ease; z-index: 9999;
-    `;
-    document.body.appendChild(toast);
-    toast.textContent = msg;
-    toast.style.opacity = 1;
-    setTimeout(() => toast.style.opacity = 0, 2000);
+    const key = 'favorites';
+    const current = JSON.parse(localStorage.getItem(key)) || [];
+    if (current.some(a => a.title === title)) return alert('Already in favorites!');
+    current.push({ title, imageUrl });
+    localStorage.setItem(key, JSON.stringify(current));
+    alert('Added to favorites!');
   }
 
   window.addEventListener("scroll", () => {
     const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
-    if (scrollTop + clientHeight >= scrollHeight - 50) {
+    if (scrollTop + clientHeight >= scrollHeight - 30) {
       loadMoreAnime();
     }
   });
 
   document.addEventListener("DOMContentLoaded", fetchWeeklyAnime);
 </script>
-
-
-
 
 <script>  
 ;(async () => {
