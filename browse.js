@@ -6,13 +6,13 @@ const genreSelect = document.getElementById("genre");
 const resultsContainer = document.getElementById("results");
 
 document.addEventListener("DOMContentLoaded", () => {
-  fetchAnime("naruto", "");
+  fetchAnime("naruto", "one piece", "bleach", "jujutsu kaisen", "solo leveling","");
 });
 
 searchBtn.addEventListener("click", () => {
   const query = searchInput.value.trim();
   const genre = genreSelect.value;
-  fetchAnime(query || "naruto", genre);
+  fetchAnime(query || "", genre);
 });
 
 async function fetchAnime(query, genre) {
