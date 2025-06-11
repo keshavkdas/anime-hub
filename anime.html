@@ -213,6 +213,35 @@ button:hover {
   text-align: center;
   margin-top: 0.5rem;
 }
+.anime-image-container {
+  position: relative;
+  display: inline-block;
+  max-width: 400px;
+}
+
+.anime-image-container img {
+  width: 100%;
+  border-radius: 10px;
+}
+
+.favorite-bubble {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #f97316;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 50%;
+  font-size: 1.2rem;
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+  transition: background 0.3s;
+}
+
+.favorite-bubble:hover {
+  background: #fb923c;
+}
+
 
 
   </style>
@@ -225,85 +254,110 @@ button:hover {
   </div>
 
   <script>
-    async function fetchAnimeDetails() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const animeId = urlParams.get('id');
-      const container = document.getElementById("animeDetails");
+  async function fetchAnimeDetails() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const animeId = urlParams.get('id');
+    const container = document.getElementById("animeDetails");
+
+    container.innerHTML = `
+      <div class="loading-spinner"></div>
+      <p>Loading anime details...</p>
+    `;
+
+    try {
+      const res = await fetch(`https://api.jikan.moe/v4/anime/${animeId}`);
+      const { data } = await res.json();
+
+      const synopsis = data.synopsis || 'No synopsis available.';
+      const shortSynopsis = synopsis.length > 200 ? `${synopsis.substring(0, 200)}...` : synopsis;
+      const embedUrl = data.trailer?.embed_url || `https://www.youtube.com/embed?listType=search&list=${encodeURIComponent(data.title + ' trailer')}`;
+
       container.innerHTML = `
-        <div class="loading-spinner"></div>
-        <p>Loading anime details...</p>
-        `;
-
-      try {
-        const res = await fetch(`https://api.jikan.moe/v4/anime/${animeId}`);
-        const { data } = await res.json();
-        const embedUrl = data.trailer?.embed_url 
-          || `https://www.youtube.com/embed?listType=search&list=${encodeURIComponent(data.title + ' trailer')}`;
-        const synopsis = data.synopsis || 'No synopsis available.';
-        const shortSynopsis = synopsis.length > 200 ? `${synopsis.substring(0, 200)}...` : synopsis;
-
-        container.innerHTML = `
-          <div class="anime-detail-header">
+        <div class="anime-detail-header">
+          <div class="anime-image-container">
             <img src="${data.images.jpg.large_image_url}" alt="${data.title}">
-            <div class="anime-info">
-              <h1>${data.title}</h1>
-              <p><strong>Synopsis:</strong> ${data.synopsis || 'No synopsis available.'}
-                <span class="synopsis-text">${shortSynopsis}</span>
-                ${synopsis.length > 200 ? '<span class="read-more-btn">Read More</span>' : ''}
-              </p>
-              <p><strong>Type:</strong> ${data.type}</p>
-              <p><strong>Episodes:</strong> ${data.episodes}</p>
-              <p><strong>Status:</strong> ${data.status}</p>
-              <p><strong>Score:</strong> ${data.score || 'N/A'}</p>
-              <p><strong>Aired:</strong> ${data.aired.string}</p>
-              <p><strong>Genres:</strong> ${data.genres.map(g => g.name).join(', ')}</p>
-            </div>
+            <div class="favorite-bubble" id="favBtn">❤️</div>
           </div>
+          <div class="anime-info">
+            <h1>${data.title}</h1>
+            <p><strong>Synopsis:</strong> 
+              <span class="synopsis-text">${shortSynopsis}</span>
+              ${synopsis.length > 200 ? '<span class="read-more-btn">Read More</span>' : ''}
+            </p>
+            <p><strong>Type:</strong> ${data.type}</p>
+            <p><strong>Episodes:</strong> ${data.episodes}</p>
+            <p><strong>Status:</strong> ${data.status}</p>
+            <p><strong>Score:</strong> ${data.score || 'N/A'}</p>
+            <p><strong>Aired:</strong> ${data.aired.string}</p>
+            <p><strong>Genres:</strong> ${data.genres.map(g => g.name).join(', ')}</p>
+          </div>
+        </div>
 
-          ${data.trailer?.embed_url ? `
+        ${data.trailer?.embed_url ? `
           <div class="anime-trailer">
-          <h2>Official Trailer</h2>
-          <iframe 
-            src="${data.trailer.embed_url}" 
-            frameborder="0" 
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-            allowfullscreen
-          ></iframe>
+            <h2>Official Trailer</h2>
+            <iframe 
+              src="${embedUrl}" 
+              frameborder="0" 
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+              allowfullscreen
+            ></iframe>
           </div>
-          ` : ''}
+        ` : ''}
 
-          <h2>Characters</h2>
-          <div id="characterContainer" class="character-bubbles"></div>
+        <h2>Characters</h2>
+        <div id="characterContainer" class="character-bubbles"></div>
+      `;
 
-        `;
-        document.querySelector('.read-more-btn')?.addEventListener('click', (e) => {
+      document.querySelector('.read-more-btn')?.addEventListener('click', (e) => {
         const textEl = e.target.previousElementSibling;
         textEl.textContent = synopsis;
         e.target.remove();
-        });
-        // Fetch and render characters
-const characterRes = await fetch(`https://api.jikan.moe/v4/anime/${data.mal_id}/characters`);
-const characterData = await characterRes.json();
-const characters = characterData.data;
+      });
 
-const characterContainer = document.getElementById('characterContainer');
-characterContainer.innerHTML = characters.map(char => `
-  <div class="character-bubble">
-    <img src="${char.character.images.jpg.image_url}" alt="${char.character.name}" />
-    <div class="character-name">${char.character.name}</div>
-  </div>
-`).join('');
+      // Favorite Button Logic
+      const favBtn = document.getElementById('favBtn');
+      const storedFavs = JSON.parse(localStorage.getItem('favorites')) || [];
 
-        
-      } catch (err) {
-        container.innerHTML = `
-          <a href="index.html" class="back-link">← Back to Home</a>
-          <p>Failed to load anime details. Please try again later.</p>
-        `;
+      if (storedFavs.some(f => f.id === data.mal_id)) {
+        favBtn.textContent = '✔️';
       }
-    }
 
-    fetchAnimeDetails();
-  </script>
+      favBtn.addEventListener('click', () => {
+        let favs = JSON.parse(localStorage.getItem('favorites')) || [];
+        if (favs.some(f => f.id === data.mal_id)) return;
+        favs.push({
+          id: data.mal_id,
+          title: data.title,
+          imageUrl: data.images.jpg.image_url
+        });
+        localStorage.setItem('favorites', JSON.stringify(favs));
+        favBtn.textContent = '✔️';
+      });
+
+      // Fetch and render characters
+      const characterRes = await fetch(`https://api.jikan.moe/v4/anime/${data.mal_id}/characters`);
+      const characterData = await characterRes.json();
+      const characters = characterData.data;
+
+      const characterContainer = document.getElementById('characterContainer');
+      characterContainer.innerHTML = characters.map(char => `
+        <div class="character-bubble">
+          <img src="${char.character.images.jpg.image_url}" alt="${char.character.name}" />
+          <div class="character-name">${char.character.name}</div>
+        </div>
+      `).join('');
+
+    } catch (err) {
+      container.innerHTML = `
+        <a href="index.html" class="back-link">← Back to Home</a>
+        <p>Failed to load anime details. Please try again later.</p>
+      `;
+    }
+  }
+
+  fetchAnimeDetails();
+</script>
+  
 </body>
 </html>
