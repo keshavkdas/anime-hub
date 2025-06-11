@@ -321,28 +321,34 @@
 
     if (cached && last && (now - parseInt(last)) < weekMs) {
       allAnime = JSON.parse(cached);
-      console.log("✅ Reusing cached anime list.");
+      console.log("📦 Using cached anime list.");
     } else {
       try {
         const res = await fetch('https://api.jikan.moe/v4/top/anime?limit=30');
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const json = await res.json();
-        if (!(json.data && Array.isArray(json.data))) {
-          throw new Error("Unexpected API format");
+
+        if (!json || !('data' in json)) {
+          console.warn("⚠️ Unexpected API response, no data field. Defaulting to empty list.");
+          allAnime = [];
+        } else if (!Array.isArray(json.data)) {
+          console.warn("⚠️ API returned non-array data—coercing into array.");
+          allAnime = Array.isArray(json.data) ? json.data : [];
+        } else {
+          allAnime = shuffleArray(json.data);
         }
 
-        allAnime = shuffleArray(json.data);
         localStorage.setItem(KEY, JSON.stringify(allAnime));
         localStorage.setItem(TIME, now.toString());
-        console.log("✅ Fetched and cached new anime list.");
+        console.log("✅ Fetched & cached new anime list:", allAnime.length, "items.");
       } catch (err) {
         console.error("❌ Fetch error:", err);
-        container.innerHTML = '<p style="color:white;">⚠️ Unable to load anime. Try again later.</p>';
+        container.innerHTML = '<p style="color:white;">⚠️ Unable to load anime. Please try again later.</p>';
         return;
       }
     }
 
-    container.innerHTML = '';  // clear before initial load
+    container.innerHTML = ''; 
     currentIndex = 0;
     loadMoreAnime();
   }
@@ -351,11 +357,10 @@
     const container = document.getElementById("animeContainer");
     if (isLoading || currentIndex >= allAnime.length) return;
 
-    console.log(`Loading ${currentIndex}–${currentIndex + itemsPerLoad} of ${allAnime.length}`);
-
+    console.log(`🔄 Loading items ${currentIndex}–${currentIndex + itemsPerLoad}`);
     isLoading = true;
-    const batch = allAnime.slice(currentIndex, currentIndex + itemsPerLoad);
 
+    const batch = allAnime.slice(currentIndex, currentIndex + itemsPerLoad);
     batch.forEach(anime => {
       const card = document.createElement('div');
       card.className = 'anime-card';
@@ -379,7 +384,7 @@
 
   window.addEventListener("scroll", () => {
     const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
-    if (scrollTop + clientHeight >= scrollHeight - 50) {
+    if (scrollTop + clientHeight >= scrollHeight - 30) {
       loadMoreAnime();
     }
   });
