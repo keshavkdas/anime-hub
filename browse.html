@@ -110,15 +110,20 @@
     }
 
     .anime-info p {
-      color: #fff; /* or any color that matches your theme */
+      color: #ddd;
       text-decoration: none;
       margin: 4px 0;
       font-size: 14px;
+      line-height: 1.4;
     }
+
     .anime-info p strong {
-      color: #ffcc00; /* highlight the labels like Score, Type, Episodes */
+      display: inline-block;
+      min-width: 75px;
+      color: #ffcc00;
       font-weight: 600;
     }
+
     .anime-info a,
     .anime-info a:visited,
     .anime-info a:hover,
@@ -127,6 +132,22 @@
       text-decoration: none !important;
     }
 
+    .genre-tag {
+      display: inline-block;
+      background-color: #2d2d2d;
+      color: #fff;
+      padding: 3px 7px;
+      margin: 4px 4px 0 0;
+      border-radius: 5px;
+      font-size: 12px;
+      transition: background-color 0.3s ease;
+    }
+
+    .genre-tag:hover {
+      background-color: #f97316;
+      color: #fff;
+      cursor: default;
+    }
 
     footer {
       text-align: center;
@@ -134,16 +155,6 @@
       background-color: #1f1f1f;
       font-size: 0.9rem;
     }
-    .genre-tag {
-      display: inline-block;
-      background-color: #444;
-      color: #fff;
-      padding: 2px 6px;
-      margin: 2px;
-      border-radius: 4px;
-      font-size: 12px;
-    }
-
   </style>
 </head>
 
@@ -180,6 +191,30 @@
   <footer>
     &copy; 2025 AnimeHub. All rights reserved.
   </footer>
+
+  <script>
+  async function loadGenres() {
+    const select = document.getElementById("genre");
+    select.innerHTML = `<option value="">All Genres</option>`;
+
+    try {
+      const res = await fetch("https://api.jikan.moe/v4/genres/anime");
+      const json = await res.json();
+      if (!json.data) throw new Error("Invalid API response");
+
+      json.data.sort((a, b) => a.name.localeCompare(b.name)).forEach(genre => {
+        const opt = document.createElement("option");
+        opt.value = genre.mal_id;
+        opt.textContent = genre.name;
+        select.appendChild(opt);
+      });
+    } catch (err) {
+      console.error("Failed to load genres:", err);
+    }
+  }
+
+  loadGenres();
+</script>
 
   <script src="browse.js"></script>
 </body>
