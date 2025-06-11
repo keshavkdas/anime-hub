@@ -220,29 +220,25 @@
     }
     #backToTop {
   position: fixed;
-  bottom: 20px;
-  right: 20px;
-  width: 50px;
-  height: 50px;
-  background-color: #f97316;
-  color: white;
-  border: none;
-  border-radius: 50%;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  width: 48px;
+  height: 48px;
   font-size: 1.5rem;
+  background: rgba(0, 0, 0, 0.4); /* transparent + blur */
+  backdrop-filter: blur(6px);
+  border: 2px solid #f97316;
+  border-radius: 999px;
+  color: #f97316;
   cursor: pointer;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-  display: none; /* Hidden by default */
-  align-items: center;
-  justify-content: center;
-  z-index: 999;
-  transition: transform 0.3s ease;
+  z-index: 1000;
+  transition: background 0.3s, transform 0.3s;
 }
 
 #backToTop:hover {
+  background: rgba(255, 121, 18, 0.1);
   transform: scale(1.1);
-  background-color: #ff7f2a;
 }
-
 
   </style>
 </head>
@@ -280,7 +276,7 @@
   </div>
   </section>
 
-  <button id="backToTop" title="Back to top">⬆️</button>
+  <button id="backToTop" title="Back to top">👆</button>
 
 
   <footer>
@@ -552,7 +548,7 @@
   const backToTopBtn = document.getElementById('backToTop');
 
   window.addEventListener('scroll', () => {
-    backToTopBtn.style.display = window.scrollY > 300 ? 'flex' : 'none';
+    backToTopBtn.style.display = window.scrollY > 300 ? 'block' : 'none';
   });
 
   backToTopBtn.addEventListener('click', () => {
