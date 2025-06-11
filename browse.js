@@ -59,16 +59,17 @@ async function loadAnime() {
       const card = document.createElement("div");
       card.className = "anime-card";
       card.innerHTML = `
-        <a href="anime.html?id=${anime.mal_id}">
-          <img src="${anime.images.jpg.image_url}" alt="${anime.title}" />
-          <div class="anime-info">
-            <h3>${anime.title}</h3>
-            <p><strong>Score:</strong> ${anime.score || "N/A"}</p>
-            <p><strong>Type:</strong> ${anime.type}</p>
-            <p><strong>Episodes:</strong> ${anime.episodes || "?"}</p>
-          </div>
-        </a>
+        <img src="${anime.images.jpg.image_url}" alt="${anime.title}" />
+        <div class="anime-info">
+          <h3>${anime.title}</h3>
+          <p><strong>Score:</strong> ${anime.score || "N/A"}</p>
+          <p><strong>Type:</strong> ${anime.type}</p>
+          <p><strong>Episodes:</strong> ${anime.episodes || "?"}</p>
+        </div>
       `;
+      card.addEventListener("click", () => {
+        window.location.href = `anime.html?id=${anime.mal_id}`;
+      });
       resultsContainer.appendChild(card);
     });
 
