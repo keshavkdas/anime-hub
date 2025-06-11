@@ -304,82 +304,122 @@
 </div>
 
 <script>
-  let allAnime = [];
-  let currentIndex = 0;
-  const itemsPerLoad = 6;
+  let currentPage = 1;
   let isLoading = false;
 
-  async function fetchWeeklyAnime() {
+  async function loadTrendingAnime() {
     const container = document.getElementById("animeContainer");
-    const weekMs = 7 * 24 * 60 * 60 * 1000;
-    const now = Date.now();
-    const cached = localStorage.getItem('weeklyTrendingAnime');
-    const last = localStorage.getItem('weeklyTrendingAnimeTimestamp');
-
-    if (cached && last && (now - parseInt(last)) < weekMs) {
-      allAnime = JSON.parse(cached);
-      console.log(`✅ Loaded ${allAnime.length} items from cache`);
-    } else {
-      try {
-        const res = await fetch('https://api.jikan.moe/v4/top/anime?limit=30&type=tv&filter=bypopularity');
-        const json = await res.json();
-
-        if (!json || !Array.isArray(json.data)) {
-          console.error("❌ Unexpected API format:", json);
-          container.innerHTML = '<p style="color:white;">⚠️ Unexpected API response.</p>';
-          return;
-        }
-
-        allAnime = shuffleArray(json.data);
-        localStorage.setItem('weeklyTrendingAnime', JSON.stringify(allAnime));
-        localStorage.setItem('weeklyTrendingAnimeTimestamp', now.toString());
-        console.log(`✅ Cached ${allAnime.length} trending anime`);
-      } catch (err) {
-        console.error("❌ Fetch error:", err);
-        container.innerHTML = '<p style="color:white;">⚠️ Failed to load anime. Check your internet connection.</p>';
-        return;
-      }
-    }
-
-    container.innerHTML = '';
-    loadMoreAnime();
-  }
-
-  function loadMoreAnime() {
-    const container = document.getElementById("animeContainer");
-    if (isLoading || currentIndex >= allAnime.length) return;
+    if (isLoading) return;
     isLoading = true;
 
-    const next = allAnime.slice(currentIndex, currentIndex + itemsPerLoad);
-    next.forEach(anime => {
-      const card = document.createElement('div');
-      card.className = 'anime-card';
-      card.innerHTML = `
-        <a href="anime.html?id=${anime.mal_id}">
-          <img src="${anime.images.jpg.image_url}" alt="${anime.title}">
+    try {
+      const res = await fetch(https://api.jikan.moe/v4/top/anime?page=${currentPage});
+      const data = await res.json();
+
+      data.data.forEach(anime => {
+        const card = document.createElement('div');
+        card.classList.add('anime-card');
+        card.innerHTML = 
+           <div class="anime-card">
+            <a href="anime.html?id=${anime.mal_id}">
+              <img src="${anime.images.jpg.image_url}" alt="${anime.title}">
+              <div class="favorite-bubble" onclick="addToFavorites('${anime.title}', '${anime.images.jpg.image_url}')">❤️</div>
+            </a>
+            <h3>${anime.title}</h3>
+          </div>
           <div class="favorite-bubble" onclick="addToFavorites('${anime.title}', '${anime.images.jpg.image_url}')">❤️</div>
-        </a>
-        <h3>${anime.title}</h3>
-      `;
-      container.appendChild(card);
-    });
+        ;
+        container.appendChild(card);
+      });
 
-    currentIndex += itemsPerLoad;
-    isLoading = false;
+      currentPage++;
+    } catch (err) {
+      console.error("Failed to load anime:", err);
+    } finally {
+      isLoading = false;
+    }
   }
 
-  function shuffleArray(array) {
-    return array.sort(() => Math.random() - 0.5);
+  function playTrailer(title) {
+    const query = encodeURIComponent(${title} anime trailer);
+    window.open(https://www.youtube.com/results?search_query=${query}, '_blank');
   }
 
+  function showToast(message) {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.style.visibility = 'visible';
+    toast.style.opacity = '1';
+
+    setTimeout(() => {
+      toast.style.opacity = '0';
+      toast.style.visibility = 'hidden';
+    }, 2500);
+  }
+
+  function addToFavorites(title, imageUrl) {
+    let favs = JSON.parse(localStorage.getItem('favorites')) || [];
+
+    if (favs.some(fav => fav.title === title)) {
+      showToast('This anime is already in your favorites!');
+      return;
+    }
+
+    favs.push({ title, imageUrl });
+    localStorage.setItem('favorites', JSON.stringify(favs));
+    showToast('Added to favorites!');
+  }
+
+  // Load top anime slider
+  const splideScript = document.createElement('script');
+  splideScript.src = "https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.3/dist/js/splide.min.js";
+  splideScript.onload = () => {
+    fetch("https://api.jikan.moe/v4/top/anime?limit=10")
+      .then(res => res.json())
+      .then(data => {
+        const list = document.getElementById("splideList");
+        data.data.forEach(anime => {
+          const li = document.createElement("li");
+          li.className = "splide__slide";
+          li.innerHTML = 
+            <div class="slider-card">
+              <img src="${anime.images.jpg.image_url}" alt="${anime.title}">
+              <h3>${anime.title}</h3>
+            </div>
+          ;
+          list.appendChild(li);
+        });
+
+        new Splide('#topAnimeSlider', {
+          type   : 'loop',
+          perPage: 5,
+          autoplay: true,
+          interval: 2500,
+          arrows: true,
+          pagination: false,
+          gap: '1rem',
+          breakpoints: {
+            1024: { perPage: 4 },
+            768: { perPage: 3 },
+            480: { perPage: 2 }
+          }
+        }).mount();
+      });
+  };
+  document.body.appendChild(splideScript);
+
+  // Infinite scroll loading
   window.addEventListener("scroll", () => {
     const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
-    if (scrollTop + clientHeight >= scrollHeight - 50) {
-      loadMoreAnime();
+    if (scrollTop + clientHeight >= scrollHeight - 20) {
+      loadTrendingAnime();
     }
   });
 
-  document.addEventListener("DOMContentLoaded", fetchWeeklyAnime);
+  document.addEventListener("DOMContentLoaded", () => {
+    loadTrendingAnime();
+    
+  });
 </script>
 
 
