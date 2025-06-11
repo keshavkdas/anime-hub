@@ -150,14 +150,15 @@ button:hover {
 }
 .character-bubbles {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: row;
+  flex-wrap: nowrap;
   gap: 1rem;
-  margin-top: 1rem;
   overflow-x: auto;
   padding: 1rem 0;
   scroll-behavior: smooth;
   scrollbar-width: thin;
   scrollbar-color: #f97316 #1f1f1f;
+  white-space: nowrap;
 }
 .character-bubbles::-webkit-scrollbar {
   height: 8px;
@@ -175,19 +176,15 @@ button:hover {
 .character-bubble {
   background-color: #1f1f1f;
   border: 2px solid #f97316;
-  border-radius: 50%;
-  width: 100px;
-  height: 100px;
+  border-radius: 999px;
+  width: 120px;
   overflow: hidden;
   display: flex;
+  flex: 0 0 auto;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
   text-align: center;
   color: white;
-  font-size: 0.7rem;
-  color: white;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.6);
+  font-size: 0.9rem;
   transition: transform 0.3s;
   position: relative;
 }
@@ -200,7 +197,7 @@ button:hover {
 .character-bubble img {
   width: 100px;
   height: 100px;
-  object-fit: cover;
+  object-fit: contain;
   border-radius: 50%;
   position: absolute;
   top: 0;
@@ -295,10 +292,10 @@ const characterRes = await fetch(`https://api.jikan.moe/v4/anime/${data.mal_id}/
 const characterData = await characterRes.json();
 
 const characterContainer = document.getElementById('characterContainer');
-characterContainer.innerHTML = characterData.data.slice(0, 10).map(c => `
+characterContainer.innerHTML = characters.map(char => `
   <div class="character-bubble">
-    <img src="${c.character.images.jpg.image_url}" alt="${c.character.name}">
-    <span>${c.character.name}</span>
+    <img src="${char.character.images.jpg.image_url}" alt="${char.character.name}" />
+    <div>${char.character.name}</div>
   </div>
 `).join('');
 
