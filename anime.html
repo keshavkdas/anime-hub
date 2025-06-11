@@ -260,15 +260,18 @@ button:hover {
             </div>
           </div>
 
+          ${data.trailer?.embed_url ? `
           <div class="anime-trailer">
-            <h2>Official Trailer</h2>
-            <iframe 
-              src="${embedUrl}" 
-              frameborder="0" 
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-              allowfullscreen
-            ></iframe>
+          <h2>Official Trailer</h2>
+          <iframe 
+            src="${data.trailer.embed_url}" 
+            frameborder="0" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+            allowfullscreen
+          ></iframe>
           </div>
+          ` : ''}
+
           <h2>Characters</h2>
           <div id="characterContainer" class="character-bubbles"></div>
 
