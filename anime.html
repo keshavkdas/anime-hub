@@ -151,7 +151,6 @@ button:hover {
 .character-bubbles {
   display: flex;
   flex-direction: row;
-  flex-wrap: nowrap;
   gap: 1rem;
   overflow-x: auto;
   padding: 1rem 0;
@@ -202,16 +201,17 @@ button:hover {
   height: 80px;
   object-fit: cover;
   border-radius: 50%;
-  margin-bottom: 0.5rem;
+  border: 2px solid #f97316;
+  background-color: #1f1f1f;
+  box-shadow: 0 0 6px rgba(255, 121, 18, 0.4);
 }
 
 .character-bubble div {
+  margin-top: 0.4rem;
   color: #f97316;
   font-size: 0.75rem;
-  margin-top: 0.3rem;
-  white-space: normal;
-  word-wrap: break-word;
-  padding: 0 4px;
+  max-width: 100px;
+  overflow-wrap: break-word;
 }
 
   </style>
