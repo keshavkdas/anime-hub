@@ -313,7 +313,7 @@
     isLoading = true;
 
     try {
-      const res = await fetch(https://api.jikan.moe/v4/top/anime?page=${currentPage});
+      const res = await fetch('https://api.jikan.moe/v4/top/anime?page=${currentPage}');
       const data = await res.json();
 
       data.data.forEach(anime => {
@@ -342,7 +342,7 @@
 
   function playTrailer(title) {
     const query = encodeURIComponent(${title} anime trailer);
-    window.open(https://www.youtube.com/results?search_query=${query}, '_blank');
+    window.open('https://www.youtube.com/results?search_query=${query}, '_blank');
   }
 
   function showToast(message) {
