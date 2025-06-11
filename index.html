@@ -321,26 +321,28 @@
 
     if (cached && last && (now - parseInt(last)) < weekMs) {
       allAnime = JSON.parse(cached);
-      console.log("Reusing cached anime list.");
+      console.log("✅ Reusing cached anime list.");
     } else {
       try {
         const res = await fetch('https://api.jikan.moe/v4/top/anime?limit=30');
-        if (!res.ok) throw new Error(`response status ${res.status}`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const json = await res.json();
-        if (!Array.isArray(json.data)) throw new Error("Invalid data format");
-        allAnime = shuffleArray(json.data);
+        if (!(json.data && Array.isArray(json.data))) {
+          throw new Error("Unexpected API format");
+        }
 
+        allAnime = shuffleArray(json.data);
         localStorage.setItem(KEY, JSON.stringify(allAnime));
         localStorage.setItem(TIME, now.toString());
-        console.log("Fetched weekly anime and updated cache.");
+        console.log("✅ Fetched and cached new anime list.");
       } catch (err) {
-        console.error("Fetch failed:", err);
-        container.innerHTML = '<p style="color:white;">⚠️ Unable to load anime. Please try later.</p>';
+        console.error("❌ Fetch error:", err);
+        container.innerHTML = '<p style="color:white;">⚠️ Unable to load anime. Try again later.</p>';
         return;
       }
     }
 
-    container.innerHTML = '';
+    container.innerHTML = '';  // clear before initial load
     currentIndex = 0;
     loadMoreAnime();
   }
@@ -349,11 +351,11 @@
     const container = document.getElementById("animeContainer");
     if (isLoading || currentIndex >= allAnime.length) return;
 
-    console.log(`Loading items ${currentIndex} to ${currentIndex + itemsPerLoad}`);
+    console.log(`Loading ${currentIndex}–${currentIndex + itemsPerLoad} of ${allAnime.length}`);
 
     isLoading = true;
     const batch = allAnime.slice(currentIndex, currentIndex + itemsPerLoad);
-    
+
     batch.forEach(anime => {
       const card = document.createElement('div');
       card.className = 'anime-card';
@@ -375,18 +377,9 @@
     return arr.sort(() => Math.random() - 0.5);
   }
 
-  function addToFavorites(title, imageUrl) {
-    const key = 'favorites';
-    const current = JSON.parse(localStorage.getItem(key)) || [];
-    if (current.some(a => a.title === title)) return alert('Already in favorites!');
-    current.push({ title, imageUrl });
-    localStorage.setItem(key, JSON.stringify(current));
-    alert('Added to favorites!');
-  }
-
   window.addEventListener("scroll", () => {
     const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
-    if (scrollTop + clientHeight >= scrollHeight - 30) {
+    if (scrollTop + clientHeight >= scrollHeight - 50) {
       loadMoreAnime();
     }
   });
