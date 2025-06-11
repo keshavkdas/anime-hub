@@ -290,6 +290,7 @@ h2 {
         // Fetch and render characters
 const characterRes = await fetch(`https://api.jikan.moe/v4/anime/${data.mal_id}/characters`);
 const characterData = await characterRes.json();
+const characters = characterData.data;
 
 const characterContainer = document.getElementById('characterContainer');
 characterContainer.innerHTML = characters.map(char => `
