@@ -315,16 +315,25 @@ button:hover {
         });
 
         // Trailer
-        if (data.trailer && data.trailer.embed_url) {
-          container.insertAdjacentHTML('beforeend', `
-            <div class="anime-trailer">
-              <h2>Trailer</h2>
-              <iframe src="${data.trailer.embed_url}" frameborder="0" allowfullscreen></iframe>
-            </div>
-          `);
-        } else {
-          container.insertAdjacentHTML('beforeend', `<p style="color:#aaa;margin-top:1rem;">Trailer not available.</p>`);
-        }
+        if (data.trailer && data.trailer.embed_url && data.trailer.embed_url.includes("youtube.com")) {
+        const fallbackLink = data.trailer.url; // Direct YouTube page
+
+        container.insertAdjacentHTML('beforeend', `
+        <div class="anime-trailer">
+          <h2>Trailer</h2>
+          <iframe 
+            src="${data.trailer.embed_url}" 
+            frameborder="0" 
+            allowfullscreen 
+            onerror="this.style.display='none'; this.parentElement.innerHTML += 
+            '<p style=\\'color:#aaa;\\'>Trailer not playable. <a href=\\'${fallbackLink}\\' target=\\'_blank\\' style=\\'color:#f97316;\\'>Watch on YouTube</a></p>';">
+          </iframe>
+        </div>
+      `);
+      } else {
+        container.insertAdjacentHTML('beforeend', `<p style="color:#aaa;margin-top:1rem;">Trailer not available.</p>`);
+      }
+
 
         // Characters
         const charRes = await fetch(`https://api.jikan.moe/v4/anime/${data.mal_id}/characters`);
