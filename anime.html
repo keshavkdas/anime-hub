@@ -153,6 +153,23 @@ button:hover {
   flex-wrap: wrap;
   gap: 1rem;
   margin-top: 1rem;
+  overflow-x: auto;
+  padding: 1rem 0;
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: #f97316 #1f1f1f;
+}
+.character-bubbles::-webkit-scrollbar {
+  height: 8px;
+}
+
+.character-bubbles::-webkit-scrollbar-track {
+  background: #1f1f1f;
+}
+
+.character-bubbles::-webkit-scrollbar-thumb {
+  background-color: #f97316;
+  border-radius: 4px;
 }
 
 .character-bubble {
@@ -167,30 +184,12 @@ button:hover {
   align-items: center;
   justify-content: center;
   text-align: center;
+  color: white;
   font-size: 0.7rem;
   color: white;
   box-shadow: 0 4px 10px rgba(0,0,0,0.6);
-  transition: transform 0.2s;
+  transition: transform 0.3s;
   position: relative;
-  display: flex;
-  overflow-x: auto;
-  gap: 1rem;
-  padding: 1rem 0;
-  scrollbar-width: thin;
-  scrollbar-color: #f97316 #1f1f1f;
-}
-
-.character-bubbles::-webkit-scrollbar {
-  height: 8px;
-}
-
-.character-bubbles::-webkit-scrollbar-track {
-  background: #1f1f1f;
-}
-
-.character-bubbles::-webkit-scrollbar-thumb {
-  background-color: #f97316;
-  border-radius: 4px;
 }
 
 .character-bubble:hover {
@@ -199,13 +198,14 @@ button:hover {
 }
 
 .character-bubble img {
-  width: 100%;
-  height: 100%;
+  width: 100px;
+  height: 100px;
   object-fit: cover;
   border-radius: 50%;
   position: absolute;
   top: 0;
   left: 0;
+  margin-bottom: 0.5rem;
 }
 
 .character-bubble span {
