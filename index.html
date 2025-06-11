@@ -218,6 +218,31 @@
       color: #fff;
       text-shadow: 0 0 8px black;
     }
+    #backToTop {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  background-color: #f97316;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  font-size: 1.5rem;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+  display: none; /* Hidden by default */
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  transition: transform 0.3s ease;
+}
+
+#backToTop:hover {
+  transform: scale(1.1);
+  background-color: #ff7f2a;
+}
+
 
   </style>
 </head>
@@ -254,6 +279,8 @@
     <!-- Main trending anime cards will appear here -->
   </div>
   </section>
+
+  <button id="backToTop" title="Back to top">⬆️</button>
 
 
   <footer>
@@ -521,6 +548,18 @@
 })();
 
 </script>
+<script>
+  const backToTopBtn = document.getElementById('backToTop');
+
+  window.addEventListener('scroll', () => {
+    backToTopBtn.style.display = window.scrollY > 300 ? 'flex' : 'none';
+  });
+
+  backToTopBtn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+</script>
+
 
 
 
