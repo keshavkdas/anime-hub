@@ -87,8 +87,9 @@ button:hover {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .anime-info p {
@@ -264,7 +265,7 @@ button:hover {
   </div>
 
   <script>
-async function fetchAnimeDetails() {
+  async function fetchAnimeDetails() {
   const urlParams = new URLSearchParams(window.location.search);
   const animeId = urlParams.get('id');
   const container = document.getElementById("animeDetails");
@@ -282,6 +283,8 @@ async function fetchAnimeDetails() {
           <img src="${img}" alt="${title}">
           <div class="favorite-bubble" id="favBtn">❤️</div>
         </div>
+        <div class="loading-spinner"></div>
+        <div class="loading-spinner"></div>
         <div class="anime-info">
           <h1>${title}</h1>
           <p><strong>Synopsis:</strong> <span class="synopsis-text">${
