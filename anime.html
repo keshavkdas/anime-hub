@@ -315,45 +315,34 @@ button:hover {
         });
 
         // Trailer
-        if (data.trailer && data.trailer.embed_url && data.trailer.embed_url.includes("youtube.com")) {
+         if (data.trailer && data.trailer.embed_url && data.trailer.embed_url.includes("youtube.com")) {
   const trailerId = `trailer-${Date.now()}`;
+  const fallbackImg = data.trailer?.images?.maximum_image_url || data.images.jpg.large_image_url;
 
-  container.insertAdjacentHTML('beforeend', `
-    <div class="anime-trailer" id="${trailerId}">
-      <h2>Trailer</h2>
-      <iframe 
-        src="${data.trailer.embed_url}" 
-        frameborder="0" 
-        allowfullscreen 
-        width="100%" 
-        height="500px">
-      </iframe>
-    </div>
-  `);
+  const trailerWrapper = document.createElement("div");
+  trailerWrapper.className = "anime-trailer";
+  trailerWrapper.id = trailerId;
 
-  // Wait and check if iframe loaded correctly
-  setTimeout(() => {
-    const iframe = document.querySelector(`#${trailerId} iframe`);
-    const trailerDiv = document.getElementById(trailerId);
+  const iframe = document.createElement("iframe");
+  iframe.src = data.trailer.embed_url;
+  iframe.width = "100%";
+  iframe.height = "500";
+  iframe.setAttribute("frameborder", "0");
+  iframe.setAttribute("allowfullscreen", "");
 
-    try {
-      const isVisible = iframe && iframe.contentWindow?.document?.body?.children.length > 0;
-      if (!isVisible) throw new Error("Not visible");
-    } catch (err) {
-      // Remove broken trailer and insert fallback thumbnail
-      trailerDiv?.remove();
-      const fallbackImg = data.trailer?.images?.maximum_image_url || data.images.jpg.large_image_url;
+  // Fallback logic if trailer fails to load
+  iframe.onerror = () => {
+    trailerWrapper.innerHTML = `
+      <h2>Trailer Unavailable</h2>
+      <img src="${fallbackImg}" alt="Epic Poster" style="width:100%; border-radius:10px; box-shadow: 0 0 10px rgba(0,0,0,0.3); margin-top:1rem;">
+    `;
+  };
 
-      container.insertAdjacentHTML("beforeend", `
-        <div class="anime-trailer">
-          <h2>Trailer Unavailable</h2>
-          <img src="${fallbackImg}" alt="Epic Poster" style="width:100%; border-radius:10px; box-shadow: 0 0 10px rgba(0,0,0,0.3); margin-top:1rem;">
-        </div>
-      `);
-    }
-  }, 3000);
+  trailerWrapper.innerHTML = `<h2>Trailer</h2>`;
+  trailerWrapper.appendChild(iframe);
+  container.appendChild(trailerWrapper);
 } else {
-  // No trailer link, show fallback thumbnail
+  // No trailer link, show fallback image
   const fallbackImg = data.trailer?.images?.maximum_image_url || data.images.jpg.large_image_url;
   container.insertAdjacentHTML("beforeend", `
     <div class="anime-trailer">
@@ -362,6 +351,7 @@ button:hover {
     </div>
   `);
 }
+
 
 
 
