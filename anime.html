@@ -376,7 +376,8 @@ container.appendChild(sceneContainer);
 try {
   const query = encodeURIComponent(data.title + " anime screenshot");
   const imgRes = await fetch(`/.netlify/functions/getImages?q=${query}`);
-  const imgs = await imgRes.json();
+  const { images } = await imgRes.json();
+
 
   const track = sceneContainer.querySelector('.carousel-track');
   (imgs.images || []).forEach(url => {
