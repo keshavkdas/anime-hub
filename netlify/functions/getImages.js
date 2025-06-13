@@ -1,4 +1,5 @@
 const fetch = require("node-fetch");
+const UNSPLASH_KEY = process.env.UNSPLASH_KEY;
 
 exports.handler = async function (event, context) {
   const query = event.queryStringParameters.q;
@@ -9,8 +10,6 @@ exports.handler = async function (event, context) {
       body: JSON.stringify({ error: "Missing query" }),
     };
   }
-
-  const UNSPLASH_KEY = process.env.UNSPLASH_KEY;
 
   try {
     const res = await fetch(`https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&client_id=${UNSPLASH_KEY}&per_page=5`);
