@@ -363,8 +363,8 @@ button:hover {
 
 } else {
   const sceneContainer = document.createElement('div');
-sceneContainer.className = 'fallback-carousel';
-sceneContainer.innerHTML = `
+  sceneContainer.className = 'fallback-carousel';
+  sceneContainer.innerHTML = `
   <h2>Scenes & Art</h2>
   <div class="carousel-track"></div>
   <button class="prev">❮</button>
@@ -380,7 +380,7 @@ try {
 
 
   const track = sceneContainer.querySelector('.carousel-track');
-  (imgs.images || []).forEach(url => {
+  (images || []).forEach(url => {
     const slide = document.createElement('div');
     slide.className = 'carousel-slide';
     slide.innerHTML = `<img src="${url}" alt="scene" />`;
@@ -399,7 +399,6 @@ try {
   console.error("Failed to fetch images", err);
   sceneContainer.remove(); // Optionally remove the carousel if fetch fails
 }
-
 
 
         // Characters
