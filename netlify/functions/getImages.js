@@ -1,48 +1,42 @@
+// netlify/functions/getImages.js
+
 const fetch = require('node-fetch');
 
-exports.handler = async (event) => {
-  const query = event.queryStringParameters.q;
-
-  if (!query) {
-    return {
-      statusCode: 400,
-      body: JSON.stringify({ error: "Missing query" }),
-    };
-  }
-
-  const UNSPLASH_KEY = process.env.UNSPLASH_KEY;
-
-  if (!UNSPLASH_KEY) {
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: "Missing Unsplash API key" }),
-    };
-  }
-
+exports.handler = async function(event, context) {
   try {
-    const res = await fetch(
-      `https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&per_page=5&client_id=${UNSPLASH_KEY}`
-    );
-    const data = await res.json();
+    const { q } = event.queryStringParameters || {};
 
-    if (!data.results) {
+    if (!q) {
       return {
-        statusCode: 500,
-        body: JSON.stringify({ message: "Failed to fetch images" }),
+        statusCode: 400,
+        body: JSON.stringify({ error: "Missing query" }),
       };
     }
 
-    const imageUrls = data.results.map(photo => photo.urls.regular);
+    const UNSPLASH_KEY = process.env.UNSPLASH_KEY;
+
+    const unsplashURL = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(q)}&per_page=6&client_id=${UNSPLASH_KEY}`;
+
+    const response = await fetch(unsplashURL);
+    if (!response.ok) {
+      return {
+        statusCode: 500,
+        body: JSON.stringify({ error: "Failed to fetch from Unsplash" }),
+      };
+    }
+
+    const data = await response.json();
+    const images = data.results.map(item => item.urls.regular);
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ images: imageUrls }),
+      body: JSON.stringify({ images }),
     };
   } catch (err) {
-    console.error("Error fetching from Unsplash:", err);
+    console.error("Image fetch error:", err);
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: "Failed to fetch from Unsplash" }),
+      body: JSON.stringify({ error: "Internal server error" }),
     };
   }
 };
