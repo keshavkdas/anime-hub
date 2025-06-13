@@ -2,7 +2,7 @@ const fetch = require('node-fetch');
 
 exports.handler = async (event) => {
   const query = event.queryStringParameters.q;
-  const UNSPLASH_ACCESS_KEY = process.env.UNSPLASH_ACCESS_KEY;
+  const UNSPLASH_KEY = process.env.UNSPLASH_KEY;
 
   if (!query) {
     return { statusCode: 400, body: JSON.stringify({ error: 'Missing query' }) };
