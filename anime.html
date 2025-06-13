@@ -363,37 +363,40 @@ button:hover {
 
 } else {
   const sceneContainer = document.createElement('div');
-  sceneContainer.className = 'fallback-carousel';
-  sceneContainer.innerHTML = `
-    <h2>Scenes & Art</h2>
-    <div class="carousel-track"></div>
-    <button class="prev">❮</button>
-    <button class="next">❯</button>
-  `;
-  container.appendChild(sceneContainer);
+sceneContainer.className = 'fallback-carousel';
+sceneContainer.innerHTML = `
+  <h2>Scenes & Art</h2>
+  <div class="carousel-track"></div>
+  <button class="prev">❮</button>
+  <button class="next">❯</button>
+`;
+container.appendChild(sceneContainer);
 
-  // Fetch 4 images using Google Custom Search JSON API (or any service)
-  const query = encodeURIComponent(`${data.title} anime screenshot`);
-  const resp = await fetch(`/.netlify/functions/getImages?q=${data.title}`);
-  const imgs = imgRes.json();
+// Fetch images
+try {
+  const imgRes = await fetch(`/.netlify/functions/getImages?q=${encodeURIComponent(data.title)}`);
+  const imgs = await imgRes.json();
 
   const track = sceneContainer.querySelector('.carousel-track');
-  imgs.forEach(url => {
+  (imgs.images || []).forEach(url => {
     const slide = document.createElement('div');
     slide.className = 'carousel-slide';
-    slide.innerHTML = `<img src="${url}" alt="scene">`;
+    slide.innerHTML = `<img src="${url}" alt="scene" />`;
     track.appendChild(slide);
   });
 
-  // Carousel controls
+  // Carousel logic
   let idx = 0;
   const slides = track.querySelectorAll('.carousel-slide');
-  function update() { track.style.transform = `translateX(-${idx * 100}%)`; }
-  sceneContainer.querySelector('.prev').onclick = () => { idx=(idx-1+slides.length)%slides.length; update(); };
-  sceneContainer.querySelector('.next').onclick = () => { idx=(idx+1)%slides.length; update(); };
+  function update() {
+    track.style.transform = `translateX(-${idx * 100}%)`;
+  }
+  sceneContainer.querySelector('.prev').onclick = () => { idx = (idx - 1 + slides.length) % slides.length; update(); };
+  sceneContainer.querySelector('.next').onclick = () => { idx = (idx + 1) % slides.length; update(); };
+} catch (err) {
+  console.error("Failed to fetch images", err);
+  sceneContainer.remove(); // Optionally remove the carousel if fetch fails
 }
-}
-
 
 
 
