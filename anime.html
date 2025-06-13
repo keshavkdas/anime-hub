@@ -453,7 +453,7 @@ if (pictures.length > 0) {
   let idx = 0;
   const slides = track.querySelectorAll('.carousel-slide');
   function update() {
-    track.style.transform = `translateX(-${idx * 100}%)`;
+    track.style.transform = `translateX(-${idx * 70}%)`;
 
     slides.forEach((slide, i) => {
       slide.classList.remove("center", "blur-left", "blur-right");
