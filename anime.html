@@ -338,18 +338,14 @@ button:hover {
     <div class="loading-spinner"></div>
     <p>Loading anime details...</p>
     <div class="scene-block">
-  <div class="scene-carousel">
+  <div class="scene-carousel-wrapper">
+  <div class="carousel-window">
     <div class="carousel-track"></div>
-    <button class="prev">❮</button>
-    <button class="next">❯</button>
   </div>
-  <div class="scene-description">
-    <div class="blurred-bg"></div>
-    <div class="description-text">
-      <h3>Scene Description</h3>
-      <p>This scene probably shows a peaceful sunset moment with the protagonist looking over the city...</p>
-    </div>
-  </div>
+  <button class="prev">❮</button>
+  <button class="next">❯</button>
+</div>
+
 </div>
   </main>
 
@@ -446,36 +442,49 @@ if (pictures.length > 0) {
   });
 
   let idx = 0;
-  const slides = track.querySelectorAll('.carousel-slide');
-  function update() {
-    track.style.transform = `translateX(-${idx * 70}%)`;
+const slides = track.querySelectorAll('.carousel-slide');
 
-    slides.forEach((slide, i) => {
-      slide.classList.remove("center", "blur-left", "blur-right");
-      if (i === idx) slide.classList.add("center");
-      else if (i === idx - 1) slide.classList.add("blur-left");
-      else if (i === idx + 1) slide.classList.add("blur-right");
-    });
-  }
-  const slideWidthWithMargin = slides[idx].offsetWidth + 16; // approx. margin
-  const centerOffset = (track.offsetWidth / 2) - (slideWidthWithMargin / 2);
-  track.style.transform = `translateX(-${idx * slideWidthWithMargin - centerOffset}px)`;
+// Update carousel view
+function update() {
+  slides.forEach((slide, i) => {
+    slide.classList.remove('center', 'blur-left', 'blur-right');
 
-  sceneBlock.querySelector('.prev').onclick = () => {
-    idx = (idx - 1 + slides.length) % slides.length;
-    update();
-  };
-  sceneBlock.querySelector('.next').onclick = () => {
-    idx = (idx + 1) % slides.length;
-    update();
-  };
+    if (i === idx) {
+      slide.classList.add('center');
+    } else if (i === (idx - 1 + slides.length) % slides.length) {
+      slide.classList.add('blur-left');
+    } else if (i === (idx + 1) % slides.length) {
+      slide.classList.add('blur-right');
+    }
+  });
 
-  setInterval(() => {
-    idx = (idx + 1) % slides.length;
-    update();
-  }, 5000);
+  // Centering the current slide
+  const slideWidth = slides[idx].offsetWidth;
+  const margin = 16; // if margin used
+  const totalOffset = (slideWidth + margin) * idx;
+  const centerOffset = (track.offsetWidth / 2) - (slideWidth / 2);
+  track.style.transform = `translateX(-${totalOffset - centerOffset}px)`;
+}
 
+// Manual controls
+sceneBlock.querySelector('.prev').onclick = () => {
+  idx = (idx - 1 + slides.length) % slides.length;
   update();
+};
+sceneBlock.querySelector('.next').onclick = () => {
+  idx = (idx + 1) % slides.length;
+  update();
+};
+
+// Auto scroll every 5 seconds
+setInterval(() => {
+  idx = (idx + 1) % slides.length;
+  update();
+}, 5000);
+
+// Initial render
+update();
+
 
 
 
