@@ -457,6 +457,9 @@ if (pictures.length > 0) {
       else if (i === idx + 1) slide.classList.add("blur-right");
     });
   }
+  const slideWidthWithMargin = slides[idx].offsetWidth + 16; // approx. margin
+  const centerOffset = (track.offsetWidth / 2) - (slideWidthWithMargin / 2);
+  track.style.transform = `translateX(-${idx * slideWidthWithMargin - centerOffset}px)`;
 
   sceneBlock.querySelector('.prev').onclick = () => {
     idx = (idx - 1 + slides.length) % slides.length;
