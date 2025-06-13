@@ -1,7 +1,6 @@
-const fetch = require("node-fetch");
-const UNSPLASH_KEY = process.env.UNSPLASH_KEY;
+const fetch = require('node-fetch');
 
-exports.handler = async function (event, context) {
+exports.handler = async (event) => {
   const query = event.queryStringParameters.q;
 
   if (!query) {
@@ -11,38 +10,39 @@ exports.handler = async function (event, context) {
     };
   }
 
+  const UNSPLASH_KEY = process.env.UNSPLASH_KEY;
+
+  if (!UNSPLASH_KEY) {
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: "Missing Unsplash API key" }),
+    };
+  }
+
   try {
-    const res = await fetch(`https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&client_id=${UNSPLASH_KEY}&per_page=5`);
-
-    if (!res.ok) {
-      const errorText = await res.text();
-      console.error("Unsplash API error:", errorText);
-      return {
-        statusCode: res.status,
-        body: JSON.stringify({ error: "Failed to fetch from Unsplash" }),
-      };
-    }
-
+    const res = await fetch(
+      `https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&per_page=5&client_id=${UNSPLASH_KEY}`
+    );
     const data = await res.json();
 
-    if (!data.results || !Array.isArray(data.results)) {
+    if (!data.results) {
       return {
         statusCode: 500,
-        body: JSON.stringify({ error: "Unexpected API response structure" }),
+        body: JSON.stringify({ message: "Failed to fetch images" }),
       };
     }
 
-    const imageUrls = data.results.map((img) => img.urls.regular);
+    const imageUrls = data.results.map(photo => photo.urls.regular);
 
     return {
       statusCode: 200,
       body: JSON.stringify({ images: imageUrls }),
     };
-  } catch (error) {
-    console.error("Unexpected error:", error);
+  } catch (err) {
+    console.error("Error fetching from Unsplash:", err);
     return {
       statusCode: 500,
-      body: JSON.stringify({ message: "Failed to fetch images" }),
+      body: JSON.stringify({ error: "Failed to fetch from Unsplash" }),
     };
   }
 };
