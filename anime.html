@@ -416,57 +416,63 @@ button:hover {
       `;
       container.appendChild(trailerWrapper);
     } else {
-      // Fallback scene images from Jikan
-      const imgRes = await fetch(`https://api.jikan.moe/v4/anime/${data.mal_id}/pictures`);
-      const imgData = await imgRes.json();
-      const pictures = imgData.data;
+        const imgRes = await fetch(`https://api.jikan.moe/v4/anime/${data.mal_id}/pictures`);
+const imgData = await imgRes.json();
+const pictures = imgData.data;
 
-      if (pictures.length > 0) {
-        const sceneBlock = document.createElement('div');
-        sceneBlock.className = 'scene-block';
+if (pictures.length > 0) {
+  const sceneBlock = document.createElement('div');
+  sceneBlock.className = 'scene-block';
+  sceneBlock.innerHTML = `
+    <div class="scene-carousel-wrapper">
+      <button class="prev">❮</button>
+      <div class="carousel-window">
+        <div class="carousel-track"></div>
+      </div>
+      <button class="next">❯</button>
+    </div>
+  `;
+  container.appendChild(sceneBlock);
 
-        sceneBlock.innerHTML = `
-          <div class="scene-carousel">
-            <div class="carousel-track"></div>
-            <button class="prev">❮</button>
-            <button class="next">❯</button>
-          </div>
-        `;
+  const track = sceneBlock.querySelector('.carousel-track');
+  pictures.forEach(pic => {
+    const url = pic.jpg.large_image_url || pic.jpg.image_url;
+    const slide = document.createElement('div');
+    slide.className = 'carousel-slide';
+    slide.innerHTML = `<img src="${url}" alt="scene" />`;
+    track.appendChild(slide);
+  });
 
-        container.appendChild(sceneBlock);
+  let idx = 0;
+  const slides = track.querySelectorAll('.carousel-slide');
+  function update() {
+    track.style.transform = `translateX(-${idx * 100}%)`;
 
-        const track = sceneBlock.querySelector('.carousel-track');
-        pictures.forEach(pic => {
-          const url = pic.jpg.large_image_url || pic.jpg.image_url;
-          const slide = document.createElement('div');
-          slide.className = 'carousel-slide';
-          slide.innerHTML = `<img src="${url}" alt="scene" />`;
-          track.appendChild(slide);
-        });
+    slides.forEach((slide, i) => {
+      slide.classList.remove("center", "blur-left", "blur-right");
+      if (i === idx) slide.classList.add("center");
+      else if (i === idx - 1) slide.classList.add("blur-left");
+      else if (i === idx + 1) slide.classList.add("blur-right");
+    });
+  }
 
-        let idx = 0;
-        const slides = track.querySelectorAll('.carousel-slide');
-        function update() {
-          track.style.transform = `translateX(-${idx * (track.clientWidth / 1.5)}px)`;
+  sceneBlock.querySelector('.prev').onclick = () => {
+    idx = (idx - 1 + slides.length) % slides.length;
+    update();
+  };
+  sceneBlock.querySelector('.next').onclick = () => {
+    idx = (idx + 1) % slides.length;
+    update();
+  };
 
-        }
-        sceneBlock.querySelector('.prev').onclick = () => {
-            idx = (idx - 1 + slides.length) % slides.length;
-            update();
-        };
-        sceneBlock.querySelector('.next').onclick = () => {
-            idx = (idx + 1) % slides.length;
-            update();
-        };
+  setInterval(() => {
+    idx = (idx + 1) % slides.length;
+    update();
+  }, 5000);
 
-        // Auto-scroll every 5 seconds
-        setInterval(() => {
-            idx = (idx + 1) % slides.length;
-            update();
-        }, 5000);
+  update();
+}
 
-        // Initial update
-        update();
 
       }
     }
