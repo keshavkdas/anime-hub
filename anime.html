@@ -374,7 +374,8 @@ container.appendChild(sceneContainer);
 
 // Fetch images
 try {
-  const imgRes = await fetch(`/.netlify/functions/getImages?q=${encodeURIComponent(data.title)}`);
+  const query = encodeURIComponent(data.title + " anime screenshot");
+  const imgRes = await fetch(`/.netlify/functions/getImages?q=${query}`);
   const imgs = await imgRes.json();
 
   const track = sceneContainer.querySelector('.carousel-track');
