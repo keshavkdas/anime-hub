@@ -363,8 +363,8 @@ button:hover {
 
 } else {
   const sceneContainer = document.createElement('div');
-  sceneContainer.className = 'fallback-carousel';
-  sceneContainer.innerHTML = `
+sceneContainer.className = 'fallback-carousel';
+sceneContainer.innerHTML = `
   <h2>Scenes & Art</h2>
   <div class="carousel-track"></div>
   <button class="prev">❮</button>
@@ -372,38 +372,44 @@ button:hover {
 `;
 container.appendChild(sceneContainer);
 
-// Fetch images
 try {
-  if (!data || !data.title) {
-  console.error("Missing anime title for image query");
-  sceneContainer.remove();
-  return;
-  }
+  const title = data.title || data.title_english || data.title_japanese;
+  if (!title) throw new Error("Anime title missing");
 
-  const query = encodeURIComponent(data.title + " anime screenshot");
+  const query = encodeURIComponent(title + " anime screenshot");
+  console.log("Fetching images for:", query);
+
   const imgRes = await fetch(`/.netlify/functions/getImages?q=${query}`);
   const { images } = await imgRes.json();
 
+  if (!images || images.length === 0) throw new Error("No images found");
 
   const track = sceneContainer.querySelector('.carousel-track');
-  (images || []).forEach(url => {
+  images.forEach(url => {
     const slide = document.createElement('div');
     slide.className = 'carousel-slide';
-    slide.innerHTML = `<img src="${url}" alt="scene" />`;
+    slide.innerHTML = `<img src="${url}" alt="scene">`;
     track.appendChild(slide);
   });
 
-  // Carousel logic
   let idx = 0;
   const slides = track.querySelectorAll('.carousel-slide');
   function update() {
     track.style.transform = `translateX(-${idx * 100}%)`;
   }
-  sceneContainer.querySelector('.prev').onclick = () => { idx = (idx - 1 + slides.length) % slides.length; update(); };
-  sceneContainer.querySelector('.next').onclick = () => { idx = (idx + 1) % slides.length; update(); };
+  sceneContainer.querySelector('.prev').onclick = () => {
+    idx = (idx - 1 + slides.length) % slides.length;
+    update();
+  };
+  sceneContainer.querySelector('.next').onclick = () => {
+    idx = (idx + 1) % slides.length;
+    update();
+  };
 } catch (err) {
-  console.error("Failed to fetch images", err);
-  sceneContainer.remove(); // Optionally remove the carousel if fetch fails
+  console.error("Image fetch failed:", err.message);
+  sceneContainer.remove();
+}
+
 }
 
 
