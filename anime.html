@@ -374,7 +374,7 @@ button:hover {
 
   // Fetch 4 images using Google Custom Search JSON API (or any service)
   const query = encodeURIComponent(`${data.title} anime screenshot`);
-  const resp = await fetch(`/.netlify/functions/getImages?q=${query}`);
+  const resp = await fetch(`/.netlify/functions/getImages?q=${data.title}`);
   const imgs = imgRes.json();
 
   const track = sceneContainer.querySelector('.carousel-track');
