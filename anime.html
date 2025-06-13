@@ -253,34 +253,63 @@ button:hover {
 .back-to-top:hover { background: rgba(255,255,255,0.3); }
 
 .fallback-carousel {
+  margin-top: 2rem;
   position: relative;
-  margin: 2rem 0;
   overflow: hidden;
+  width: 100%;
+  max-width: 800px;
+  margin-inline: auto;
 }
+
 .carousel-track {
   display: flex;
-  transition: transform 0.5s ease;
+  transition: transform 0.5s ease-in-out;
 }
+
 .carousel-slide {
   min-width: 100%;
+  box-sizing: border-box;
+  padding: 0.5rem;
 }
+
 .carousel-slide img {
   width: 100%;
-  border-radius: 8px;
+  height: auto;
+  display: block;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  object-fit: cover;
 }
-.prev, .next {
+
+.fallback-carousel button.prev,
+.fallback-carousel button.next {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background: rgba(0,0,0,0.5);
-  color: #fff;
+  font-size: 1.8rem;
+  background: rgba(0, 0, 0, 0.3);
   border: none;
-  padding: 0.5rem;
-  border-radius: 50%;
+  color: white;
+  padding: 0.4rem 0.7rem;
   cursor: pointer;
+  z-index: 10;
+  border-radius: 6px;
+  transition: background 0.2s ease;
 }
-.prev { left: 10px; }
-.next { right: 10px; }
+
+.fallback-carousel button.prev:hover,
+.fallback-carousel button.next:hover {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.fallback-carousel button.prev {
+  left: 10px;
+}
+
+.fallback-carousel button.next {
+  right: 10px;
+}
+
 
   </style>
 </head>
@@ -384,9 +413,10 @@ try {
 
   const track = sceneContainer.querySelector('.carousel-track');
   pictures.forEach(pic => {
+    const url = pic.jpg.large_image_url || pic.jpg.image_url;
     const slide = document.createElement('div');
     slide.className = 'carousel-slide';
-    slide.innerHTML = `<img src="${pic.jpg.image_url}" alt="scene" />`;
+    slide.innerHTML = `<img src="${url}" alt="scene" />`;
     track.appendChild(slide);
   });
 
