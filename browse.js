@@ -64,7 +64,7 @@ async function loadAnime() {
           <h3>${anime.title}</h3>
           <p><strong>Score:</strong> ${anime.score || "N/A"}</p>
           <p><strong>Type:</strong> ${anime.type}</p>
-          <p><strong>Episodes:</strong> ${anime.episodes || "?"}</p>
+          ${anime.type !== "Movie" ? `<p><strong>Episodes:</strong> ${anime.episodes}</p>` : ""}
         </div>
       `;
       card.addEventListener("click", () => {
