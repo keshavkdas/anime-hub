@@ -346,7 +346,7 @@ button:hover {
         });
 
         // Trailer
-         if (data.trailer && data.trailer.embed_url && data.trailer.embed_url.includes("youtube.com")) {
+        if (data.trailer && data.trailer.embed_url && data.trailer.embed_url.includes("youtube.com")) {
   const trailerId = `trailer-${Date.now()}`;
   const fallbackImg = data.trailer?.images?.maximum_image_url || data.images.jpg.large_image_url;
 
@@ -360,6 +360,9 @@ button:hover {
   iframe.height = "500";
   iframe.setAttribute("frameborder", "0");
   iframe.setAttribute("allowfullscreen", "");
+
+  trailerWrapper.appendChild(iframe);
+  container.appendChild(trailerWrapper);
 
 } else {
   const sceneContainer = document.createElement('div');
