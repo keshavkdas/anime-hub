@@ -449,8 +449,6 @@ button:hover {
         function update() {
           track.style.transform = `translateX(-${idx * (track.clientWidth / 1.5)}px)`;
 
-          const bg = sceneBlock.querySelector('.blurred-bg');
-          bg.style.backgroundImage = `url('${slides[idx].querySelector('img').src}')`;
         }
         sceneBlock.querySelector('.prev').onclick = () => {
             idx = (idx - 1 + slides.length) % slides.length;
