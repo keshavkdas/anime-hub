@@ -374,7 +374,12 @@ container.appendChild(sceneContainer);
 
 // Fetch images
 try {
-  console.log("Fetching images for:", data.title);
+  if (!data || !data.title) {
+  console.error("Missing anime title for image query");
+  sceneContainer.remove();
+  return;
+  }
+
   const query = encodeURIComponent(data.title + " anime screenshot");
   const imgRes = await fetch(`/.netlify/functions/getImages?q=${query}`);
   const { images } = await imgRes.json();
