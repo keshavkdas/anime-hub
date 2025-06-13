@@ -10,10 +10,10 @@ exports.handler = async function (event, context) {
     };
   }
 
-  const UNSPLASH_ACCESS_KEY = process.env.UNSPLASH_ACCESS_KEY;
+  const UNSPLASH_KEY = process.env.UNSPLASH_KEY;
 
   try {
-    const res = await fetch(`https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&client_id=${UNSPLASH_ACCESS_KEY}&per_page=5`);
+    const res = await fetch(`https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&client_id=${UNSPLASH_KEY}&per_page=5`);
 
     if (!res.ok) {
       const errorText = await res.text();
