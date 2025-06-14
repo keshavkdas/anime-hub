@@ -13,30 +13,57 @@
       margin: 0;
       padding: 1rem;
     }
-    header {
-    background-color: #1f1f1f;
-    padding: 1rem 2rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
+     /* Header styles */
+header {
+  background-color: #1f1f1f;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: 'Poppins', sans-serif;
+  border-bottom: 1px solid #2b2b2b;
+}
 
-  header h1 {
-    font-family: 'Oswald', sans-serif;
-    font-size: 2rem;
-    color: #f97316;
-  }
+/* Logo text */
+header h1 {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 2rem;
+  color: #f97316; /* Bright orange */
+  margin: 0;
+  text-shadow: 0 1px 1px #000;
+}
 
-  nav a {
-    color: #fff;
-    margin-left: 2rem;
-    text-decoration: none;
-    font-weight: bold;
-  }
+/* Navigation */
+nav {
+  display: flex;
+  align-items: center;
+  gap: 2.5rem;
+}
 
-  nav a:hover {
-    color: #f97316;
-  }
+nav a {
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 1.2rem;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+nav a:hover {
+  color: #f97316;
+}
+
+/* Heart icon */
+nav .heart-icon {
+  font-size: 1.5rem;
+  margin-left: 1rem;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+nav .heart-icon:hover {
+  transform: scale(1.2);
+}
 
     a {
       color: #f97316;
