@@ -118,9 +118,13 @@
           <div class="section">
             <h2>Voice Actors</h2>
             <ul>
-              ${data.voice_actors.map(va =>
-                `<li>${va.language.toUpperCase()}: ${va.person.name}</li>`).join("")}
+              ${
+                  Array.isArray(d.voice_actors)
+                  ? d.voice_actors.map(va => `<li>${va.language.toUpperCase()}: ${va.person.name}</li>`).join("")
+                  : "<li>No voice actor info available.</li>"
+              }
             </ul>
+
           </div>
 
           <div class="section">
