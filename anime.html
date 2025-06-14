@@ -506,7 +506,9 @@ update();
     const charContainer = document.getElementById('characterContainer');
     charContainer.innerHTML = charData.data.map(c => `
       <div class="character-bubble">
-        <img src="${c.character.images.jpg.image_url}" alt="${c.character.name}">
+        <a href="character.html?id=${c.character.mal_id}">
+          <img src="${c.character.images.jpg.image_url}" alt="${c.character.name}">
+        </a>
         <div class="character-name">${c.character.name}</div>
       </div>
     `).join('');
