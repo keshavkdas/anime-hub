@@ -4,97 +4,195 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Manga Details</title>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@600&family=Poppins:wght@500&display=swap" rel="stylesheet"/>
   <style>
     body {
-      background: #111;
+      margin: 0;
+      background-color: #121212;
+      font-family: 'Poppins', sans-serif;
       color: white;
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 20px;
     }
-
-    a {
-      color: #00bfff;
-      text-decoration: none;
-      display: inline-block;
-      margin-bottom: 20px;
-    }
-
-    .details-container {
+    header {
+      background-color: #1f1f1f;
+      padding: 1rem 2rem;
       display: flex;
-      flex-direction: column;
+      justify-content: space-between;
       align-items: center;
-      gap: 20px;
-      max-width: 800px;
-      margin: auto;
-      text-align: center;
+      border-bottom: 2px solid #2a2a2a;
     }
-
-    .details-container img {
-      width: 240px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(255,255,255,0.1);
-    }
-
-    .details-container h1 {
-      font-size: 1.8rem;
+    header h1 {
+      font-family: 'Oswald', sans-serif;
+      font-size: 2rem;
+      color: #f97316;
       margin: 0;
     }
-
-    .info {
-      font-size: 1rem;
+    .container {
+      padding: 2rem;
+    }
+    .manga-details {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      align-items: flex-start;
+    }
+    .manga-details img {
+      width: 250px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
+    }
+    .manga-info {
+      flex: 1;
+    }
+    .manga-info h2 {
+      color: #f97316;
+      margin-top: 0;
+    }
+    .manga-info p {
+      margin: 0.5rem 0;
       color: #ccc;
     }
-
-    .synopsis {
-      margin-top: 20px;
-      line-height: 1.6;
-      font-size: 1rem;
+    .section {
+      margin-top: 3rem;
     }
-
-    .loading {
-      text-align: center;
-      font-size: 1.2rem;
-      margin-top: 50px;
+    .section h3 {
+      margin-bottom: 1rem;
+      color: #f97316;
+    }
+    .chapter-list,
+    .character-list,
+    .related-list {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    }
+    .chapter,
+    .character,
+    .related {
+      background-color: #1e1e1e;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+    }
+    .chapter:hover,
+    .character:hover,
+    .related:hover {
+      background-color: #2a2a2a;
+    }
+    button.fav-btn {
+      margin-top: 1rem;
+      padding: 0.6rem 1.2rem;
+      background-color: #f97316;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
-  <a href="javascript:history.back()">← Go Back</a>
-  <div id="details" class="details-container">
-    <p class="loading">Loading manga details...</p>
+  <header>
+    <h1>AnimeHub</h1>
+  </header>
+
+  <div class="container">
+    <div class="manga-details" id="mangaDetails"></div>
+
+    <div class="section" id="charactersSection">
+      <h3>Characters</h3>
+      <div class="character-list" id="characterList"></div>
+    </div>
+
+    <div class="section" id="relatedSection">
+      <h3>Related Works</h3>
+      <div class="related-list" id="relatedList"></div>
+    </div>
+
+    <div class="section" id="chaptersSection">
+      <h3>Chapters</h3>
+      <div class="chapter-list" id="chapterList"></div>
+    </div>
   </div>
 
   <script>
-    async function loadMangaDetails() {
-      const params = new URLSearchParams(window.location.search);
-      const mangaId = params.get('id');
-      const container = document.getElementById('details');
+    const params = new URLSearchParams(window.location.search);
+    const mangaId = params.get("id");
 
-      if (!mangaId) {
-        container.innerHTML = '<p>Manga ID not found in URL.</p>';
-        return;
-      }
+    async function fetchMangaDetails() {
+      const res = await fetch(`https://api.jikan.moe/v4/manga/${mangaId}/full`);
+      const { data } = await res.json();
 
-      try {
-        const res = await fetch(`https://api.jikan.moe/v4/manga/${mangaId}`);
-        const data = await res.json();
-        const manga = data.data;
+      const container = document.getElementById("mangaDetails");
+      container.innerHTML = `
+        <img src="${data.images.jpg.image_url}" alt="${data.title}">
+        <div class="manga-info">
+          <h2>${data.title}</h2>
+          <p><strong>Type:</strong> ${data.type}</p>
+          <p><strong>Status:</strong> ${data.status}</p>
+          <p><strong>Chapters:</strong> ${data.chapters || "Unknown"}</p>
+          <p><strong>Score:</strong> ${data.score || "N/A"}</p>
+          <p>${data.synopsis}</p>
+          <button class="fav-btn" onclick="addToFavorites(${data.mal_id}, '${data.title}', '${data.images.jpg.image_url}')">Add to Favorites</button>
+        </div>
+      `;
+    }
 
-        container.innerHTML = `
-          <img src="${manga.images.jpg.image_url}" alt="${manga.title}">
-          <h1>${manga.title}</h1>
-          <p class="info">📖 ${manga.chapters || 'N/A'} chapters | 📚 ${manga.volumes || 'N/A'} volumes</p>
-          <p class="info">⭐ ${manga.score || 'N/A'} | 📝 ${manga.status} | 🔞 ${manga.rating || 'Unknown'}</p>
-          <div class="synopsis">${manga.synopsis || 'No synopsis available.'}</div>
-        `;
-      } catch (err) {
-        console.error('Error loading manga details:', err);
-        container.innerHTML = '<p>Failed to load manga details.</p>';
+    async function fetchCharacters() {
+      const res = await fetch(`https://api.jikan.moe/v4/manga/${mangaId}/characters`);
+      const { data } = await res.json();
+      const container = document.getElementById("characterList");
+
+      container.innerHTML = data.slice(0, 10).map(char => `
+        <div class="character">
+          <strong>${char.character.name}</strong>
+        </div>
+      `).join('');
+    }
+
+    async function fetchRelated() {
+      const res = await fetch(`https://api.jikan.moe/v4/manga/${mangaId}/relations`);
+      const { data } = await res.json();
+      const container = document.getElementById("relatedList");
+
+      container.innerHTML = data.flatMap(rel => 
+        rel.entry.map(item => `
+          <div class="related">
+            <strong>${item.name}</strong>
+            <p>${rel.relation}</p>
+          </div>
+        `)
+      ).join('');
+    }
+
+    async function fetchChapters() {
+      const res = await fetch(`https://api.jikan.moe/v4/manga/${mangaId}/chapters`);
+      const { data } = await res.json();
+      const container = document.getElementById("chapterList");
+
+      container.innerHTML = data.slice(0, 20).map(ch => `
+        <div class="chapter">
+          <strong>Chapter ${ch.mal_id}</strong>
+          <p>${ch.title || "Untitled"}</p>
+        </div>
+      `).join('');
+    }
+
+    function addToFavorites(id, title, image) {
+      const favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+      const exists = favorites.some(item => item.id === id);
+      if (!exists) {
+        favorites.push({ id, title, image, type: "manga" });
+        localStorage.setItem("favorites", JSON.stringify(favorites));
+        alert("Added to favorites!");
+      } else {
+        alert("Already in favorites.");
       }
     }
 
-    loadMangaDetails();
+    fetchMangaDetails();
+    fetchCharacters();
+    fetchRelated();
+    fetchChapters();
   </script>
 </body>
 </html>
