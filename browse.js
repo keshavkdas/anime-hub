@@ -134,7 +134,7 @@ async function loadItems() {
       imgWrapper.addEventListener("click", () => {
         window.location.href = currentType === "anime"
           ? `anime.html?id=${item.mal_id}`
-          : `manga.html?id=${item.mal_id}`;
+          : `manga-details.html?id=${item.mal_id}`;
       });
 
       resultsContainer.appendChild(card);
