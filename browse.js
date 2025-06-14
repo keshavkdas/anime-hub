@@ -119,9 +119,10 @@ async function loadItems() {
         <h3>${title}</h3>
         <p><strong>Score:</strong> ${score}</p>
         <p><strong>Type:</strong> ${type}</p>
-        ${currentType === "anime" && episodes ? `<p><strong>Episodes:</strong> ${episodes}</p>` : ""}
-        ${currentType === "manga" ? chapterInfo : ""}
+        ${currentType === "anime" && type !== "Movie" && episodes ? `<p><strong>Episodes:</strong> ${episodes}</p>` : ""}
+        ${currentType === "manga" && chapters ? `<p><strong>Chapters:</strong> ${chapters}</p>` : ""}
       `;
+
 
       card.innerHTML = `
         <img src="${image}" alt="${title}" />
