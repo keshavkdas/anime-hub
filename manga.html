@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Manga Section</title>
+  <style>
+    body {
+      background: #111;
+      color: white;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0 20px;
+    }
+
+    header {
+      padding: 20px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .title {
+      font-size: 2rem;
+      margin: 0;
+    }
+
+    a {
+      color: #00bfff;
+      text-decoration: none;
+    }
+
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 20px;
+      padding-bottom: 50px;
+    }
+
+    .card {
+      background: #222;
+      padding: 10px;
+      border-radius: 10px;
+      text-align: center;
+      transition: transform 0.2s;
+    }
+
+    .card:hover {
+      transform: scale(1.05);
+    }
+
+    .card img {
+      width: 100%;
+      height: 240px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+
+    .card .title {
+      margin-top: 10px;
+      font-size: 14px;
+      color: #f1f1f1;
+    }
+
+    .loading {
+      text-align: center;
+      margin: 20px 0;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1 class="title">📚 Manga</h1>
+    <a href="index.html">← Back to Home</a>
+  </header>
+
+  <main>
+    <div id="manga-container" class="grid-container"></div>
+    <p id="loading" class="loading">Loading more manga...</p>
+  </main>
+
+  <script>
+    let page = 1;
+    let isLoading = false;
+
+    async function fetchManga() {
+      if (isLoading) return;
+      isLoading = true;
+      document.getElementById('loading').style.display = 'block';
+
+      try {
+        const res = await fetch(`https://api.jikan.moe/v4/manga?page=${page}`);
+        const data = await res.json();
+        const container = document.getElementById('manga-container');
+
+        data.data.forEach(manga => {
+          const card = document.createElement('div');
+          card.className = 'card';
+          card.innerHTML = `
+            <img src="${manga.images.jpg.image_url}" alt="${manga.title}">
+            <p class="title">${manga.title}</p>
+          `;
+          container.appendChild(card);
+        });
+
+        page++;
+      } catch (err) {
+        console.error('Failed to fetch manga', err);
+      }
+
+      document.getElementById('loading').style.display = 'none';
+      isLoading = false;
+    }
+
+    function handleScroll() {
+      if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 100) {
+        fetchManga();
+      }
+    }
+
+    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('load', fetchManga);
+  </script>
+</body>
+</html>
