@@ -90,6 +90,37 @@
   height: 100px;
   margin-bottom: 0.5rem;
 }
+/* Voice actor language text */
+.va-card div:last-child {
+  font-size: 0.85rem;
+  color: #f97316; /* Bright orange */
+}
+
+/* Custom scrollbar styling */
+.va-carousel-wrapper::-webkit-scrollbar {
+  height: 8px;
+}
+
+.va-carousel-wrapper::-webkit-scrollbar-track {
+  background: #1e293b;
+  border-radius: 10px;
+}
+
+.va-carousel-wrapper::-webkit-scrollbar-thumb {
+  background: #f97316;
+  border-radius: 10px;
+}
+
+.va-carousel-wrapper::-webkit-scrollbar-thumb:hover {
+  background: #fb923c;
+}
+
+/* Firefox support */
+.va-carousel-wrapper {
+  scrollbar-color: #f97316 #1e293b;
+  scrollbar-width: thin;
+}
+
 
 
     .loading {
