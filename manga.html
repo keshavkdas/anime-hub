@@ -60,43 +60,71 @@
       font-size: 1.8rem;
     }
 
-    .carousel-section {
-      background-color: #1e1e1e;
-      padding-bottom: 1rem;
+    .carousel-wrapper {
+      background-color: #1a1a1a;
+      overflow: hidden;
+      height: 400px;
+      position: relative;
+      margin-bottom: 2rem;
     }
 
-    .carousel-container {
+    .carousel-track {
       display: flex;
-      overflow-x: auto;
-      gap: 1rem;
-      padding: 1rem 1rem 2rem;
-      scroll-behavior: smooth;
-    }
-
-    .carousel-container::-webkit-scrollbar {
-      display: none;
+      transition: transform 0.8s ease-in-out;
+      height: 100%;
     }
 
     .carousel-item {
-      min-width: 180px;
-      max-width: 180px;
-      flex-shrink: 0;
-      border-radius: 10px;
-      overflow: hidden;
-      background-color: #1f1f1f;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.6);
-      cursor: pointer;
-      transition: transform 0.3s;
-    }
-
-    .carousel-item:hover {
-      transform: scale(1.05);
+      min-width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 2rem;
+      box-sizing: border-box;
+      background: linear-gradient(to right, #000000 30%, rgba(0,0,0,0.7));
     }
 
     .carousel-item img {
-      width: 100%;
-      height: 260px;
+      width: 250px;
+      height: 360px;
       object-fit: cover;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(255,255,255,0.1);
+      flex-shrink: 0;
+    }
+
+    .carousel-info {
+      margin-left: 2rem;
+      color: white;
+      max-width: 50%;
+    }
+
+    .carousel-info h2 {
+      font-size: 1.8rem;
+      color: #f97316;
+      margin-bottom: 0.5rem;
+      font-family: 'Oswald', sans-serif;
+    }
+
+    .carousel-info p {
+      margin: 0.3rem 0;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .dive-button {
+      margin-top: 1rem;
+      background-color: #f97316;
+      color: white;
+      padding: 0.6rem 1.2rem;
+      font-size: 1rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .dive-button:hover {
+      background-color: #fb923c;
     }
 
     .explore-section {
@@ -158,10 +186,9 @@
     </nav>
   </header>
 
-  <!-- Carousel Section -->
-  <section class="carousel-section">
-    <h2>Latest Manga Releases</h2>
-    <div class="carousel-container" id="mangaCarousel"></div>
+  <!-- Auto Carousel Section -->
+  <section class="carousel-wrapper">
+    <div class="carousel-track" id="carouselTrack"></div>
   </section>
 
   <!-- Explore Section -->
@@ -171,27 +198,42 @@
   </section>
 
   <script>
-    const mangaCarousel = document.getElementById("mangaCarousel");
+    const track = document.getElementById("carouselTrack");
     const mangaResults = document.getElementById("mangaResults");
     let currentPage = 1;
     let hasMore = true;
 
-    async function loadCarouselManga() {
+    async function loadAutoCarousel() {
       try {
-        const res = await fetch(`https://api.jikan.moe/v4/manga?order_by=start_date&sort=desc&limit=10`);
+        const res = await fetch(`https://api.jikan.moe/v4/manga?order_by=popularity&limit=5`);
         const json = await res.json();
+        const mangaList = json.data;
 
-        json.data.forEach(manga => {
-          const item = document.createElement("div");
-          item.className = "carousel-item";
-          item.innerHTML = `<img src="${manga.images.jpg.image_url}" alt="${manga.title}"/>`;
-          item.addEventListener("click", () => {
-            window.location.href = `manga-details.html?id=${manga.mal_id}`;
-          });
-          mangaCarousel.appendChild(item);
+        mangaList.forEach(manga => {
+          const slide = document.createElement('div');
+          slide.className = 'carousel-item';
+
+          slide.innerHTML = `
+            <img src="${manga.images.jpg.large_image_url}" alt="${manga.title}" />
+            <div class="carousel-info">
+              <h2>${manga.title}</h2>
+              <p><strong>Score:</strong> ${manga.score ?? "N/A"}</p>
+              <p><strong>Type:</strong> ${manga.type}</p>
+              <p><strong>Chapters:</strong> ${manga.chapters ?? "Unknown"}</p>
+              <button class="dive-button" onclick="location.href='manga-details.html?id=${manga.mal_id}'">Dive In</button>
+            </div>
+          `;
+          track.appendChild(slide);
         });
+
+        // Auto-scroll
+        let index = 0;
+        setInterval(() => {
+          index = (index + 1) % mangaList.length;
+          track.style.transform = `translateX(-${index * 100}%)`;
+        }, 5000);
       } catch (err) {
-        console.error("Failed to load carousel:", err);
+        console.error("Carousel error:", err);
       }
     }
 
@@ -240,7 +282,7 @@
     }
 
     window.addEventListener("DOMContentLoaded", () => {
-      loadCarouselManga();
+      loadAutoCarousel();
       loadMoreManga();
     });
 
