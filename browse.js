@@ -26,7 +26,6 @@ typeSelect.addEventListener("change", () => {
   loadItems();
 });
 
-
 // Initial load
 document.addEventListener("DOMContentLoaded", () => {
   currentType = typeSelect.value;
@@ -56,12 +55,14 @@ async function loadGenres() {
     const json = await res.json();
     if (!json.data) throw new Error("Invalid API response");
 
-    json.data.sort((a, b) => a.name.localeCompare(b.name)).forEach(genre => {
-      const opt = document.createElement("option");
-      opt.value = genre.mal_id;
-      opt.textContent = genre.name;
-      select.appendChild(opt);
-    });
+    json.data
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .forEach(genre => {
+        const opt = document.createElement("option");
+        opt.value = genre.mal_id;
+        opt.textContent = genre.name;
+        select.appendChild(opt);
+      });
   } catch (err) {
     console.error("Failed to load genres:", err);
   }
@@ -108,28 +109,29 @@ async function loadItems() {
       const episodes = item.episodes;
       const status = item.status;
 
-      const chapterInfo =
-        chapters
-          ? `<p><strong>Chapters:</strong> ${chapters}</p>`
-          : status === "Publishing"
-            ? `<p><strong>Chapters:</strong> Ongoing</p>`
-            : `<p><strong>Chapters:</strong> Unknown</p>`;
-
       const infoHTML = `
         <h3>${title}</h3>
         <p><strong>Score:</strong> ${score}</p>
         <p><strong>Type:</strong> ${type}</p>
         ${currentType === "anime" && type !== "Movie" && episodes ? `<p><strong>Episodes:</strong> ${episodes}</p>` : ""}
-        ${currentType === "manga" && chapters ? `<p><strong>Chapters:</strong> ${chapters}</p>` : ""}
+        ${currentType === "manga" ? (
+          chapters
+            ? `<p><strong>Chapters:</strong> ${chapters}</p>`
+            : status === "Publishing"
+              ? `<p><strong>Chapters:</strong> Ongoing</p>`
+              : `<p><strong>Chapters:</strong> Unknown</p>`
+        ) : ""}
       `;
 
-
       card.innerHTML = `
-        <img src="${image}" alt="${title}" />
+        <div class="card-img-wrapper" style="cursor: pointer;">
+          <img src="${image}" alt="${title}" />
+        </div>
         <div class="anime-info">${infoHTML}</div>
       `;
 
-      card.addEventListener("click", () => {
+      const imgWrapper = card.querySelector(".card-img-wrapper");
+      imgWrapper.addEventListener("click", () => {
         window.location.href = currentType === "anime"
           ? `anime.html?id=${item.mal_id}`
           : `manga.html?id=${item.mal_id}`;
