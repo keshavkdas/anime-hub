@@ -4,10 +4,132 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Character Details</title>
-  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #0b0b0f;
+      color: #ffffff;
+    }
+
+    header {
+      padding: 1rem 2rem;
+      background-color: #1c1c24;
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #ff5c5c;
+    }
+
+    .container {
+      padding: 2rem;
+      max-width: 960px;
+      margin: auto;
+    }
+
+    .character-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .character-header img {
+      width: 220px;
+      height: auto;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(255, 92, 92, 0.4);
+    }
+
+    .character-name {
+      font-size: 2rem;
+      font-weight: 600;
+      color: #ffb3b3;
+      text-align: center;
+    }
+
+    .character-about {
+      font-size: 1.1rem;
+      line-height: 1.6;
+      background-color: #16161d;
+      padding: 1.5rem;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(255, 255, 255, 0.03);
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-bottom: 2rem;
+      color: #ff5c5c;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .back-link:hover {
+      text-decoration: underline;
+    }
+
+    .loading {
+      text-align: center;
+      margin-top: 50px;
+      font-size: 1.5rem;
+      color: #ccc;
+    }
+
+    @media (max-width: 600px) {
+      .character-header {
+        padding: 1rem;
+      }
+
+      .character-header img {
+        width: 150px;
+      }
+
+      .character-name {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
 </head>
 <body>
-  <div id="characterDetails"></div>
-  <script src="character.js"></script>
+  <header>Character Details</header>
+  <div class="container" id="characterDetails">
+    <p class="loading">Loading character info...</p>
+  </div>
+
+  <script>
+    async function fetchCharacter() {
+      const params = new URLSearchParams(window.location.search);
+      const id = params.get("id");
+
+      const container = document.getElementById("characterDetails");
+
+      if (!id) {
+        container.innerHTML = "<p>No character ID provided.</p>";
+        return;
+      }
+
+      try {
+        const res = await fetch(`https://api.jikan.moe/v4/characters/${id}/full`);
+        const { data } = await res.json();
+
+        container.innerHTML = `
+          <a href="index.html" class="back-link">← Back to Home</a>
+          <div class="character-header">
+            <img src="${data.images.jpg.image_url}" alt="${data.name}" />
+            <div class="character-name">${data.name}</div>
+          </div>
+          <div class="character-about">
+            ${data.about ? data.about.replace(/\n/g, "<br>") : "No biography available for this character."}
+          </div>
+        `;
+      } catch (err) {
+        console.error(err);
+        container.innerHTML = "<p>Failed to load character details. Try again later.</p>";
+      }
+    }
+
+    fetchCharacter();
+  </script>
 </body>
 </html>
