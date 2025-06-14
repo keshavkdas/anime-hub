@@ -6,106 +6,87 @@
   <title>Character Details</title>
   <style>
     body {
-      margin: 0;
+      margin: 0; padding: 0;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #0b0b0f;
-      color: #ffffff;
+      background-color: #0f172a; color: #e2e8f0;
     }
-
-    header {
-      padding: 1rem 2rem;
-      background-color: #1c1c24;
-      font-size: 1.5rem;
-      font-weight: bold;
-      color: #ff5c5c;
-    }
-
     .container {
-      padding: 2rem;
-      max-width: 960px;
-      margin: auto;
+      max-width: 900px; margin: 2rem auto; padding: 1rem;
+      background: #1e293b; border-radius: 16px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.4);
     }
-
-    .character-header {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 1rem;
-      margin-bottom: 2rem;
+    .header {
+      display: flex; flex-wrap: wrap; gap: 2rem;
     }
-
-    .character-header img {
-      width: 220px;
-      height: auto;
-      border-radius: 12px;
-      box-shadow: 0 0 20px rgba(255, 92, 92, 0.4);
+    .img-wrap {
+      position: relative;
+      max-width: 300px;
+      flex-shrink: 0;
     }
-
-    .character-name {
-      font-size: 2rem;
-      font-weight: 600;
-      color: #ffb3b3;
-      text-align: center;
+    .img-wrap img {
+      width: 100%; border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
     }
-
-    .character-about {
-      font-size: 1.1rem;
-      line-height: 1.6;
-      background-color: #16161d;
-      padding: 1.5rem;
-      border-radius: 10px;
-      box-shadow: 0 0 15px rgba(255, 255, 255, 0.03);
+    .info {
+      flex: 1;
     }
-
-    .back-link {
-      display: inline-block;
-      margin-bottom: 2rem;
-      color: #ff5c5c;
-      text-decoration: none;
-      font-weight: bold;
+    .info h1 {
+      font-size: 2.5rem; margin: 0;
+      color: #f97316;
     }
-
-    .back-link:hover {
-      text-decoration: underline;
+    .info p {
+      margin: 0.5rem 0; line-height: 1.6;
     }
-
-    .loading {
-      text-align: center;
-      margin-top: 50px;
-      font-size: 1.5rem;
-      color: #ccc;
+    .details-section {
+      margin-top: 1.5rem;
     }
-
-    @media (max-width: 600px) {
-      .character-header {
-        padding: 1rem;
-      }
-
-      .character-header img {
-        width: 150px;
-      }
-
-      .character-name {
-        font-size: 1.5rem;
-      }
+    .details-section h2 {
+      color: #f97316; margin-bottom: 0.5rem;
+    }
+    .details-section ul {
+      list-style: none; padding-left: 0;
+    }
+    .details-section li {
+      margin: 0.25rem 0;
+    }
+    .voice li, .appearances li, .anime-list li {
+      padding-left: 1.2rem;
+      position: relative;
+    }
+    .voice li::before, .appearances li::before, .anime-list li::before {
+      content: "•"; position: absolute; left: 0; color: #f97316;
+    }
+    .loading-spinner {
+      border: 4px solid #f97316;
+      border-top: 4px solid transparent;
+      border-radius: 50%;
+      width: 40px; height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 2rem auto;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    @media (max-width: 768px) {
+      .header { flex-direction: column; align-items: center; }
+      .info h1 { text-align: center; font-size: 2rem; }
     }
   </style>
 </head>
 <body>
-  <header>Character Details</header>
   <div class="container" id="characterDetails">
-    <p class="loading">Loading character info...</p>
+    <div class="loading-spinner"></div>
+    <p style="text-align:center;">Loading character details...</p>
   </div>
 
   <script>
-    async function fetchCharacter() {
+    async function fetchCharacterDetails() {
       const params = new URLSearchParams(window.location.search);
       const id = params.get("id");
-
       const container = document.getElementById("characterDetails");
 
       if (!id) {
-        container.innerHTML = "<p>No character ID provided.</p>";
+        container.innerHTML = "<p>No character selected.</p>";
         return;
       }
 
@@ -114,22 +95,50 @@
         const { data } = await res.json();
 
         container.innerHTML = `
-          <a href="index.html" class="back-link">← Back to Home</a>
-          <div class="character-header">
-            <img src="${data.images.jpg.image_url}" alt="${data.name}" />
-            <div class="character-name">${data.name}</div>
+          <div class="header">
+            <div class="img-wrap">
+              <img src="${data.images.jpg.large_image_url}" alt="${data.name}">
+            </div>
+            <div class="info">
+              <h1>${data.name}</h1>
+              <p>${data.name_kanji ? `Kanji: ${data.name_kanji}` : ""}</p>
+              <p>${data.nicknames.length ? `Nicknames: ${data.nicknames.join(", ")}` : ""}</p>
+              <p>${data.about ? data.about.replace(/\n/g, "<br>") : "No biography available."}</p>
+            </div>
           </div>
-          <div class="character-about">
-            ${data.about ? data.about.replace(/\n/g, "<br>") : "No biography available for this character."}
+
+          <div class="details-section voice">
+            <h2>Voice Actors</h2>
+            <ul>${data.voice_actors.map(va =>
+              `<li>${va.language.toUpperCase()}: ${va.person.name}</li>`
+            ).join("")}</ul>
+          </div>
+
+          <div class="details-section anime-list">
+            <h2>Appears in</h2>
+            <ul>${data.anime.map(a =>
+              `<li>${a.role} in <a href="anime.html?id=${a.anime.mal_id}" style="color:#f97316;text-decoration:none;">
+                ${a.anime.title}
+              </a></li>`
+            ).join("")}</ul>
+          </div>
+
+          <div class="details-section appearances">
+            <h2>Episode Appearances</h2>
+            <ul>${data.anime.map(a =>
+              a.role === "Main" || a.role === "Supporting" ?
+                `<li>${a.anime.title} – ${a.role}</li>` : ""
+            ).join("")}</ul>
           </div>
         `;
+
       } catch (err) {
         console.error(err);
         container.innerHTML = "<p>Failed to load character details. Try again later.</p>";
       }
     }
 
-    fetchCharacter();
+    fetchCharacterDetails();
   </script>
 </body>
 </html>
