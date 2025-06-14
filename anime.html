@@ -262,35 +262,39 @@ button:hover {
 }
 
 .carousel-window {
-  width: 90%;
+  width: 100%;
   overflow: hidden;
+  position: relative;
 }
+
 
 .carousel-track {
   display: flex;
-  transition: transform 0.6s ease-in-out;
-  height: 100%;
+  transition: transform 0.5s ease-in-out;
+  transform-style: preserve-3d;
+  will-change: transform;
 }
 
 .carousel-slide {
-  flex: 0 0 40%;
-  margin: 0 2%;
-  position: relative;
-  filter: brightness(0.4);
-  opacity: 0.6;
-  transition: transform 0.5s ease, filter 0.3s ease;
+  flex: 0 0 60%;  /* Or try 50% for balance */
+  margin: 0 1%;
   display: flex;
   justify-content: center;
   align-items: center;
+  position: relative;
 }
 
+
 .carousel-slide img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  border-radius: 12px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  object-fit: cover;
+  border-radius: 10px;
+  image-rendering: auto; /* Prevent pixelation */
 }
+
 
 .carousel-slide.center {
   filter: brightness(1);
@@ -328,8 +332,11 @@ button:hover {
 
 .prev { left: 10px; }
 .next { right: 10px; }
-
-
+html, body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  image-rendering: auto;
+}
 
   </style>
 </head>
