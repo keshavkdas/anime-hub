@@ -207,50 +207,6 @@
     &copy; 2025 AnimeHub. All rights reserved.
   </footer>
 
-  <script>
-  const genreSelect = document.getElementById("genre");
-  const typeSelect = document.getElementById("typeSelect");
-
-  async function loadGenres() {
-    genreSelect.innerHTML = `<option value="">All Genres</option>`;
-
-    try {
-      const res = await fetch("https://api.jikan.moe/v4/genres/anime");
-      const json = await res.json();
-      if (!json.data) throw new Error("Invalid API response");
-
-      json.data.sort((a, b) => a.name.localeCompare(b.name)).forEach(genre => {
-        const opt = document.createElement("option");
-        opt.value = genre.mal_id;
-        opt.textContent = genre.name;
-        genreSelect.appendChild(opt);
-      });
-
-      genreSelect.disabled = false;
-    } catch (err) {
-      console.error("Failed to load genres:", err);
-      genreSelect.disabled = true;
-    }
-  }
-
-  typeSelect.addEventListener("change", () => {
-    const selected = typeSelect.value;
-
-    if (selected === "anime") {
-      loadGenres();
-    } else {
-      genreSelect.innerHTML = `<option value="">Genres not available for manga</option>`;
-      genreSelect.disabled = true;
-    }
-  });
-
-  // Initial load
-  if (typeSelect.value === "anime") {
-    loadGenres();
-  }
-</script>
-
-
   <script src="browse.js"></script>
 </body>
 </html>
