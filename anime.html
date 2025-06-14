@@ -286,15 +286,27 @@ button:hover {
   background: rgba(249, 115, 22, 0.15); /* subtle orange hover */
   transform: scale(1.1);
 }
-.back-to-top {
-  position: fixed; bottom:20px; right:20px;
-  background: rgba(255,255,255,0.2);
+#backToTop {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  width: 48px;
+  height: 48px;
+  font-size: 1.5rem;
+  background: rgba(0, 0, 0, 0.4); /* transparent + blur */
   backdrop-filter: blur(6px);
-  border:none; padding:12px; border-radius:50%;
-  font-size:1.3rem; color:#f97316;
-  display:none; cursor:pointer; transition: background 0.3s;
+  border: 2px solid #f97316;
+  border-radius: 999px;
+  color: #f97316;
+  cursor: pointer;
+  z-index: 1000;
+  transition: background 0.3s, transform 0.3s;
 }
-.back-to-top:hover { background: rgba(255,255,255,0.3); }
+
+#backToTop:hover {
+  background: rgba(255, 121, 18, 0.1);
+  transform: scale(1.1);
+}
 
 .scene-carousel-wrapper {
   position: relative;
