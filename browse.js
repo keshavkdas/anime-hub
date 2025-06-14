@@ -13,46 +13,18 @@ let currentQuery = "";
 let currentGenre = "";
 let currentType = "anime";
 
-// Load genres for selected type (anime or manga)
-async function loadGenres(type = "anime") {
-  genreSelect.innerHTML = `<option value="">All Genres</option>`;
-  try {
-    const res = await fetch(`https://api.jikan.moe/v4/genres/${type}`);
-    const json = await res.json();
-    if (!json.data) throw new Error("Invalid API response");
-
-    json.data
-      .filter(g => g.name && g.mal_id)
-      .sort((a, b) => a.name.localeCompare(b.name))
-      .forEach(genre => {
-        const opt = document.createElement("option");
-        opt.value = genre.mal_id;
-        opt.textContent = genre.name;
-        genreSelect.appendChild(opt);
-      });
-  } catch (err) {
-    console.error(`Failed to load ${type} genres:`, err);
-  }
-}
-
-// Trigger loading items on type change
+// Update search placeholder dynamically
 typeSelect.addEventListener("change", () => {
+  searchInput.placeholder = `Search ${typeSelect.value}`;
   currentType = typeSelect.value;
-  searchInput.placeholder = `Search ${currentType}...`;
-  loadGenres(currentType);
-  currentQuery = "";
-  currentGenre = "";
-  currentPage = 1;
-  hasMore = true;
-  resultsContainer.innerHTML = "";
-  loadItems();
+  loadGenres();
 });
 
 // Initial load
 document.addEventListener("DOMContentLoaded", () => {
   currentType = typeSelect.value;
-  searchInput.placeholder = `Search ${currentType}...`;
-  loadGenres(currentType);
+  searchInput.placeholder = `Search ${currentType}`;
+  loadGenres();
   loadItems();
 });
 
@@ -66,6 +38,27 @@ searchBtn.addEventListener("click", () => {
   resultsContainer.innerHTML = "";
   loadItems();
 });
+
+// Load genres dynamically from Jikan
+async function loadGenres() {
+  const select = genreSelect;
+  select.innerHTML = `<option value="">All Genres</option>`;
+
+  try {
+    const res = await fetch(`https://api.jikan.moe/v4/genres/${currentType}`);
+    const json = await res.json();
+    if (!json.data) throw new Error("Invalid API response");
+
+    json.data.sort((a, b) => a.name.localeCompare(b.name)).forEach(genre => {
+      const opt = document.createElement("option");
+      opt.value = genre.mal_id;
+      opt.textContent = genre.name;
+      select.appendChild(opt);
+    });
+  } catch (err) {
+    console.error("Failed to load genres:", err);
+  }
+}
 
 // Load anime or manga
 async function loadItems() {
@@ -106,13 +99,21 @@ async function loadItems() {
       const type = item.type ?? "Unknown";
       const chapters = item.chapters;
       const episodes = item.episodes;
+      const status = item.status;
+
+      const chapterInfo =
+        chapters
+          ? `<p><strong>Chapters:</strong> ${chapters}</p>`
+          : status === "Publishing"
+            ? `<p><strong>Chapters:</strong> Ongoing</p>`
+            : `<p><strong>Chapters:</strong> Unknown</p>`;
 
       const infoHTML = `
         <h3>${title}</h3>
         <p><strong>Score:</strong> ${score}</p>
         <p><strong>Type:</strong> ${type}</p>
         ${currentType === "anime" && episodes ? `<p><strong>Episodes:</strong> ${episodes}</p>` : ""}
-        ${currentType === "manga" && chapters ? `<p><strong>Chapters:</strong> ${chapters}</p>` : ""}
+        ${currentType === "manga" ? chapterInfo : ""}
       `;
 
       card.innerHTML = `
