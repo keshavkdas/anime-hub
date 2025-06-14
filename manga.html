@@ -222,9 +222,11 @@
               <p><strong>Score:</strong> ${manga.score ?? "N/A"}</p>
               <p><strong>Type:</strong> ${manga.type}</p>
               <p><strong>Chapters:</strong> ${manga.chapters ?? "Unknown"}</p>
+              <p><strong>Synopsis:</strong> ${manga.synopsis ? manga.synopsis.slice(0, 220) + "..." : "No description available."}</p>
               <button class="dive-button" onclick="location.href='manga-details.html?id=${manga.mal_id}'">Dive In</button>
             </div>
-          `;
+            `;
+
           track.appendChild(slide);
         });
 
