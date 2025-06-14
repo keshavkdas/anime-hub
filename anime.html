@@ -290,23 +290,40 @@ button:hover {
   position: fixed;
   bottom: 1.5rem;
   right: 1.5rem;
-  width: 48px;
-  height: 48px;
-  font-size: 1.5rem;
-  background: rgba(0, 0, 0, 0.4); /* transparent + blur */
-  backdrop-filter: blur(6px);
-  border: 2px solid #f97316;
-  border-radius: 999px;
+  width: 55px;
+  height: 55px;
+  font-size: 1.8rem;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #1e293b, #0f172a);
+  border: none;
   color: #f97316;
   cursor: pointer;
-  z-index: 1000;
-  transition: background 0.3s, transform 0.3s;
+  z-index: 999;
+  box-shadow: 0 8px 15px rgba(249, 115, 22, 0.25);
+  backdrop-filter: blur(8px);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 #backToTop:hover {
-  background: rgba(255, 121, 18, 0.1);
-  transform: scale(1.1);
+  transform: scale(1.15);
+  box-shadow: 0 0 20px #f97316, 0 0 10px rgba(249, 115, 22, 0.6);
 }
+
+#backToTop span {
+  display: inline-block;
+  animation: bounce 1.5s infinite;
+  line-height: 1;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
 
 .scene-carousel-wrapper {
   position: relative;
