@@ -13,12 +13,19 @@ let currentQuery = "";
 let currentGenre = "";
 let currentType = "anime";
 
-// Update search placeholder dynamically
+// When type (anime/manga) is changed
 typeSelect.addEventListener("change", () => {
-  searchInput.placeholder = `Search ${typeSelect.value}`;
   currentType = typeSelect.value;
+  searchInput.placeholder = `Search ${currentType}`;
+  currentQuery = "";
+  currentGenre = "";
+  currentPage = 1;
+  hasMore = true;
+  resultsContainer.innerHTML = "";
   loadGenres();
+  loadItems();
 });
+
 
 // Initial load
 document.addEventListener("DOMContentLoaded", () => {
