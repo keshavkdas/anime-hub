@@ -130,10 +130,11 @@
           <div class="section">
             <h2>Appears In</h2>
             <ul>
-              ${data.anime.map(a =>
-                `<li>${a.role} in <a href="anime.html?id=${a.anime.mal_id}" style="color:#f97316;text-decoration:none;">
-                  ${a.anime.title}
-                </a></li>`).join("")}
+              ${
+                  Array.isArray(d.anime)
+                  ? d.anime.map(a => `<li>${a.role} in <a href="anime.html?id=${a.anime.mal_id}">${a.anime.title}</a></li>`).join("")
+                  : "<li>No anime appearances found.</li>"
+              }
             </ul>
           </div>
 
