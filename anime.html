@@ -7,30 +7,41 @@
   <link rel="icon" href="favicon.ico" />
 
   <style>
-    header {
-      background-color: #1f1f1f;
-      padding: 1rem 2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+    .site-header {
+  background: linear-gradient(to right, #1e3a8a, #1e293b);
+  color: #f8fafc;
+  padding: 1rem 2rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+  border-bottom: 2px solid #334155;
+}
 
-    header h1 {
-      font-family: 'Oswald', sans-serif;
-      font-size: 2rem;
-      color: #f97316;
-    }
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1000px;
+  margin: 0 auto;
+  flex-wrap: wrap;
+}
 
-    nav a {
-      color: #fff;
-      margin-left: 2rem;
-      text-decoration: none;
-      font-weight: bold;
-    }
+.site-header h1 {
+  margin: 0;
+  font-size: 2rem;
+  color: #f97316;
+}
 
-    nav a:hover {
-      color: #f97316;
-    }
+.site-header nav a {
+  margin-left: 1.5rem;
+  color: #f8fafc;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.site-header nav a:hover {
+  color: #f97316;
+}
+
 
     body {
   background-color: #0f172a;
@@ -366,14 +377,17 @@ html, body {
   </style>
 </head>
 <body>
-  <header>
+  <header class="site-header">
+  <div class="header-content">
     <h1>AnimeHub</h1>
     <nav>
       <a href="index.html">Home</a>
       <a href="browse.html">Browse</a>
-      <a href="favorites.html" style="color:#f97316; font-weight:bold;">❤️</a>
+      <a href="favorites.html">Favorites</a>
     </nav>
-  </header>
+  </div>
+</header>
+
   <main class="anime-details-container" id="animeDetails">
     <div class="loading-spinner"></div>
     <p>Loading anime details...</p>
