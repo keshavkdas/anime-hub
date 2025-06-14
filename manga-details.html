@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Manga Details</title>
+  <style>
+    body {
+      background: #111;
+      color: white;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+
+    a {
+      color: #00bfff;
+      text-decoration: none;
+      display: inline-block;
+      margin-bottom: 20px;
+    }
+
+    .details-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      max-width: 800px;
+      margin: auto;
+      text-align: center;
+    }
+
+    .details-container img {
+      width: 240px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(255,255,255,0.1);
+    }
+
+    .details-container h1 {
+      font-size: 1.8rem;
+      margin: 0;
+    }
+
+    .info {
+      font-size: 1rem;
+      color: #ccc;
+    }
+
+    .synopsis {
+      margin-top: 20px;
+      line-height: 1.6;
+      font-size: 1rem;
+    }
+
+    .loading {
+      text-align: center;
+      font-size: 1.2rem;
+      margin-top: 50px;
+    }
+  </style>
+</head>
+<body>
+  <a href="javascript:history.back()">← Go Back</a>
+  <div id="details" class="details-container">
+    <p class="loading">Loading manga details...</p>
+  </div>
+
+  <script>
+    async function loadMangaDetails() {
+      const params = new URLSearchParams(window.location.search);
+      const mangaId = params.get('id');
+      const container = document.getElementById('details');
+
+      if (!mangaId) {
+        container.innerHTML = '<p>Manga ID not found in URL.</p>';
+        return;
+      }
+
+      try {
+        const res = await fetch(`https://api.jikan.moe/v4/manga/${mangaId}`);
+        const data = await res.json();
+        const manga = data.data;
+
+        container.innerHTML = `
+          <img src="${manga.images.jpg.image_url}" alt="${manga.title}">
+          <h1>${manga.title}</h1>
+          <p class="info">📖 ${manga.chapters || 'N/A'} chapters | 📚 ${manga.volumes || 'N/A'} volumes</p>
+          <p class="info">⭐ ${manga.score || 'N/A'} | 📝 ${manga.status} | 🔞 ${manga.rating || 'Unknown'}</p>
+          <div class="synopsis">${manga.synopsis || 'No synopsis available.'}</div>
+        `;
+      } catch (err) {
+        console.error('Error loading manga details:', err);
+        container.innerHTML = '<p>Failed to load manga details.</p>';
+      }
+    }
+
+    loadMangaDetails();
+  </script>
+</body>
+</html>
