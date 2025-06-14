@@ -192,6 +192,10 @@
       <option value="22">Romance</option>
       <option value="24">Sci-Fi</option>
     </select>
+    <select id="typeSelect">
+      <option value="anime">Anime</option>
+      <option value="manga">Manga</option>
+    </select>
     <button id="searchBtn">Search</button>
   </section>
 
@@ -204,9 +208,11 @@
   </footer>
 
   <script>
+  const genreSelect = document.getElementById("genre");
+  const typeSelect = document.getElementById("typeSelect");
+
   async function loadGenres() {
-    const select = document.getElementById("genre");
-    select.innerHTML = `<option value="">All Genres</option>`;
+    genreSelect.innerHTML = `<option value="">All Genres</option>`;
 
     try {
       const res = await fetch("https://api.jikan.moe/v4/genres/anime");
@@ -217,15 +223,33 @@
         const opt = document.createElement("option");
         opt.value = genre.mal_id;
         opt.textContent = genre.name;
-        select.appendChild(opt);
+        genreSelect.appendChild(opt);
       });
+
+      genreSelect.disabled = false;
     } catch (err) {
       console.error("Failed to load genres:", err);
+      genreSelect.disabled = true;
     }
   }
 
-  loadGenres();
+  typeSelect.addEventListener("change", () => {
+    const selected = typeSelect.value;
+
+    if (selected === "anime") {
+      loadGenres();
+    } else {
+      genreSelect.innerHTML = `<option value="">Genres not available for manga</option>`;
+      genreSelect.disabled = true;
+    }
+  });
+
+  // Initial load
+  if (typeSelect.value === "anime") {
+    loadGenres();
+  }
 </script>
+
 
   <script src="browse.js"></script>
 </body>
