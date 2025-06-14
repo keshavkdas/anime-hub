@@ -119,7 +119,7 @@
             <h2>Voice Actors</h2>
             <ul>
               ${
-                  Array.isArray(d.voice_actors)
+                  Array.isArray(data.voice_actors)
                   ? data.voice_actors.map(va => `<li>${va.language.toUpperCase()}: ${va.person.name}</li>`).join("")
                   : "<li>No voice actor info available.</li>"
               }
@@ -131,7 +131,7 @@
             <h2>Appears In</h2>
             <ul>
               ${
-                  Array.isArray(d.anime)
+                  Array.isArray(data.anime)
                   ? data.anime.map(a => `<li>${a.role} in <a href="anime.html?id=${a.anime.mal_id}">${a.anime.title}</a></li>`).join("")
                   : "<li>No anime appearances found.</li>"
               }
