@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Manga | AnimeHub</title>
-  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@600&family=Poppins:wght@500&display=swap" rel="stylesheet">
+  <title>Manga Hub</title>
+  <link rel="stylesheet" href="style.css" />
   <style>
+    /* Your existing styles */
     body {
       margin: 0;
-      padding: 0;
+      font-family: 'Poppins', sans-serif;
       background-color: #121212;
-      color: white;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #ffffff;
     }
 
     header {
@@ -20,278 +20,222 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: none;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
     }
 
     header h1 {
       font-family: 'Oswald', sans-serif;
       font-size: 2rem;
       color: #f97316;
+      letter-spacing: 1px;
       margin: 0;
-      font-weight: 600;
-      letter-spacing: -1px;
-    }
-
-    nav {
-      display: flex;
-      align-items: center;
     }
 
     nav a {
-      color: white;
+      color: #fff;
       margin-left: 2rem;
-      font-family: 'Poppins', sans-serif;
-      font-size: 1rem;
       text-decoration: none;
-      font-weight: 600;
-      transition: color 0.3s ease;
+      font-weight: bold;
     }
 
     nav a:hover {
       color: #f97316;
     }
 
-    h2 {
-      font-family: 'Poppins', sans-serif;
-      color: #f97316;
-      text-align: center;
-      margin: 2rem 0 1rem;
-      font-size: 1.8rem;
-    }
-
-    .carousel-wrapper {
-      background-color: #1a1a1a;
-      overflow: hidden;
-      height: 400px;
+    .carousel {
       position: relative;
-      margin-bottom: 2rem;
+      overflow: hidden;
+      height: 500px;
+      background-color: #181818;
+      margin: 2rem 0;
     }
 
-    .carousel-track {
-      display: flex;
-      transition: transform 0.8s ease-in-out;
-      height: 100%;
-    }
-
-    .carousel-item {
-      min-width: 100%;
+    .carousel-slide {
       display: flex;
       align-items: center;
-      justify-content: flex-start;
-      padding: 2rem;
-      box-sizing: border-box;
-      background: linear-gradient(to right, #000000 30%, rgba(0,0,0,0.7));
+      justify-content: space-between;
+      min-width: 100%;
+      height: 100%;
+      transition: transform 0.8s ease-in-out;
     }
 
-    .carousel-item img {
-      width: 250px;
-      height: 360px;
-      object-fit: cover;
-      border-radius: 10px;
-      box-shadow: 0 0 20px rgba(255,255,255,0.1);
-      flex-shrink: 0;
-    }
-
-    .carousel-info {
-      margin-left: 2rem;
-      color: white;
+    .carousel-img {
+      flex: 1;
       max-width: 50%;
+      height: 100%;
+      object-fit: cover;
+      filter: brightness(0.9);
     }
 
-    .carousel-info h2 {
-      font-size: 1.8rem;
-      color: #f97316;
+    .carousel-content {
+      flex: 1;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .carousel-content h2 {
+      font-size: 2rem;
       margin-bottom: 0.5rem;
-      font-family: 'Oswald', sans-serif;
+      color: #f97316;
     }
 
-    .carousel-info p {
-      margin: 0.3rem 0;
-      font-family: 'Poppins', sans-serif;
+    .carousel-content p {
+      margin-bottom: 1rem;
+      font-size: 1rem;
+      color: #ccc;
+      line-height: 1.6;
     }
 
-    .dive-button {
-      margin-top: 1rem;
+    .carousel-content .info {
+      margin-bottom: 1rem;
+      font-size: 0.95rem;
+      color: #aaa;
+    }
+
+    .carousel-content button {
+      padding: 0.7rem 1.2rem;
       background-color: #f97316;
       color: white;
-      padding: 0.6rem 1.2rem;
-      font-size: 1rem;
       border: none;
-      border-radius: 6px;
+      border-radius: 4px;
+      font-weight: bold;
       cursor: pointer;
-      transition: background-color 0.3s ease;
     }
 
-    .dive-button:hover {
+    .carousel-content button:hover {
       background-color: #fb923c;
     }
 
     .explore-section {
-      padding: 2rem 1rem;
+      padding: 2rem;
     }
 
-    .results-grid {
+    .explore-section h2 {
+      margin-bottom: 1rem;
+      font-size: 1.5rem;
+      color: #f97316;
+    }
+
+    .manga-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 1.5rem;
     }
 
-    .anime-card {
-      background-color: #1f1f1f;
+    .manga-card {
+      background-color: #1e1e1e;
       border-radius: 10px;
       overflow: hidden;
-      transition: transform 0.3s;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      transition: transform 0.3s ease;
     }
 
-    .anime-card:hover {
+    .manga-card:hover {
       transform: scale(1.05);
     }
 
-    .card-img-wrapper {
-      cursor: pointer;
-    }
-
-    .card-img-wrapper img {
+    .manga-card img {
       width: 100%;
-      height: 260px;
+      height: 300px;
       object-fit: cover;
     }
 
-    .anime-info {
+    .manga-card h3 {
       padding: 1rem;
-      font-family: 'Poppins', sans-serif;
-    }
-
-    .anime-info h3 {
+      font-size: 1rem;
       color: #f97316;
-      font-size: 1.1rem;
-      margin: 0 0 0.5rem;
-    }
-
-    .anime-info p {
-      margin: 0.2rem 0;
-      font-size: 0.9rem;
-      color: #ccc;
+      text-align: center;
     }
   </style>
 </head>
 <body>
 
   <header>
-    <h1>AnimeHub</h1>
+    <h1>MangaHub</h1>
     <nav>
       <a href="index.html">Anime</a>
       <a href="manga.html">Manga</a>
     </nav>
   </header>
 
-  <!-- Auto Carousel Section -->
-  <section class="carousel-wrapper">
-    <div class="carousel-track" id="carouselTrack"></div>
+  <section class="carousel" id="mangaCarousel">
+    <!-- Slides will be added dynamically -->
   </section>
 
-  <!-- Explore Section -->
   <section class="explore-section">
-    <h2>Explore More Mangas</h2>
-    <div id="mangaResults" class="results-grid"></div>
+    <h2>Explore More Manga</h2>
+    <div class="manga-grid" id="mangaGrid"></div>
   </section>
 
   <script>
-    const track = document.getElementById("carouselTrack");
-    const mangaResults = document.getElementById("mangaResults");
-    let currentPage = 1;
-    let hasMore = true;
-
-    async function loadAutoCarousel() {
-      try {
-        const res = await fetch(`https://api.jikan.moe/v4/manga?order_by=popularity&limit=5`);
-        const json = await res.json();
-        const mangaList = json.data;
-
-        mangaList.forEach(manga => {
-          const slide = document.createElement('div');
-          slide.className = 'carousel-item';
-
-          slide.innerHTML = `
-            <img src="${manga.images.jpg.large_image_url}" alt="${manga.title}" />
-            <div class="carousel-info">
-              <h2>${manga.title}</h2>
-              <p><strong>Score:</strong> ${manga.score ?? "N/A"}</p>
-              <p><strong>Type:</strong> ${manga.type}</p>
-              <p><strong>Chapters:</strong> ${manga.chapters ?? "Unknown"}</p>
-              <button class="dive-button" onclick="location.href='manga-details.html?id=${manga.mal_id}'">Dive In</button>
-            </div>
-          `;
-          track.appendChild(slide);
-        });
-
-        // Auto-scroll
-        let index = 0;
-        setInterval(() => {
-          index = (index + 1) % mangaList.length;
-          track.style.transform = `translateX(-${index * 100}%)`;
-        }, 5000);
-      } catch (err) {
-        console.error("Carousel error:", err);
+    const carouselData = [
+      {
+        title: "One Piece",
+        image: "https://cdn.myanimelist.net/images/manga/2/253146.jpg",
+        description: "Follow Monkey D. Luffy and his pirate crew in their search for the greatest treasure ever left by the legendary Pirate, Gold Roger.",
+        type: "Manga",
+        score: 9.1,
+        chapters: "1100+",
+        mal_id: 13
+      },
+      {
+        title: "Attack on Titan",
+        image: "https://cdn.myanimelist.net/images/manga/2/37844.jpg",
+        description: "Eren Yeager vows to cleanse the earth of giant humanoid Titans after a catastrophic attack on his hometown.",
+        type: "Manga",
+        score: 8.9,
+        chapters: "139",
+        mal_id: 23390
       }
+    ];
+
+    const carousel = document.getElementById("mangaCarousel");
+    let currentSlide = 0;
+
+    function renderCarousel() {
+      carousel.innerHTML = "";
+      const slide = document.createElement("div");
+      slide.className = "carousel-slide";
+
+      const content = `
+        <div class="carousel-content">
+          <h2>${carouselData[currentSlide].title}</h2>
+          <p>${carouselData[currentSlide].description}</p>
+          <div class="info">
+            <p><strong>Type:</strong> ${carouselData[currentSlide].type}</p>
+            <p><strong>Score:</strong> ${carouselData[currentSlide].score}</p>
+            <p><strong>Chapters:</strong> ${carouselData[currentSlide].chapters}</p>
+          </div>
+          <button onclick="location.href='manga-details.html?id=${carouselData[currentSlide].mal_id}'">Dive In</button>
+        </div>
+        <img src="${carouselData[currentSlide].image}" class="carousel-img" alt="${carouselData[currentSlide].title}">
+      `;
+      slide.innerHTML = content;
+      carousel.appendChild(slide);
     }
 
-    async function loadMoreManga() {
-      if (!hasMore) return;
-      try {
-        const res = await fetch(`https://api.jikan.moe/v4/manga?page=${currentPage}&limit=12`);
-        const json = await res.json();
+    renderCarousel();
+    setInterval(() => {
+      currentSlide = (currentSlide + 1) % carouselData.length;
+      renderCarousel();
+    }, 5000);
 
-        json.data.forEach(manga => {
-          const card = document.createElement("div");
-          card.className = "anime-card";
-
-          const title = manga.title;
-          const image = manga.images?.jpg?.image_url || "";
-          const score = manga.score ?? "N/A";
-          const type = manga.type ?? "Unknown";
-          const chapters = manga.chapters;
-
-          const infoHTML = `
-            <h3>${title}</h3>
-            <p><strong>Score:</strong> ${score}</p>
-            <p><strong>Type:</strong> ${type}</p>
-            ${chapters ? `<p><strong>Chapters:</strong> ${chapters}</p>` : ""}
-          `;
-
-          card.innerHTML = `
-            <div class="card-img-wrapper">
-              <img src="${image}" alt="${title}" />
-            </div>
-            <div class="anime-info">${infoHTML}</div>
-          `;
-
-          card.querySelector(".card-img-wrapper").addEventListener("click", () => {
-            window.location.href = `manga-details.html?id=${manga.mal_id}`;
-          });
-
-          mangaResults.appendChild(card);
-        });
-
-        currentPage++;
-        hasMore = json.pagination?.has_next_page;
-      } catch (err) {
-        console.error("Failed to load manga:", err);
-      }
-    }
-
-    window.addEventListener("DOMContentLoaded", () => {
-      loadAutoCarousel();
-      loadMoreManga();
-    });
-
-    window.addEventListener("scroll", () => {
-      const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
-      if (scrollTop + clientHeight >= scrollHeight - 100) {
-        loadMoreManga();
-      }
+    const mangaGrid = document.getElementById("mangaGrid");
+    carouselData.forEach(manga => {
+      const card = document.createElement("div");
+      card.className = "manga-card";
+      card.innerHTML = `
+        <img src="${manga.image}" alt="${manga.title}" />
+        <h3>${manga.title}</h3>
+      `;
+      card.addEventListener("click", () => {
+        window.location.href = `manga-details.html?id=${manga.mal_id}`;
+      });
+      mangaGrid.appendChild(card);
     });
   </script>
+
 </body>
 </html>
