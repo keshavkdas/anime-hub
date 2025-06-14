@@ -130,26 +130,24 @@
 .anime-link:hover {
   color: #f97316; /* orange on hover */
 }
-
-.know-more-btn {
-  display: inline-block;
-  margin-top: 1rem;
-  padding: 0.6rem 1.2rem;
+.read-more-btn {
+  margin-top: 0.5rem;
+  padding: 0.4rem 0.9rem;
   background-color: #f97316;
-  color: #fff;
-  font-weight: bold;
+  color: white;
   border: none;
-  border-radius: 8px;
-  text-decoration: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
   transition: background-color 0.3s ease;
 }
 
-.know-more-btn:hover {
+.read-more-btn:hover {
   background-color: #ea580c;
 }
 
 
-    .loading {
+ .loading {
       text-align: center; padding: 2rem;
     }
     .loading-spinner {
@@ -210,8 +208,16 @@
             <h1>${data.name}</h1>
             ${data.name_kanji ? `<p><em>Kanji:</em> ${data.name_kanji}</p>` : ""}
             ${data.nicknames.length ? `<p><em>Nicknames:</em> ${data.nicknames.join(", ")}</p>` : ""}
-            <p>${data.about || "No description available."}</p>
-            <a href="${data.url}" target="_blank" class="know-more-btn">Know More</a>
+            ${data.about
+              ? `
+              <p id="aboutText">
+                ${data.about.slice(0, 300)}<span id="dots">...</span>
+                <span id="more" style="display: none;">${data.about.slice(300)}</span>
+              </p>
+              <button class="read-more-btn" onclick="toggleReadMore()">Read More</button>
+              `
+              : "<p>No description available.</p>"
+              }
           </div>
         </div>
 
@@ -251,6 +257,24 @@
 
   fetchCharacterDetails();
 </script>
+  <script>
+  function toggleReadMore() {
+    const dots = document.getElementById("dots");
+    const moreText = document.getElementById("more");
+    const btn = document.querySelector(".read-more-btn");
+
+    if (dots.style.display === "none") {
+      dots.style.display = "inline";
+      moreText.style.display = "none";
+      btn.textContent = "Read More";
+    } else {
+      dots.style.display = "none";
+      moreText.style.display = "inline";
+      btn.textContent = "Read Less";
+    }
+  }
+</script>
+
 
 </body>
 </html>
