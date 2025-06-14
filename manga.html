@@ -249,6 +249,7 @@
         const json = await res.json();
 
         json.data.forEach(manga => {
+          if (manga.type?.toLowerCase() === "manhwa") return;
           const card = document.createElement("div");
           card.className = "anime-card";
 
