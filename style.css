@@ -247,3 +247,25 @@ body.dark-mode .anime-card {
   color: #eee;
 }
 
+.character-profile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
+}
+
+.character-profile img {
+  width: 240px;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+}
+
+.character-info {
+  max-width: 600px;
+  text-align: center;
+}
+
+.character-info h1 {
+  margin-bottom: 0.5rem;
+}
+
