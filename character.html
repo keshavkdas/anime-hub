@@ -3,11 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Character Details</title>
+  <title>Character Details – AnimeHub</title>
   <style>
+    /* Styles same as anime-detail layout */
     body {
       margin: 0; padding: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Segoe UI', sans-serif;
       background-color: #0f172a; color: #e2e8f0;
     }
     .container {
@@ -19,9 +20,7 @@
       display: flex; flex-wrap: wrap; gap: 2rem;
     }
     .img-wrap {
-      position: relative;
-      max-width: 300px;
-      flex-shrink: 0;
+      flex-shrink: 0; max-width: 300px;
     }
     .img-wrap img {
       width: 100%; border-radius: 12px;
@@ -31,30 +30,32 @@
       flex: 1;
     }
     .info h1 {
-      font-size: 2.5rem; margin: 0;
-      color: #f97316;
+      margin: 0; font-size: 2.5rem; color: #f97316;
     }
     .info p {
       margin: 0.5rem 0; line-height: 1.6;
     }
-    .details-section {
+
+    .section {
       margin-top: 1.5rem;
     }
-    .details-section h2 {
-      color: #f97316; margin-bottom: 0.5rem;
+    .section h2 {
+      margin-bottom: 0.5rem; color: #f97316;
     }
-    .details-section ul {
-      list-style: none; padding-left: 0;
+    .section ul {
+      list-style: none; padding: 0;
     }
-    .details-section li {
-      margin: 0.25rem 0;
-    }
-    .voice li, .appearances li, .anime-list li {
-      padding-left: 1.2rem;
+    .section li {
+      margin: 0.3rem 0; padding-left: 1.2rem;
       position: relative;
     }
-    .voice li::before, .appearances li::before, .anime-list li::before {
-      content: "•"; position: absolute; left: 0; color: #f97316;
+    .section li::before {
+      content: '•'; position: absolute; left: 0;
+      color: #f97316;
+    }
+
+    .loading {
+      text-align: center; padding: 2rem;
     }
     .loading-spinner {
       border: 4px solid #f97316;
@@ -62,21 +63,25 @@
       border-radius: 50%;
       width: 40px; height: 40px;
       animation: spin 1s linear infinite;
-      margin: 2rem auto;
+      margin: 0 auto;
     }
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
+
     @media (max-width: 768px) {
       .header { flex-direction: column; align-items: center; }
-      .info h1 { text-align: center; font-size: 2rem; }
+      .info h1 { font-size: 2rem; text-align: center; }
     }
   </style>
 </head>
+
 <body>
   <div class="container" id="characterDetails">
-    <div class="loading-spinner"></div>
-    <p style="text-align:center;">Loading character details...</p>
+    <div class="loading">
+      <div class="loading-spinner"></div>
+      <p>Loading character details...</p>
+    </div>
   </div>
 
   <script>
@@ -86,55 +91,52 @@
       const container = document.getElementById("characterDetails");
 
       if (!id) {
-        container.innerHTML = "<p>No character selected.</p>";
+        container.innerHTML = "<p style='text-align:center;'>No character specified.</p>";
         return;
       }
 
       try {
         const res = await fetch(`https://api.jikan.moe/v4/characters/${id}/full`);
-        const { data } = await res.json();
+        const json = await res.json();
+        const data = json.data;
+
+        if (!data) throw new Error("Character not found");
 
         container.innerHTML = `
           <div class="header">
             <div class="img-wrap">
-              <img src="${data.images.jpg.large_image_url}" alt="${data.name}">
+              <img src="${data.images.jpg.large_image_url}" alt="${data.name}" />
             </div>
             <div class="info">
               <h1>${data.name}</h1>
-              <p>${data.name_kanji ? `Kanji: ${data.name_kanji}` : ""}</p>
-              <p>${data.nicknames.length ? `Nicknames: ${data.nicknames.join(", ")}` : ""}</p>
-              <p>${data.about ? data.about.replace(/\n/g, "<br>") : "No biography available."}</p>
+              ${data.name_kanji ? `<p><em>Kanji:</em> ${data.name_kanji}</p>` : ""}
+              ${data.nicknames.length ? `<p><em>Nicknames:</em> ${data.nicknames.join(", ")}</p>` : ""}
+              <p>${data.about || "No description available."}</p>
             </div>
           </div>
 
-          <div class="details-section voice">
+          <div class="section">
             <h2>Voice Actors</h2>
-            <ul>${data.voice_actors.map(va =>
-              `<li>${va.language.toUpperCase()}: ${va.person.name}</li>`
-            ).join("")}</ul>
+            <ul>
+              ${data.voice_actors.map(va =>
+                `<li>${va.language.toUpperCase()}: ${va.person.name}</li>`).join("")}
+            </ul>
           </div>
 
-          <div class="details-section anime-list">
-            <h2>Appears in</h2>
-            <ul>${data.anime.map(a =>
-              `<li>${a.role} in <a href="anime.html?id=${a.anime.mal_id}" style="color:#f97316;text-decoration:none;">
-                ${a.anime.title}
-              </a></li>`
-            ).join("")}</ul>
+          <div class="section">
+            <h2>Appears In</h2>
+            <ul>
+              ${data.anime.map(a =>
+                `<li>${a.role} in <a href="anime.html?id=${a.anime.mal_id}" style="color:#f97316;text-decoration:none;">
+                  ${a.anime.title}
+                </a></li>`).join("")}
+            </ul>
           </div>
 
-          <div class="details-section appearances">
-            <h2>Episode Appearances</h2>
-            <ul>${data.anime.map(a =>
-              a.role === "Main" || a.role === "Supporting" ?
-                `<li>${a.anime.title} – ${a.role}</li>` : ""
-            ).join("")}</ul>
-          </div>
         `;
-
       } catch (err) {
         console.error(err);
-        container.innerHTML = "<p>Failed to load character details. Try again later.</p>";
+        container.innerHTML = "<p style='text-align:center;'>Failed to load character info. Please try again later.</p>";
       }
     }
 
