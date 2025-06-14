@@ -5,40 +5,35 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Character Details – AnimeHub</title>
   <style>
-    .site-header {
-  background: linear-gradient(to right, #1e3a8a, #1e293b);
-  color: #f8fafc;
+    header {
+  background-color: #1e293b; /* bluish-dark */
   padding: 1rem 2rem;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
-  border-bottom: 2px solid #334155;
-}
-
-.header-content {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  max-width: 1000px;
-  margin: 0 auto;
-  flex-wrap: wrap;
+  border-bottom: 2px solid #334155;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
-.site-header h1 {
-  margin: 0;
+header h1 {
+  font-family: 'Oswald', sans-serif;
   font-size: 2rem;
   color: #f97316;
+  margin: 0;
 }
 
-.site-header nav a {
-  margin-left: 1.5rem;
-  color: #f8fafc;
+nav a {
+  color: #e2e8f0;
+  margin-left: 2rem;
   text-decoration: none;
-  font-weight: 500;
+  font-weight: bold;
   transition: color 0.3s ease;
 }
 
-.site-header nav a:hover {
+nav a:hover {
   color: #f97316;
 }
+
 
     /* Styles same as anime-detail layout */
     body {
@@ -205,16 +200,15 @@
 </head>
 
 <body>
-  <header class="site-header">
-  <div class="header-content">
-    <h1>AnimeHub</h1>
-    <nav>
-      <a href="index.html">Home</a>
-      <a href="browse.html">Browse</a>
-      <a href="favorites.html">Favorites</a>
-    </nav>
-  </div>
+  <header>
+  <h1>AnimeHub</h1>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="browse.html">Browse</a>
+    <a href="favorites.html">Favorites</a>
+  </nav>
 </header>
+
 
   <div class="container" id="characterDetails">
     <div class="loading">
