@@ -13,9 +13,46 @@ let currentQuery = "";
 let currentGenre = "";
 let currentType = "anime";
 
+// Load genres for selected type (anime or manga)
+async function loadGenres(type = "anime") {
+  genreSelect.innerHTML = `<option value="">All Genres</option>`;
+  try {
+    const res = await fetch(`https://api.jikan.moe/v4/genres/${type}`);
+    const json = await res.json();
+    if (!json.data) throw new Error("Invalid API response");
+
+    json.data
+      .filter(g => g.name && g.mal_id)
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .forEach(genre => {
+        const opt = document.createElement("option");
+        opt.value = genre.mal_id;
+        opt.textContent = genre.name;
+        genreSelect.appendChild(opt);
+      });
+  } catch (err) {
+    console.error(`Failed to load ${type} genres:`, err);
+  }
+}
+
+// Trigger loading items on type change
+typeSelect.addEventListener("change", () => {
+  currentType = typeSelect.value;
+  searchInput.placeholder = `Search ${currentType}...`;
+  loadGenres(currentType);
+  currentQuery = "";
+  currentGenre = "";
+  currentPage = 1;
+  hasMore = true;
+  resultsContainer.innerHTML = "";
+  loadItems();
+});
+
 // Initial load
 document.addEventListener("DOMContentLoaded", () => {
   currentType = typeSelect.value;
+  searchInput.placeholder = `Search ${currentType}...`;
+  loadGenres(currentType);
   loadItems();
 });
 
@@ -43,8 +80,7 @@ async function loadItems() {
       url += `&q=${encodeURIComponent(currentQuery)}`;
     }
 
-    // Only apply genres for anime
-    if (currentType === "anime" && currentGenre) {
+    if (currentGenre) {
       url += `&genres=${currentGenre}`;
     }
 
