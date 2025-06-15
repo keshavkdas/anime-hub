@@ -177,6 +177,35 @@
       font-size: 0.9rem;
       color: #ccc;
     }
+
+    .carousel-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgba(0, 0, 0, 0.5);
+  color: #f97316;
+  border: none;
+  font-size: 2rem;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  z-index: 5;
+  transition: background-color 0.3s ease;
+  border-radius: 4px;
+}
+
+.carousel-btn:hover {
+  background-color: rgba(249, 115, 22, 0.8);
+  color: #fff;
+}
+
+.carousel-btn.prev {
+  left: 10px;
+}
+
+.carousel-btn.next {
+  right: 10px;
+}
+
   </style>
 </head>
 <body>
@@ -194,8 +223,13 @@
 
   <!-- Auto Carousel Section -->
   <section class="carousel-wrapper">
-    <div class="carousel-track" id="carouselTrack"></div>
-  </section>
+  <button class="carousel-btn prev" aria-label="Previous">&#10094;</button>
+
+  <div class="carousel-track" id="carouselTrack"></div>
+
+  <button class="carousel-btn next" aria-label="Next">&#10095;</button>
+</section>
+
 
   <!-- Explore Section -->
   <section class="explore-section">
@@ -236,14 +270,26 @@
 
         // Auto-scroll
         let index = 0;
-        setInterval(() => {
-          index = (index + 1) % mangaList.length;
-          track.style.transform = `translateX(-${index * 100}%)`;
-        }, 5000);
-      } catch (err) {
-        console.error("Carousel error:", err);
-      }
-    }
+const nextBtn = document.querySelector(".carousel-btn.next");
+const prevBtn = document.querySelector(".carousel-btn.prev");
+
+// Auto-scroll every 5 seconds
+setInterval(() => {
+  index = (index + 1) % mangaList.length;
+  track.style.transform = `translateX(-${index * 100}%)`;
+}, 5000);
+
+// Manual navigation
+nextBtn.addEventListener("click", () => {
+  index = (index + 1) % mangaList.length;
+  track.style.transform = `translateX(-${index * 100}%)`;
+});
+
+prevBtn.addEventListener("click", () => {
+  index = (index - 1 + mangaList.length) % mangaList.length;
+  track.style.transform = `translateX(-${index * 100}%)`;
+});
+
 
     async function loadMoreManga() {
       if (!hasMore) return;
