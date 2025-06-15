@@ -94,6 +94,7 @@
       padding: 0.5rem;
       position: relative;
       transition: transform 0.2s ease;
+      cursor: pointer;
     }
 
     .fav-card:hover {
@@ -148,8 +149,8 @@
     <nav>
       <a href="index.html">Anime</a>
       <a href="browse.html">Browse</a>
-      <a href="/manga.html">Manga</a>
-      <a href="/manhwa.html">Manhwa</a>
+      <a href="manga.html">Manga</a>
+      <a href="manhwa.html">Manhwa</a>
       <a href="favorites.html" style="color:#f97316; font-weight:bold;">❤️</a>
     </nav>
   </header>
@@ -170,7 +171,7 @@
 
   <script>
     function renderFavorites(type, key, containerId, emptyId) {
-      const favs = JSON.parse(localStorage.getItem(key)) || [];
+      let favs = JSON.parse(localStorage.getItem(key)) || [];
       const container = document.getElementById(containerId);
       const emptyMsg = document.getElementById(emptyId);
 
@@ -185,23 +186,29 @@
       container.style.display = "grid";
       emptyMsg.style.display = "none";
 
-      favs.forEach((item, index) => {
+      favs.forEach((item) => {
         const card = document.createElement("div");
         card.className = "fav-card";
+
         card.innerHTML = `
           <img src="${item.imageUrl}" alt="${item.title}" />
           <h3>${item.title}</h3>
           <button class="remove-btn" title="Remove from favorites">❌</button>
         `;
 
-        card.querySelector(".remove-btn").onclick = () => {
-          favs.splice(index, 1);
+        const removeBtn = card.querySelector(".remove-btn");
+
+        removeBtn.addEventListener("click", (e) => {
+          e.stopPropagation(); // prevent card click
+          favs = favs.filter(f => f.id !== item.id);
           localStorage.setItem(key, JSON.stringify(favs));
           renderFavorites(type, key, containerId, emptyId);
-        };
+        });
 
-        card.addEventListener("click", () => {
-          window.location.href = `${type}-details.html?id=${item.id}`;
+        card.addEventListener("click", (e) => {
+          if (!e.target.classList.contains("remove-btn")) {
+            window.location.href = `${type}-details.html?id=${item.id}`;
+          }
         });
 
         container.appendChild(card);
