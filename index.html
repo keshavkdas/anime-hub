@@ -387,6 +387,15 @@
     localStorage.setItem('favorites', JSON.stringify(favs));
     showToast('Added to favorites!');
   }
+  document.addEventListener("click", (e) => {
+  if (e.target.classList.contains("fav-btn")) {
+    const id = e.target.dataset.id;
+    e.target.classList.toggle("active");
+    e.target.innerText = e.target.classList.contains("active") ? "💖" : "❤️";
+    // Optionally save to favorites here
+    console.log("Favorited manga ID:", id);
+  }
+});
 
   // Load top anime slider
   const splideScript = document.createElement('script');
@@ -573,14 +582,3 @@
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 </script>
-  
-
-
-
-
-
-
-
-
-
-
