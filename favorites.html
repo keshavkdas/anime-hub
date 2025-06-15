@@ -5,164 +5,142 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="icon" href="favicon.ico" type="image/x-icon" />
   <title>My Anime Favorites</title>
-  
   <style>
-  @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@600&family=Poppins:wght@600&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@600&family=Poppins:wght@600&display=swap');
 
-  html, body {
-    margin: 0;
-    padding: 0;
-    background-color: #121212;
-    color: white;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  }
-  header {
-  background-color: #1f1f1f;
-  padding: 1rem 2rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-    
-}
-
-header h1 {
-  font-family: 'Oswald', sans-serif;
-  font-size: 2rem; 
-  letter-spacing: 0.00px; /* reduced from 0.03em to tighten spacing */
-  color: #f97316;
-  margin: 0;
-  font-weight: 1000;
-}
-
-  nav {
-    display: flex;
-    align-items: center;
-    gap: 2rem;
-  }
-
-  nav a {
-    color: white;
-    font-family: 'Poppins', sans-serif;
-    font-size: 1.05rem;
-    font-weight: 600;
-    text-decoration: none;
-    transition: color 0.3s ease;
-  }
-
-  nav a:last-child {
-    font-size: 1.3rem;
-  }
-
-  nav a:hover {
-    color: #f97316;
-  }
-
-  a {
-    color: #f97316;
-    text-decoration: none;
-    font-weight: bold;
-  }
-
-  a:hover {
-    text-decoration: none;
-  }
-
-  .favorites-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 1rem;
-    align-items: stretch;
-    margin-top: 1rem;
-    padding: 0 1rem;
-  }
-
-  @media (max-width: 1024px) {
-    .favorites-list {
-      grid-template-columns: repeat(3, 1fr);
+    html, body {
+      margin: 0;
+      padding: 0;
+      background-color: #121212;
+      color: white;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
-  }
 
-  @media (max-width: 768px) {
-    .favorites-list {
-      grid-template-columns: repeat(2, 1fr);
+    header {
+      background-color: #1f1f1f;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
     }
-  }
 
-  @media (max-width: 480px) {
-    .favorites-list {
-      grid-template-columns: 1fr;
+    header h1 {
+      font-family: 'Oswald', sans-serif;
+      font-size: 2rem;
+      color: #f97316;
+      margin: 0;
+      font-weight: 1000;
     }
-  }
 
-  .fav-card {
-    background-color: #222;
-    height: 100%;
-    box-sizing: border-box;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.7);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    align-self: stretch;
-    padding: 0.5rem;
-    transition: transform 0.2s ease;
-    position: relative;
-  }
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+    }
 
-  .fav-card:hover {
-    transform: scale(1.05);
-    box-shadow: 0 8px 20px rgba(255, 121, 18, 0.8);
-  }
+    nav a {
+      color: white;
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
 
-  .fav-card img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 8px;
-  }
+    nav a:last-child {
+      font-size: 1.3rem;
+    }
 
-  .fav-card h3 {
-    margin: 0.5rem 0 0;
-    font-size: 1.1rem;
-    color: #f97316;
-    min-height: 3rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-  }
+    nav a:hover {
+      color: #f97316;
+    }
 
-  .remove-btn {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    background-color: #2c2c2c;
-    border: none;
-    color: #f44336;
-    font-size: 1.1rem;
-    padding: 0.4rem;
-    border-radius: 50%;
-    cursor: pointer;
-    transition: background-color 0.2s, color 0.2s;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
-  }
+    h2 {
+      font-family: 'Oswald', sans-serif;
+      font-size: 1.8rem;
+      color: #f97316;
+      margin: 2rem 0 1rem;
+      padding-left: 1rem;
+    }
 
-  .remove-btn:hover {
-    background-color: #f44336;
-    color: white;
-  }
+    .favorites-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 1rem;
+      padding: 0 1rem;
+    }
 
-  .empty-msg {
-  margin-top: 50vh; /* pushes it to about half the screen height */
-  text-align: center;
-  font-size: 1.2rem;
-  color: #888;
-}
+    @media (max-width: 768px) {
+      .favorites-list {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
 
-</style>
+    @media (max-width: 480px) {
+      .favorites-list {
+        grid-template-columns: 1fr;
+      }
+    }
 
+    .fav-card {
+      background-color: #222;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.7);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0.5rem;
+      position: relative;
+      transition: transform 0.2s ease;
+    }
+
+    .fav-card:hover {
+      transform: scale(1.05);
+      box-shadow: 0 8px 20px rgba(255, 121, 18, 0.8);
+    }
+
+    .fav-card img {
+      width: 100%;
+      height: 280px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+
+    .fav-card h3 {
+      margin: 0.5rem 0 0;
+      font-size: 1.1rem;
+      color: #f97316;
+      text-align: center;
+    }
+
+    .remove-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background-color: #2c2c2c;
+      border: none;
+      color: #f44336;
+      font-size: 1.1rem;
+      padding: 0.4rem;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: background-color 0.2s, color 0.2s;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+    }
+
+    .remove-btn:hover {
+      background-color: #f44336;
+      color: white;
+    }
+
+    .empty-msg {
+      text-align: center;
+      color: #888;
+      margin: 2rem 0;
+    }
+  </style>
 </head>
 <body>
   <header>
@@ -170,51 +148,70 @@ header h1 {
     <nav>
       <a href="index.html">Anime</a>
       <a href="browse.html">Browse</a>
-      <a href="/manga.html" class="hover:text-purple-400">Manga</a>
-      <a href="/manhwa.html" class="hover:text-purple-400">Manhwa</a>
+      <a href="/manga.html">Manga</a>
+      <a href="/manhwa.html">Manhwa</a>
       <a href="favorites.html" style="color:#f97316; font-weight:bold;">❤️</a>
     </nav>
   </header>
 
   <main>
-    <h1>My Favorites ❤️</h1>
-    <div id="favoritesContainer" class="favorites-list"></div>
-    <p id="emptyMessage" class="empty-msg" style="display:none;">No favorites added yet.</p>
+    <h2>Anime Favorites</h2>
+    <div id="animeFavorites" class="favorites-list"></div>
+    <p id="animeEmpty" class="empty-msg">No anime favorited yet.</p>
+
+    <h2>Manga Favorites</h2>
+    <div id="mangaFavorites" class="favorites-list"></div>
+    <p id="mangaEmpty" class="empty-msg">No manga favorited yet.</p>
+
+    <h2>Manhwa Favorites</h2>
+    <div id="manhwaFavorites" class="favorites-list"></div>
+    <p id="manhwaEmpty" class="empty-msg">No manhwa favorited yet.</p>
   </main>
 
   <script>
-    function loadFavorites() {
-      const favs = JSON.parse(localStorage.getItem('favorites')) || [];
-      const container = document.getElementById('favoritesContainer');
-      const emptyMessage = document.getElementById('emptyMessage');
+    function renderFavorites(type, key, containerId, emptyId) {
+      const favs = JSON.parse(localStorage.getItem(key)) || [];
+      const container = document.getElementById(containerId);
+      const emptyMsg = document.getElementById(emptyId);
+
+      container.innerHTML = "";
 
       if (favs.length === 0) {
-        container.style.display = 'none';
-        emptyMessage.style.display = 'block';
+        container.style.display = "none";
+        emptyMsg.style.display = "block";
         return;
-      } else {
-        container.style.display = 'grid';
-        emptyMessage.style.display = 'none';
       }
 
-      container.innerHTML = favs.map((anime, index) => `
-        <div class="fav-card">
-          <img src="${anime.imageUrl}" alt="${anime.title}" />
-          <h3>${anime.title}</h3>
-          <button class="remove-btn" onclick="removeFavorite(${index})" title="Remove from favorites">❌</button>
-        </div>
-      `).join('');
+      container.style.display = "grid";
+      emptyMsg.style.display = "none";
+
+      favs.forEach((item, index) => {
+        const card = document.createElement("div");
+        card.className = "fav-card";
+        card.innerHTML = `
+          <img src="${item.imageUrl}" alt="${item.title}" />
+          <h3>${item.title}</h3>
+          <button class="remove-btn" title="Remove from favorites">❌</button>
+        `;
+
+        card.querySelector(".remove-btn").onclick = () => {
+          favs.splice(index, 1);
+          localStorage.setItem(key, JSON.stringify(favs));
+          renderFavorites(type, key, containerId, emptyId);
+        };
+
+        card.addEventListener("click", () => {
+          window.location.href = `${type}-details.html?id=${item.id}`;
+        });
+
+        container.appendChild(card);
+      });
     }
 
-    function removeFavorite(index) {
-      const favs = JSON.parse(localStorage.getItem('favorites')) || [];
-      favs.splice(index, 1);
-      localStorage.setItem('favorites', JSON.stringify(favs));
-      loadFavorites();
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-      loadFavorites();
+    document.addEventListener("DOMContentLoaded", () => {
+      renderFavorites("anime", "animeFavorites", "animeFavorites", "animeEmpty");
+      renderFavorites("manga", "mangaFavorites", "mangaFavorites", "mangaEmpty");
+      renderFavorites("manga", "manhwaFavorites", "manhwaFavorites", "manhwaEmpty");
     });
   </script>
 </body>
