@@ -368,15 +368,24 @@
         loadMoreManga();
       }
     });
-    document.addEventListener("click", (e) => {
-      if (e.target.classList.contains("fav-btn")) {
-        const id = e.target.dataset.id;
-        e.target.classList.toggle("active");
-        e.target.innerText = e.target.classList.contains("active") ? "💖" : "❤️";
-        // Optionally save to favorites here
-        console.log("Favorited manga ID:", id);
-      }
-    });
+document.addEventListener("click", (e) => {
+  if (e.target.classList.contains("fav-btn")) {
+    const id = e.target.dataset.id;
+    let favorites = JSON.parse(localStorage.getItem("mangaFavorites")) || [];
+
+    if (favorites.includes(id)) {
+      // Remove from favorites
+      favorites = favorites.filter(fav => fav !== id);
+      e.target.innerText = "❤️";
+    } else {
+      favorites.push(id);
+      e.target.innerText = "💖";
+    }
+
+    localStorage.setItem("mangaFavorites", JSON.stringify(favorites));
+  }
+});
+
 
   </script>
 </body>
