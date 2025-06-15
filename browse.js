@@ -157,8 +157,56 @@ async function loadItems() {
       hasMore = searchData.pagination?.has_next_page || topData.pagination?.has_next_page || false;
 
     } else {
-      // Existing anime/manga behavior here
-      // ...
+      document.getElementById("loading")?.remove();
+
+  let url = `https://api.jikan.moe/v4/${currentType}?page=${currentPage}&limit=12${currentQuery ? `&q=${encodeURIComponent(currentQuery)}` : ''}${currentGenre ? `&genres=${currentGenre}` : ''}`;
+  console.log("Fetching:", url);
+  const res = await fetch(url);
+  const data = await res.json();
+
+  const items = Array.isArray(data.data) ? data.data : [];
+  if (!items.length && currentPage === 1) {
+    resultsContainer.innerHTML = "<p>No results found.</p>";
+    hasMore = false;
+  } else {
+    items.forEach(item => {
+      const card = document.createElement("div");
+      card.className = "anime-card";
+      const title = item.title;
+      const imageUrl = item.images?.jpg?.image_url || "";
+      const score = item.score ?? "N/A";
+      const typeVal = item.type ?? "";
+      const episodes = item.episodes;
+      const chapters = item.chapters;
+
+      let infoHTML = `
+        <h3>${title}</h3>
+        <p><strong>Score:</strong> ${score}</p>
+        <p><strong>Type:</strong> ${typeVal}</p>
+      `;
+      if (currentType === "anime" && typeVal !== "Movie" && episodes) {
+        infoHTML += `<p><strong>Episodes:</strong> ${episodes}</p>`;
+      }
+      if (["manga"].includes(currentType) && chapters) {
+        infoHTML += `<p><strong>Chapters:</strong> ${chapters}</p>`;
+      }
+
+      card.innerHTML = `
+        <div class="card-img-wrapper"><img src="${imageUrl}" alt="${title}" /></div>
+        <div class="anime-info">${infoHTML}</div>
+      `;
+      card.querySelector(".card-img-wrapper").addEventListener("click", () => {
+        const url = currentType === "anime"
+          ? `anime.html?id=${item.mal_id}`
+          : `manga-details.html?id=${item.mal_id}`;
+        window.location.href = url;
+      });
+      resultsContainer.appendChild(card);
+    });
+    currentPage++;
+    hasMore = data.pagination?.has_next_page ?? false;
+  }
+}
     }
   } catch (err) {
     console.error("Error fetching data:", err);
