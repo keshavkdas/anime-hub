@@ -78,7 +78,7 @@ async function loadItems() {
 
   try {
     const apiType = currentType === "manhwa" ? "manga" : currentType;
-    let url = `https://api.jikan.moe/v4/${apiType}?page=${currentPage}&limit=12`;
+    let url = `https://api.jikan.moe/v4/${apiType}?page=${currentPage}&limit=25`;
 
     if (currentQuery) {
       url += `&q=${encodeURIComponent(currentQuery)}`;
