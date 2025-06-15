@@ -328,15 +328,19 @@
         if (loadedAnimeIds.has(anime.mal_id)) return;
         loadedAnimeIds.add(anime.mal_id);
 
+        const id = anime.mal_id;
+        const title = anime.title.replace(/'/g, "\\'");
+        const imageUrl = anime.images.jpg.image_url.replace(/"/g, '&quot;');
+
         const card = document.createElement('div');
         card.classList.add('anime-card');
         card.innerHTML = `
           <div class="anime-card-inner">
-            <a href="anime.html?id=${anime.mal_id}">
-              <img src="${anime.images.jpg.image_url}" alt="${anime.title}" loading="lazy" onerror="this.src='fallback.jpg';">
+            <a href="anime.html?id=${id}">
+              <img src="${imageUrl}" alt="${title}" loading="lazy" onerror="this.src='fallback.jpg';">
             </a>
-            <div class="favorite-bubble" onclick="event.stopPropagation(); addToFavorites(${anime.mal_id}, '${anime.title.replace(/'/g, "\\'")}', '${anime.images.jpg.image_url}')">❤️</div>
-            <h3>${anime.title}</h3>
+            <div class="favorite-bubble" onclick="event.stopPropagation(); addToFavorites(${id}, '${title}', '${imageUrl}')">❤️</div>
+            <h3>${title}</h3>
           </div>
         `;
         container.appendChild(card);
