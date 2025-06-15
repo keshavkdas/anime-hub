@@ -76,9 +76,8 @@ async function loadItems() {
   resultsContainer.insertAdjacentHTML("beforeend", "<p id='loading'>Loading...</p>");
 
   try {
-    // Fetch from manga endpoint for both "manga" and "manhwa"
     const apiType = currentType === "manhwa" ? "manga" : currentType;
-    let url = `https://api.jikan.moe/v4/${apiType}?page=${currentPage}&limit=25`;
+    let url = `https://api.jikan.moe/v4/${apiType}?page=${currentPage}&limit=12`;
 
     if (currentQuery) {
       url += `&q=${encodeURIComponent(currentQuery)}`;
@@ -100,9 +99,9 @@ async function loadItems() {
       return;
     }
 
-    // Filter manhwa manually
+    // Apply Manhwa logic: filter items with type "Manhwa"
     const items = currentType === "manhwa"
-      ? data.data.filter(item => item.type === "Manhwa")
+      ? data.data.filter(m => m.type === "Manhwa")
       : data.data;
 
     if (items.length === 0 && currentPage === 1) {
@@ -111,34 +110,25 @@ async function loadItems() {
       return;
     }
 
-    items.forEach(item => {
+    items.forEach(manga => {
       const card = document.createElement("div");
       card.className = "anime-card";
 
-      const title = item.title || "Untitled";
-      const image = item.images?.jpg?.image_url || "";
-      const score = item.score ?? "N/A";
-      const type = item.type ?? "Unknown";
-      const chapters = item.chapters;
-      const episodes = item.episodes;
-      const status = item.status;
+      const title = manga.title;
+      const image = manga.images?.jpg?.image_url || "";
+      const score = manga.score ?? "N/A";
+      const type = manga.type ?? "Unknown";
+      const chapters = manga.chapters;
 
       const infoHTML = `
         <h3>${title}</h3>
         <p><strong>Score:</strong> ${score}</p>
         <p><strong>Type:</strong> ${type}</p>
-        ${currentType === "anime" && type !== "Movie" && episodes ? `<p><strong>Episodes:</strong> ${episodes}</p>` : ""}
-        ${["manga", "manhwa"].includes(currentType) ? (
-          chapters
-            ? `<p><strong>Chapters:</strong> ${chapters}</p>`
-            : status === "Publishing"
-              ? `<p><strong>Chapters:</strong> Ongoing</p>`
-              : `<p><strong>Chapters:</strong> Unknown</p>`
-        ) : ""}
+        ${chapters ? `<p><strong>Chapters:</strong> ${chapters}</p>` : ""}
       `;
 
       card.innerHTML = `
-        <div class="card-img-wrapper" style="cursor: pointer;">
+        <div class="card-img-wrapper">
           <img src="${image}" alt="${title}" />
         </div>
         <div class="anime-info">${infoHTML}</div>
@@ -146,8 +136,8 @@ async function loadItems() {
 
       card.querySelector(".card-img-wrapper").addEventListener("click", () => {
         window.location.href = currentType === "anime"
-          ? `anime.html?id=${item.mal_id}`
-          : `manga-details.html?id=${item.mal_id}`;
+          ? `anime.html?id=${manga.mal_id}`
+          : `manga-details.html?id=${manga.mal_id}`;
       });
 
       resultsContainer.appendChild(card);
@@ -165,8 +155,6 @@ async function loadItems() {
     isLoading = false;
   }
 }
-
-
 
 // Infinite scroll
 window.addEventListener("scroll", () => {
