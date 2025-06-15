@@ -306,7 +306,7 @@
   Added to favorites!
 </div>
 
-  <script>
+<script>
   let currentPage = 1;
   let isLoading = false;
   const loadedAnimeIds = new Set();
@@ -335,7 +335,7 @@
             <a href="anime.html?id=${anime.mal_id}">
               <img src="${anime.images.jpg.image_url}" alt="${anime.title}" loading="lazy" onerror="this.src='fallback.jpg';">
             </a>
-            <div class="favorite-bubble" onclick="event.stopPropagation(); addToFavorites('${anime.title}', '${anime.images.jpg.image_url}')">❤️</div>
+            <div class="favorite-bubble" onclick="event.stopPropagation(); addToFavorites(${anime.mal_id}, '${anime.title.replace(/'/g, "\\'")}', '${anime.images.jpg.image_url}')">❤️</div>
             <h3>${anime.title}</h3>
           </div>
         `;
@@ -364,16 +364,16 @@
     return array;
   }
 
-  function addToFavorites(title, imageUrl) {
-    let favs = JSON.parse(localStorage.getItem('favorites')) || [];
+  function addToFavorites(id, title, imageUrl) {
+    let favs = JSON.parse(localStorage.getItem('animeFavorites')) || [];
 
-    if (favs.some(fav => fav.title === title)) {
+    if (favs.some(fav => fav.id === id)) {
       showToast('This anime is already in your favorites!');
       return;
     }
 
-    favs.push({ title, imageUrl });
-    localStorage.setItem('favorites', JSON.stringify(favs));
+    favs.push({ id, title, imageUrl });
+    localStorage.setItem('animeFavorites', JSON.stringify(favs));
     showToast('Added to favorites!');
   }
 
@@ -394,16 +394,6 @@
     const query = encodeURIComponent(`${title} anime trailer`);
     window.open(`https://www.youtube.com/results?search_query=${query}`, '_blank');
   }
-
-  // Global click listener for fav-btn (used in manga or elsewhere)
-  document.addEventListener("click", (e) => {
-    if (e.target.classList.contains("fav-btn")) {
-      const id = e.target.dataset.id;
-      e.target.classList.toggle("active");
-      e.target.innerText = e.target.classList.contains("active") ? "💖" : "❤️";
-      console.log("Favorited manga ID:", id);
-    }
-  });
 
   // Load top anime slider
   const splideScript = document.createElement('script');
@@ -426,7 +416,7 @@
         });
 
         new Splide('#topAnimeSlider', {
-          type   : 'loop',
+          type: 'loop',
           perPage: 5,
           autoplay: true,
           interval: 2500,
@@ -459,8 +449,6 @@
     loadTrendingAnime();
   });
 </script>
-
-
 
 <script>  
 ;(async () => {
