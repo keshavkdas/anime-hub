@@ -205,25 +205,32 @@
     }
 
     .fav-btn {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background-color: rgba(0, 0, 0, 0.7);
-      border: none;
-      color: #f97316;
-      font-size: 1.2rem;
-      border-radius: 50%;
-      padding: 6px 10px;
-      cursor: pointer;
-      z-index: 1;
-      transition: background-color 0.3s ease, transform 0.2s ease;
-    }
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: rgba(0, 0, 0, 0.5); /* blackish background */
+  backdrop-filter: blur(6px); /* blur effect */
+  -webkit-backdrop-filter: blur(6px); /* for Safari */
+  border: none;
+  color: #f97316;
+  font-size: 1.2rem;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  cursor: pointer;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
 
-    .fav-btn:hover {
-      background-color: #f97316;
-      color: white;
-      transform: scale(1.1);
-    }
+.fav-btn:hover {
+  background-color: rgba(0, 0, 0, 0.6); /* slightly darker on hover */
+  color: #f97316; /* keep heart color consistent */
+  transform: scale(1.1);
+}
+
   </style>
 </head>
 <body>
