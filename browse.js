@@ -13,7 +13,7 @@ let currentQuery = "";
 let currentGenre = "";
 let currentType = "anime";
 
-// When type (anime/manga/manhwa) is changed
+// Handle type change (anime, manga, manhwa)
 typeSelect.addEventListener("change", () => {
   currentType = typeSelect.value;
   searchInput.placeholder = `Search ${currentType}`;
@@ -34,27 +34,25 @@ document.addEventListener("DOMContentLoaded", () => {
   loadItems();
 });
 
-// Search button click
+// Handle search
 searchBtn.addEventListener("click", () => {
   currentQuery = searchInput.value.trim();
   currentGenre = genreSelect.value;
-  currentType = typeSelect.value;
   currentPage = 1;
   hasMore = true;
   resultsContainer.innerHTML = "";
   loadItems();
 });
 
-// Load genres dynamically from Jikan
+// Load genres from Jikan
 async function loadGenres() {
-  const select = genreSelect;
-  select.innerHTML = `<option value="">All Genres</option>`;
-
+  genreSelect.innerHTML = `<option value="">All Genres</option>`;
   const apiType = currentType === "manhwa" ? "manga" : currentType;
 
   try {
     const res = await fetch(`https://api.jikan.moe/v4/genres/${apiType}`);
     const json = await res.json();
+
     if (!json.data) throw new Error("Invalid API response");
 
     json.data
@@ -63,13 +61,14 @@ async function loadGenres() {
         const opt = document.createElement("option");
         opt.value = genre.mal_id;
         opt.textContent = genre.name;
-        select.appendChild(opt);
+        genreSelect.appendChild(opt);
       });
   } catch (err) {
     console.error("Failed to load genres:", err);
   }
 }
 
+// Load anime/manga/manhwa items
 async function loadItems() {
   if (isLoading || !hasMore) return;
   isLoading = true;
@@ -77,12 +76,12 @@ async function loadItems() {
 
   try {
     let url;
+
     if (currentType === "manhwa") {
-      url = `https://api.jikan.moe/v4/top/manga?subtype=manhwa&page=${currentPage}&limit=12`;
-      if (currentQuery) url += `&q=${encodeURIComponent(currentQuery)}`;
+      // Use top manga endpoint for better filtering
+      url = `https://api.jikan.moe/v4/top/manga?type=manga&page=${currentPage}&limit=25`;
     } else {
-      const apiType = currentType;
-      url = `https://api.jikan.moe/v4/${apiType}?page=${currentPage}&limit=12`;
+      url = `https://api.jikan.moe/v4/${currentType}?page=${currentPage}&limit=12`;
       if (currentQuery) url += `&q=${encodeURIComponent(currentQuery)}`;
       if (currentGenre) url += `&genres=${currentGenre}`;
     }
@@ -90,17 +89,35 @@ async function loadItems() {
     console.log("Fetching URL:", url);
     const res = await fetch(url);
     const data = await res.json();
-    let items = Array.isArray(data.data) ? data.data : data.data.items || [];
 
-    if (currentType === "manhwa") {
-        const allowedTypes = ["manhwa", "manhua", "light novel"];
-      items = items.filter(item => allowedTypes.includes(item.type?.toLowerCase()));
-    }
     document.getElementById("loading")?.remove();
 
-    let items = Array.isArray(data.data) ? data.data : data.data.items || [];
+    let items = Array.isArray(data.data) ? data.data : [];
 
-    if ((!items || items.length === 0) && currentPage === 1) {
+    // Filter types for manhwa
+    if (currentType === "manhwa") {
+      const allowedTypes = ["manhwa", "manhua", "light novel"];
+      items = items.filter(item => allowedTypes.includes(item.type?.toLowerCase()));
+
+      // Search filter
+      if (currentQuery) {
+        items = items.filter(item =>
+          item.title.toLowerCase().includes(currentQuery.toLowerCase())
+        );
+      }
+
+      // Genre filter
+      if (currentGenre) {
+        items = items.filter(item =>
+          item.genres?.some(g => g.mal_id.toString() === currentGenre)
+        );
+      }
+
+      // Limit final displayed list
+      items = items.slice(0, 12);
+    }
+
+    if (!items.length && currentPage === 1) {
       resultsContainer.innerHTML = "<p>No results found.</p>";
       hasMore = false;
       return;
@@ -110,17 +127,17 @@ async function loadItems() {
       const card = document.createElement("div");
       card.className = "anime-card";
 
-      const title = item.title;
+      const title = item.title || "Untitled";
       const imageUrl = item.images?.jpg?.image_url || "";
       const score = item.score ?? "N/A";
-      const typeVal = item.type ?? (currentType === "manhwa" ? "Manhwa" : "Unknown");
+      const typeVal = item.type ?? "Unknown";
       const chapters = item.chapters;
 
       const infoHTML = `
         <h3>${title}</h3>
         <p><strong>Score:</strong> ${score}</p>
         <p><strong>Type:</strong> ${typeVal}</p>
-        ${["manga","manhwa"].includes(currentType) && chapters ? `<p><strong>Chapters:</strong> ${chapters}</p>` : ""}
+        ${["manga", "manhwa"].includes(currentType) && chapters ? `<p><strong>Chapters:</strong> ${chapters}</p>` : ""}
       `;
 
       card.innerHTML = `
@@ -151,7 +168,6 @@ async function loadItems() {
     isLoading = false;
   }
 }
-
 
 // Infinite scroll
 window.addEventListener("scroll", () => {
