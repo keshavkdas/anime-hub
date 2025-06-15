@@ -98,11 +98,9 @@ async function loadItems() {
       return;
     }
 
-    // Filter Manhwa based on 'Korean' demographic
+    // ✅ Filter strictly by type === "Manhwa" for manhwa section
     const filteredData = currentType === "manhwa"
-      ? data.data.filter(item =>
-          item.demographics?.some(d => d.name.toLowerCase() === "korean")
-        )
+      ? data.data.filter(item => item.type === "Manhwa")
       : data.data;
 
     if (filteredData.length === 0 && currentPage === 1) {
@@ -165,6 +163,7 @@ async function loadItems() {
     isLoading = false;
   }
 }
+
 
 
 // Infinite scroll
