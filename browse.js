@@ -74,6 +74,10 @@ async function loadItems() {
   isLoading = true;
   resultsContainer.insertAdjacentHTML("beforeend", "<p id='loading'>Loading...</p>");
 
+  // Always clean up old loading message first
+  const old = document.getElementById('loading');
+  if (old) old.remove();
+  
   try {
     let url;
     if (currentType === "manhwa") {
