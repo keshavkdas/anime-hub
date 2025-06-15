@@ -253,140 +253,143 @@
     <div id="mangaResults" class="results-grid"></div>
   </section>
 
-  <script>
-    const track = document.getElementById("carouselTrack");
-    const mangaResults = document.getElementById("mangaResults");
-    const nextBtn = document.querySelector(".carousel-btn.next");
-    const prevBtn = document.querySelector(".carousel-btn.prev");
+<script>
+  const track = document.getElementById("carouselTrack");
+  const mangaResults = document.getElementById("mangaResults");
+  const nextBtn = document.querySelector(".carousel-btn.next");
+  const prevBtn = document.querySelector(".carousel-btn.prev");
 
-    let index = 0;
-    let currentPage = 1;
-    let hasMore = true;
-    let mangaList = [];
+  let index = 0;
+  let currentPage = 1;
+  let hasMore = true;
+  let mangaList = [];
 
-    async function loadAutoCarousel() {
-      try {
-        const res = await fetch(`https://api.jikan.moe/v4/manga?order_by=popularity&limit=10&type=manga`);
-        const json = await res.json();
-        mangaList = json.data.filter(manga => manga.type?.toLowerCase() !== "manhwa");
+  async function loadAutoCarousel() {
+    try {
+      const res = await fetch(`https://api.jikan.moe/v4/manga?order_by=popularity&limit=10&type=manga`);
+      const json = await res.json();
+      mangaList = json.data.filter(manga => manga.type?.toLowerCase() !== "manhwa");
 
-        mangaList.forEach(manga => {
-          const slide = document.createElement('div');
-          slide.className = 'carousel-item';
+      mangaList.forEach(manga => {
+        const slide = document.createElement('div');
+        slide.className = 'carousel-item';
 
-          slide.innerHTML = `
-            <img src="${manga.images.jpg.large_image_url}" alt="${manga.title}" />
-            <div class="carousel-info">
-              <h2>${manga.title}</h2>
-              <p><strong>Score:</strong> ${manga.score ?? "N/A"}</p>
-              <p><strong>Type:</strong> ${manga.type}</p>
-              <p><strong>Chapters:</strong> ${manga.chapters ?? "Unknown"}</p>
-              <p><strong>Synopsis:</strong> ${manga.synopsis ? manga.synopsis.slice(0, 220) + "..." : "No description available."}</p>
-              <button class="dive-button" onclick="location.href='manga-details.html?id=${manga.mal_id}'">🐠 Dive In</button>
-            </div>
-          `;
-          track.appendChild(slide);
-        });
+        slide.innerHTML = `
+          <img src="${manga.images.jpg.large_image_url}" alt="${manga.title}" />
+          <div class="carousel-info">
+            <h2>${manga.title}</h2>
+            <p><strong>Score:</strong> ${manga.score ?? "N/A"}</p>
+            <p><strong>Type:</strong> ${manga.type}</p>
+            <p><strong>Chapters:</strong> ${manga.chapters ?? "Unknown"}</p>
+            <p><strong>Synopsis:</strong> ${manga.synopsis ? manga.synopsis.slice(0, 220) + "..." : "No description available."}</p>
+            <button class="dive-button" onclick="location.href='manga-details.html?id=${manga.mal_id}'">🐠 Dive In</button>
+          </div>
+        `;
+        track.appendChild(slide);
+      });
 
-        // Auto-scroll
-        setInterval(() => {
-          index = (index + 1) % mangaList.length;
-          track.style.transform = `translateX(-${index * 100}%)`;
-        }, 5000);
+      setInterval(() => {
+        index = (index + 1) % mangaList.length;
+        track.style.transform = `translateX(-${index * 100}%)`;
+      }, 5000);
 
-        // Button events
-        nextBtn.addEventListener("click", () => {
-          index = (index + 1) % mangaList.length;
-          track.style.transform = `translateX(-${index * 100}%)`;
-        });
+      nextBtn.addEventListener("click", () => {
+        index = (index + 1) % mangaList.length;
+        track.style.transform = `translateX(-${index * 100}%)`;
+      });
 
-        prevBtn.addEventListener("click", () => {
-          index = (index - 1 + mangaList.length) % mangaList.length;
-          track.style.transform = `translateX(-${index * 100}%)`;
-        });
+      prevBtn.addEventListener("click", () => {
+        index = (index - 1 + mangaList.length) % mangaList.length;
+        track.style.transform = `translateX(-${index * 100}%)`;
+      });
 
-      } catch (err) {
-        console.error("Carousel error:", err);
-      }
+    } catch (err) {
+      console.error("Carousel error:", err);
     }
-
-    async function loadMoreManga() {
-      if (!hasMore) return;
-      try {
-        const res = await fetch(`https://api.jikan.moe/v4/manga?page=${currentPage}&limit=12`);
-        const json = await res.json();
-
-        json.data.forEach(manga => {
-          if (manga.type?.toLowerCase() === "manhwa") return;
-          const card = document.createElement("div");
-          card.className = "anime-card";
-
-          const title = manga.title;
-          const image = manga.images?.jpg?.image_url || "";
-          const score = manga.score ?? "N/A";
-          const type = manga.type ?? "Unknown";
-          const chapters = manga.chapters;
-
-          const infoHTML = `
-            <h3>${title}</h3>
-            <p><strong>Score:</strong> ${score}</p>
-            <p><strong>Type:</strong> ${type}</p>
-            ${chapters ? `<p><strong>Chapters:</strong> ${chapters}</p>` : ""}
-          `;
-
-          card.innerHTML = `
-            <div class="card-img-wrapper">
-            <img src="${image}" alt="${title}" />
-            <button class="fav-btn" data-id="${manga.mal_id}" title="Add to favorites">❤️</button>
-            </div>
-            <div class="anime-info">${infoHTML}</div>
-          `;
-
-
-          card.querySelector(".card-img-wrapper").addEventListener("click", () => {
-            window.location.href = `manga-details.html?id=${manga.mal_id}`;
-          });
-
-          mangaResults.appendChild(card);
-        });
-
-        currentPage++;
-        hasMore = json.pagination?.has_next_page;
-      } catch (err) {
-        console.error("Failed to load manga:", err);
-      }
-    }
-
-    window.addEventListener("DOMContentLoaded", () => {
-      loadAutoCarousel();
-      loadMoreManga();
-    });
-
-    window.addEventListener("scroll", () => {
-      const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
-      if (scrollTop + clientHeight >= scrollHeight - 100) {
-        loadMoreManga();
-      }
-    });
-document.addEventListener("click", (e) => {
-  if (e.target.classList.contains("fav-btn")) {
-    const id = e.target.dataset.id;
-    let favorites = JSON.parse(localStorage.getItem("mangaFavorites")) || [];
-
-    if (favorites.includes(id)) {
-      // Remove from favorites
-      favorites = favorites.filter(fav => fav !== id);
-      e.target.innerText = "❤️";
-    } else {
-      favorites.push(id);
-      e.target.innerText = "💖";
-    }
-
-    localStorage.setItem("mangaFavorites", JSON.stringify(favorites));
   }
-});
 
+  async function loadMoreManga() {
+    if (!hasMore) return;
+    try {
+      const res = await fetch(`https://api.jikan.moe/v4/manga?page=${currentPage}&limit=12`);
+      const json = await res.json();
+      const favorites = JSON.parse(localStorage.getItem("mangaFavorites")) || [];
 
-  </script>
+      json.data.forEach(manga => {
+        if (manga.type?.toLowerCase() === "manhwa") return;
+        const card = document.createElement("div");
+        card.className = "anime-card";
+
+        const title = manga.title;
+        const image = manga.images?.jpg?.image_url || "";
+        const score = manga.score ?? "N/A";
+        const type = manga.type ?? "Unknown";
+        const chapters = manga.chapters;
+
+        const isFavorited = favorites.includes(manga.mal_id.toString());
+
+        const infoHTML = `
+          <h3>${title}</h3>
+          <p><strong>Score:</strong> ${score}</p>
+          <p><strong>Type:</strong> ${type}</p>
+          ${chapters ? `<p><strong>Chapters:</strong> ${chapters}</p>` : ""}
+        `;
+
+        card.innerHTML = `
+          <div class="card-img-wrapper">
+            <img src="${image}" alt="${title}" />
+            <button class="fav-btn ${isFavorited ? 'active' : ''}" data-id="${manga.mal_id}" title="Add to favorites">${isFavorited ? '💖' : '❤️'}</button>
+          </div>
+          <div class="anime-info">${infoHTML}</div>
+        `;
+
+        card.querySelector(".card-img-wrapper").addEventListener("click", (e) => {
+          if (!e.target.classList.contains("fav-btn")) {
+            window.location.href = `manga-details.html?id=${manga.mal_id}`;
+          }
+        });
+
+        mangaResults.appendChild(card);
+      });
+
+      currentPage++;
+      hasMore = json.pagination?.has_next_page;
+    } catch (err) {
+      console.error("Failed to load manga:", err);
+    }
+  }
+
+  document.addEventListener("click", (e) => {
+    if (e.target.classList.contains("fav-btn")) {
+      const id = e.target.dataset.id;
+      let favorites = JSON.parse(localStorage.getItem("mangaFavorites")) || [];
+
+      if (favorites.includes(id)) {
+        favorites = favorites.filter(fav => fav !== id);
+        e.target.innerText = "❤️";
+        e.target.classList.remove("active");
+      } else {
+        favorites.push(id);
+        e.target.innerText = "💖";
+        e.target.classList.add("active");
+      }
+
+      localStorage.setItem("mangaFavorites", JSON.stringify(favorites));
+    }
+  });
+
+  window.addEventListener("DOMContentLoaded", () => {
+    loadAutoCarousel();
+    loadMoreManga();
+  });
+
+  window.addEventListener("scroll", () => {
+    const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+    if (scrollTop + clientHeight >= scrollHeight - 100) {
+      loadMoreManga();
+    }
+  });
+</script>
+
 </body>
 </html>
