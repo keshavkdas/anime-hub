@@ -312,6 +312,11 @@
   const loadedAnimeIds = new Set();
   let toastTimeout;
 
+  function isInFavorites(id) {
+    const favs = JSON.parse(localStorage.getItem('animeFavorites')) || [];
+    return favs.some(fav => String(fav.id) === String(id));
+  }
+
   async function loadTrendingAnime() {
     const container = document.getElementById("animeContainer");
     if (isLoading) return;
@@ -334,18 +339,16 @@
 
         const card = document.createElement('div');
         card.classList.add('anime-card');
+
+        const isFav = isInFavorites(id);
+        const heartIcon = isFav ? '💖' : '❤️';
+        
         card.innerHTML = `
           <div class="anime-card-inner">
             <a href="anime.html?id=${id}">
               <img src="${imageUrl}" alt="${title}" loading="lazy" onerror="this.src='fallback.jpg';">
             </a>
-            <div 
-              class="favorite-bubble" 
-              data-id="${id}" 
-              onclick="event.stopPropagation(); addToFavorites('${id}', \`${title}\`, \`${imageUrl}\`)"
-            >
-            ❤️
-            </div>
+            <div class="favorite-bubble fav-btn ${isFav ? 'active' : ''}" data-id="${id}" onclick="event.stopPropagation(); addToFavorites('${id}', '${title}', '${imageUrl}')">${heartIcon}</div>
             <h3>${title}</h3>
           </div>
         `;
