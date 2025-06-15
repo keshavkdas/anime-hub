@@ -90,6 +90,12 @@ async function loadItems() {
     console.log("Fetching URL:", url);
     const res = await fetch(url);
     const data = await res.json();
+    let items = Array.isArray(data.data) ? data.data : data.data.items || [];
+
+    if (currentType === "manhwa") {
+        const allowedTypes = ["manhwa", "manhua", "light novel"];
+      items = items.filter(item => allowedTypes.includes(item.type?.toLowerCase()));
+    }
     document.getElementById("loading")?.remove();
 
     let items = Array.isArray(data.data) ? data.data : data.data.items || [];
