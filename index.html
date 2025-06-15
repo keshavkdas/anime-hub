@@ -306,10 +306,11 @@
   Added to favorites!
 </div>
 
-  
-<script>
+  <script>
   let currentPage = 1;
   let isLoading = false;
+  const loadedAnimeIds = new Set();
+  let toastTimeout;
 
   async function loadTrendingAnime() {
     const container = document.getElementById("animeContainer");
@@ -321,20 +322,26 @@
       const data = await res.json();
 
       const todaySeed = parseInt(new Date().toISOString().slice(0, 10).replace(/-/g, ''));
-    const shuffledAnime = shuffleArrayWithSeed(data.data, todaySeed);
+      const shuffledAnime = shuffleArrayWithSeed(data.data, todaySeed);
 
-    shuffledAnime.forEach(anime => {
-      const card = document.createElement('div');
-      card.classList.add('anime-card');
-      card.innerHTML = `
-        <a href="anime.html?id=${anime.mal_id}">
-          <img src="${anime.images.jpg.image_url}" alt="${anime.title}">
-          <div class="favorite-bubble" onclick="addToFavorites('${anime.title}', '${anime.images.jpg.image_url}')">❤️</div>
-        </a>
-        <h3>${anime.title}</h3>
-      `;
-      container.appendChild(card);
-    });
+      shuffledAnime.forEach(anime => {
+        if (loadedAnimeIds.has(anime.mal_id)) return;
+        loadedAnimeIds.add(anime.mal_id);
+
+        const card = document.createElement('div');
+        card.classList.add('anime-card');
+        card.innerHTML = `
+          <div class="anime-card-inner">
+            <a href="anime.html?id=${anime.mal_id}">
+              <img src="${anime.images.jpg.image_url}" alt="${anime.title}" loading="lazy" onerror="this.src='fallback.jpg';">
+            </a>
+            <div class="favorite-bubble" onclick="event.stopPropagation(); addToFavorites('${anime.title}', '${anime.images.jpg.image_url}')">❤️</div>
+            <h3>${anime.title}</h3>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+
       currentPage++;
     } catch (err) {
       console.error("Failed to load anime:", err);
@@ -344,35 +351,17 @@
   }
 
   function shuffleArrayWithSeed(array, seed) {
-  const seededRandom = (s) => {
-    let x = Math.sin(s++) * 10000;
-    return x - Math.floor(x);
-  };
+    const seededRandom = (s) => {
+      let x = Math.sin(s++) * 10000;
+      return x - Math.floor(x);
+    };
 
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(seededRandom(seed + i) * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(seededRandom(seed + i) * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
 
-  return array;
-}
-
-
-  function playTrailer(title) {
-    const query = encodeURIComponent(`${title} anime trailer`);
-    window.open(`https://www.youtube.com/results?search_query=${query}`, '_blank');
-  }
-
-  function showToast(message) {
-    const toast = document.getElementById('toast');
-    toast.textContent = message;
-    toast.style.visibility = 'visible';
-    toast.style.opacity = '1';
-
-    setTimeout(() => {
-      toast.style.opacity = '0';
-      toast.style.visibility = 'hidden';
-    }, 2500);
+    return array;
   }
 
   function addToFavorites(title, imageUrl) {
@@ -387,15 +376,34 @@
     localStorage.setItem('favorites', JSON.stringify(favs));
     showToast('Added to favorites!');
   }
-  document.addEventListener("click", (e) => {
-  if (e.target.classList.contains("fav-btn")) {
-    const id = e.target.dataset.id;
-    e.target.classList.toggle("active");
-    e.target.innerText = e.target.classList.contains("active") ? "💖" : "❤️";
-    // Optionally save to favorites here
-    console.log("Favorited manga ID:", id);
+
+  function showToast(message) {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.style.visibility = 'visible';
+    toast.style.opacity = '1';
+
+    clearTimeout(toastTimeout);
+    toastTimeout = setTimeout(() => {
+      toast.style.opacity = '0';
+      toast.style.visibility = 'hidden';
+    }, 2500);
   }
-});
+
+  function playTrailer(title) {
+    const query = encodeURIComponent(`${title} anime trailer`);
+    window.open(`https://www.youtube.com/results?search_query=${query}`, '_blank');
+  }
+
+  // Global click listener for fav-btn (used in manga or elsewhere)
+  document.addEventListener("click", (e) => {
+    if (e.target.classList.contains("fav-btn")) {
+      const id = e.target.dataset.id;
+      e.target.classList.toggle("active");
+      e.target.innerText = e.target.classList.contains("active") ? "💖" : "❤️";
+      console.log("Favorited manga ID:", id);
+    }
+  });
 
   // Load top anime slider
   const splideScript = document.createElement('script');
@@ -410,7 +418,7 @@
           li.className = "splide__slide";
           li.innerHTML = `
             <div class="slider-card">
-              <img src="${anime.images.jpg.image_url}" alt="${anime.title}">
+              <img src="${anime.images.jpg.image_url}" alt="${anime.title}" loading="lazy">
               <h3>${anime.title}</h3>
             </div>
           `;
@@ -435,18 +443,23 @@
   };
   document.body.appendChild(splideScript);
 
-  // Infinite scroll loading
+  // Infinite scroll with debounce
+  let scrollDebounce;
   window.addEventListener("scroll", () => {
-    const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
-    if (scrollTop + clientHeight >= scrollHeight - 20) {
-      loadTrendingAnime();
-    }
+    clearTimeout(scrollDebounce);
+    scrollDebounce = setTimeout(() => {
+      const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+      if (scrollTop + clientHeight >= scrollHeight - 20) {
+        loadTrendingAnime();
+      }
+    }, 150);
   });
 
   document.addEventListener("DOMContentLoaded", () => {
     loadTrendingAnime();
   });
 </script>
+
 
 
 <script>  
