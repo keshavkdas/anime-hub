@@ -76,54 +76,42 @@ async function loadItems() {
   resultsContainer.insertAdjacentHTML("beforeend", "<p id='loading'>Loading...</p>");
 
   try {
-    let itemsFetched = 0;
-    let maxPages = 10; // Avoid infinite loops
-    let page = currentPage;
-    let resultsToAdd = [];
+    let url = `https://api.jikan.moe/v4/${currentType === "manhwa" ? "manga" : currentType}?page=${currentPage}&limit=25`;
 
-    while (itemsFetched < 12 && maxPages-- > 0) {
-      let url = `https://api.jikan.moe/v4/${currentType === "manhwa" ? "manga" : currentType}?page=${page}&limit=25`;
-
-      if (currentQuery) {
-        url += `&q=${encodeURIComponent(currentQuery)}`;
-      }
-
-      if (currentGenre) {
-        url += `&genres=${currentGenre}`;
-      }
-
-      const res = await fetch(url);
-      const data = await res.json();
-      document.getElementById("loading")?.remove();
-
-      if (!data.data || data.data.length === 0) {
-        break;
-      }
-
-      const filtered = data.data.filter(item => {
-        if (currentType === "manhwa") return item.type?.toLowerCase() === "manhwa";
-        return true;
-      });
-
-      resultsToAdd.push(...filtered);
-      itemsFetched += filtered.length;
-
-      if (!data.pagination?.has_next_page) {
-        hasMore = false;
-        break;
-      }
-
-      page++;
+    if (currentQuery) {
+      url += `&q=${encodeURIComponent(currentQuery)}`;
     }
 
-    if (resultsToAdd.length === 0) {
+    if (currentGenre) {
+      url += `&genres=${currentGenre}`;
+    }
+
+    const res = await fetch(url);
+    const data = await res.json();
+    document.getElementById("loading")?.remove();
+
+    if (!data.data || data.data.length === 0) {
       if (currentPage === 1) {
         resultsContainer.innerHTML = "<p>No results found.</p>";
       }
+      hasMore = false;
       return;
     }
 
-    resultsToAdd.forEach(item => {
+    // Filter Manhwa based on 'Korean' demographic
+    const filteredData = currentType === "manhwa"
+      ? data.data.filter(item =>
+          item.demographics?.some(d => d.name.toLowerCase() === "korean")
+        )
+      : data.data;
+
+    if (filteredData.length === 0 && currentPage === 1) {
+      resultsContainer.innerHTML = "<p>No results found.</p>";
+      hasMore = false;
+      return;
+    }
+
+    filteredData.forEach(item => {
       const card = document.createElement("div");
       card.className = "anime-card";
 
@@ -140,7 +128,7 @@ async function loadItems() {
         <p><strong>Score:</strong> ${score}</p>
         <p><strong>Type:</strong> ${type}</p>
         ${currentType === "anime" && type !== "Movie" && episodes ? `<p><strong>Episodes:</strong> ${episodes}</p>` : ""}
-        ${currentType !== "anime" ? (
+        ${["manga", "manhwa"].includes(currentType) ? (
           chapters
             ? `<p><strong>Chapters:</strong> ${chapters}</p>`
             : status === "Publishing"
@@ -165,8 +153,8 @@ async function loadItems() {
       resultsContainer.appendChild(card);
     });
 
-    currentPage = page;
-    hasMore = true;
+    currentPage++;
+    hasMore = data.pagination?.has_next_page;
   } catch (err) {
     console.error("Error fetching data:", err);
     document.getElementById("loading")?.remove();
@@ -177,6 +165,7 @@ async function loadItems() {
     isLoading = false;
   }
 }
+
 
 // Infinite scroll
 window.addEventListener("scroll", () => {
