@@ -196,7 +196,9 @@
   position: absolute;
   top: 10px;
   right: 10px;
-  background-color: rgba(255, 255, 255, 0.1); /* subtle white bubble */
+  background-color: rgba(0, 0, 0, 0.5); /* blackish background */
+  backdrop-filter: blur(6px); /* blur effect */
+  -webkit-backdrop-filter: blur(6px); /* for Safari */
   border: none;
   color: #f97316;
   font-size: 1.2rem;
@@ -212,10 +214,11 @@
 }
 
 .fav-btn:hover {
-  background-color: rgba(255, 255, 255, 0.2); /* slightly brighter on hover */
-  color: #f97316; /* keeps the icon color same */
+  background-color: rgba(0, 0, 0, 0.6); /* slightly darker on hover */
+  color: #f97316; /* keep heart color consistent */
   transform: scale(1.1);
 }
+
   </style>
 </head>
 <body>
