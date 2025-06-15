@@ -321,12 +321,12 @@
         card.className = "anime-card";
 
         const title = manga.title;
-        const image = manga.images?.jpg?.image_url || "";
+        const imageUrl = manga.images?.jpg?.image_url || "";
         const score = manga.score ?? "N/A";
         const type = manga.type ?? "Unknown";
         const chapters = manga.chapters;
 
-        const isFavorited = favorites.includes(manga.mal_id.toString());
+        const isFavorited = favorites.some(fav => fav.id === String(manga.mal_id));
 
         const infoHTML = `
           <h3>${title}</h3>
@@ -337,7 +337,7 @@
 
         card.innerHTML = `
           <div class="card-img-wrapper">
-            <img src="${image}" alt="${title}" />
+            <img src="${imageUrl}" alt="${title}" />
             <button class="fav-btn ${isFavorited ? 'active' : ''}" data-id="${manga.mal_id}" title="Add to favorites">${isFavorited ? '💖' : '❤️'}</button>
           </div>
           <div class="anime-info">${infoHTML}</div>
@@ -373,22 +373,23 @@
       } else {
         const card = e.target.closest(".anime-card");
         const title = card.querySelector("h3").innerText;
-        const image = card.querySelector("img").src;
+        const imageUrl = card.querySelector("img").src;
 
-      favorites.push({
-        id,
-        title,
-        image,
-        type: "manga"
-      });
+        favorites.push({
+          id,
+          title,
+          imageUrl,
+          type: "manga"
+        });
 
-      e.target.innerText = "💖";
-      e.target.classList.add("active");
+        e.target.innerText = "💖";
+        e.target.classList.add("active");
       }
-      localStorage.setItem("mangaFavorites", JSON.stringify(favorites));
 
+      localStorage.setItem("mangaFavorites", JSON.stringify(favorites));
     }
   });
+
   window.addEventListener("DOMContentLoaded", () => {
     loadAutoCarousel();
     loadMoreManga();
@@ -401,6 +402,7 @@
     }
   });
 </script>
+
 
 </body>
 </html>
