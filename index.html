@@ -382,42 +382,36 @@
   // }
 
       document.addEventListener("click", (e) => {
-  if (e.target.classList.contains("fav-btn")) {
-    const id = e.target.dataset.id;
-    if (!id) return; // safety check
+  if (e.target.classList.contains("favorite-bubble")) {
+    const card = e.target.closest(".anime-card");
+    if (!card) return;
+
+    const id = card.querySelector("a")?.href.match(/id=(\d+)/)?.[1];
+    if (!id) return;
 
     let favorites = JSON.parse(localStorage.getItem("animeFavorites")) || [];
-    const existingIndex = favorites.findIndex(fav => fav.id === id);
+    const existingIndex = favorites.findIndex(fav => fav.id == id);
 
     if (existingIndex > -1) {
       // Remove from favorites
       favorites.splice(existingIndex, 1);
-      e.target.innerText = "❤️";
       e.target.classList.remove("active");
+      e.target.textContent = "❤️";
       showToast('Removed from favorites!');
     } else {
-      // Add to favorites
-      const card = e.target.closest(".anime-card");
-      if (!card) return; // safety check if structure changes
-
       const title = card.querySelector("h3")?.innerText || "Unknown Title";
       const imageUrl = card.querySelector("img")?.src || "";
 
-      favorites.push({
-        id,
-        title,
-        imageUrl,
-        type: "manga"  // you can change this dynamically if needed
-      });
-
-      e.target.innerText = "💖";
+      favorites.push({ id: parseInt(id), title, imageUrl });
       e.target.classList.add("active");
+      e.target.textContent = "💖";
       showToast('Added to favorites!');
     }
 
     localStorage.setItem("animeFavorites", JSON.stringify(favorites));
   }
 });
+
 
 
   function showToast(message) {
@@ -491,6 +485,25 @@
   document.addEventListener("DOMContentLoaded", () => {
     loadTrendingAnime();
   });
+
+  function markFavoritesActive() {
+  const favorites = JSON.parse(localStorage.getItem('animeFavorites')) || [];
+  document.querySelectorAll('.anime-card .favorite-bubble').forEach(btn => {
+    const card = btn.closest('.anime-card');
+    const id = card.querySelector('a')?.href.match(/id=(\d+)/)?.[1];
+    if (favorites.some(fav => fav.id == id)) {
+      btn.classList.add('active');
+      btn.textContent = '💖';
+    } else {
+      btn.classList.remove('active');
+      btn.textContent = '❤️';
+    }
+  });
+}
+
+// Call this after loading new anime cards
+markFavoritesActive();
+
 </script>
 
 <script>  
