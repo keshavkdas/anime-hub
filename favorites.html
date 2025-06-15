@@ -170,56 +170,57 @@
   </main>
 
   <script>
-    function renderFavorites(type, key, containerId, emptyId) {
-      let favs = JSON.parse(localStorage.getItem(key)) || [];
-      const container = document.getElementById(containerId);
-      const emptyMsg = document.getElementById(emptyId);
+  function renderFavorites(type, key, containerId, emptyId) {
+    let favs = JSON.parse(localStorage.getItem(key)) || [];
+    const container = document.getElementById(containerId);
+    const emptyMsg = document.getElementById(emptyId);
 
-      container.innerHTML = "";
+    container.innerHTML = "";
 
-      if (favs.length === 0) {
-        container.style.display = "none";
-        emptyMsg.style.display = "block";
-        return;
-      }
-
-      container.style.display = "grid";
-      emptyMsg.style.display = "none";
-
-      favs.forEach((item) => {
-        const card = document.createElement("div");
-        card.className = "fav-card";
-
-        card.innerHTML = `
-          <img src="${item.image}" alt="${item.title}" />
-          <h3>${item.title}</h3>
-          <button class="remove-btn" title="Remove from favorites">❌</button>
-        `;
-
-        const removeBtn = card.querySelector(".remove-btn");
-
-        removeBtn.addEventListener("click", (e) => {
-          e.stopPropagation(); // prevent card click
-          favs = favs.filter(f => f.id !== item.id);
-          localStorage.setItem(key, JSON.stringify(favs));
-          renderFavorites(type, key, containerId, emptyId);
-        });
-
-        card.addEventListener("click", (e) => {
-          if (!e.target.classList.contains("remove-btn")) {
-            window.location.href = `${type}-details.html?id=${item.id}`;
-          }
-        });
-
-        container.appendChild(card);
-      });
+    if (favs.length === 0) {
+      container.style.display = "none";
+      emptyMsg.style.display = "block";
+      return;
     }
 
-    document.addEventListener("DOMContentLoaded", () => {
-      renderFavorites("anime", "animeFavorites", "animeFavorites", "animeEmpty");
-      renderFavorites("manga", "mangaFavorites", "mangaFavorites", "mangaEmpty");
-      renderFavorites("manga", "manhwaFavorites", "manhwaFavorites", "manhwaEmpty");
+    container.style.display = "grid";
+    emptyMsg.style.display = "none";
+
+    favs.forEach((item) => {
+      const card = document.createElement("div");
+      card.className = "fav-card";
+
+      card.innerHTML = `
+        <img src="${item.imageUrl}" alt="${item.title}" onerror="this.src='fallback.jpg';">
+        <h3>${item.title}</h3>
+        <button class="remove-btn" title="Remove from favorites">❌</button>
+      `;
+
+      const removeBtn = card.querySelector(".remove-btn");
+
+      removeBtn.addEventListener("click", (e) => {
+        e.stopPropagation(); // prevent card click
+        favs = favs.filter(f => f.id !== item.id);
+        localStorage.setItem(key, JSON.stringify(favs));
+        renderFavorites(type, key, containerId, emptyId);
+      });
+
+      card.addEventListener("click", (e) => {
+        if (!e.target.classList.contains("remove-btn")) {
+          window.location.href = `${type}-details.html?id=${item.id}`;
+        }
+      });
+
+      container.appendChild(card);
     });
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    renderFavorites("anime", "animeFavorites", "animeFavorites", "animeEmpty");
+    renderFavorites("manga", "mangaFavorites", "mangaFavorites", "mangaEmpty");
+    renderFavorites("manhwa", "manhwaFavorites", "manhwaFavorites", "manhwaEmpty");
+  });
+</script>
   </script>
 </body>
 </html>
