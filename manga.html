@@ -212,9 +212,11 @@
         const json = await res.json();
         const mangaList = json.data;
 
-        mangaList.forEach(manga => {
-          const slide = document.createElement('div');
-          slide.className = 'carousel-item';
+        mangaList
+          .filter(manga => manga.type?.toLowerCase() !== "manhwa") // ❌ exclude manhwa
+          .forEach(manga => {
+            const slide = document.createElement('div');
+            slide.className = 'carousel-item';
 
           slide.innerHTML = `
             <img src="${manga.images.jpg.large_image_url}" alt="${manga.title}" />
