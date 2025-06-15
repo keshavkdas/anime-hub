@@ -76,75 +76,65 @@ async function loadItems() {
   resultsContainer.insertAdjacentHTML("beforeend", "<p id='loading'>Loading...</p>");
 
   try {
-    const apiType = currentType === "manhwa" ? "manga" : currentType;
-    let url = `https://api.jikan.moe/v4/${apiType}?page=${currentPage}&limit=12`;
-
-    if (currentQuery) {
-      url += `&q=${encodeURIComponent(currentQuery)}`;
+    let url;
+    if (currentType === "manhwa") {
+      url = `https://api.jikan.moe/v4/top/manga?subtype=manhwa&page=${currentPage}&limit=12`;
+      if (currentQuery) url += `&q=${encodeURIComponent(currentQuery)}`;
+    } else {
+      const apiType = currentType;
+      url = `https://api.jikan.moe/v4/${apiType}?page=${currentPage}&limit=12`;
+      if (currentQuery) url += `&q=${encodeURIComponent(currentQuery)}`;
+      if (currentGenre) url += `&genres=${currentGenre}`;
     }
 
-    if (currentGenre) {
-      url += `&genres=${currentGenre}`;
-    }
-
+    console.log("Fetching URL:", url);
     const res = await fetch(url);
     const data = await res.json();
     document.getElementById("loading")?.remove();
 
-    if (!data.data || data.data.length === 0) {
-      if (currentPage === 1) {
-        resultsContainer.innerHTML = "<p>No results found.</p>";
-      }
-      hasMore = false;
-      return;
-    }
+    let items = Array.isArray(data.data) ? data.data : data.data.items || [];
 
-    // Apply Manhwa logic: filter items with type "Manhwa"
-    const items = currentType === "manhwa"
-      ? data.data.filter(m => m.type === "Manhwa")
-      : data.data;
-
-    if (items.length === 0 && currentPage === 1) {
+    if ((!items || items.length === 0) && currentPage === 1) {
       resultsContainer.innerHTML = "<p>No results found.</p>";
       hasMore = false;
       return;
     }
 
-    items.forEach(manga => {
+    items.forEach(item => {
       const card = document.createElement("div");
       card.className = "anime-card";
 
-      const title = manga.title;
-      const image = manga.images?.jpg?.image_url || "";
-      const score = manga.score ?? "N/A";
-      const type = manga.type ?? "Unknown";
-      const chapters = manga.chapters;
+      const title = item.title;
+      const imageUrl = item.images?.jpg?.image_url || "";
+      const score = item.score ?? "N/A";
+      const typeVal = item.type ?? (currentType === "manhwa" ? "Manhwa" : "Unknown");
+      const chapters = item.chapters;
 
       const infoHTML = `
         <h3>${title}</h3>
         <p><strong>Score:</strong> ${score}</p>
-        <p><strong>Type:</strong> ${type}</p>
-        ${chapters ? `<p><strong>Chapters:</strong> ${chapters}</p>` : ""}
+        <p><strong>Type:</strong> ${typeVal}</p>
+        ${["manga","manhwa"].includes(currentType) && chapters ? `<p><strong>Chapters:</strong> ${chapters}</p>` : ""}
       `;
 
       card.innerHTML = `
         <div class="card-img-wrapper">
-          <img src="${image}" alt="${title}" />
+          <img src="${imageUrl}" alt="${title}" />
         </div>
         <div class="anime-info">${infoHTML}</div>
       `;
 
       card.querySelector(".card-img-wrapper").addEventListener("click", () => {
         window.location.href = currentType === "anime"
-          ? `anime.html?id=${manga.mal_id}`
-          : `manga-details.html?id=${manga.mal_id}`;
+          ? `anime.html?id=${item.mal_id}`
+          : `manga-details.html?id=${item.mal_id}`;
       });
 
       resultsContainer.appendChild(card);
     });
 
     currentPage++;
-    hasMore = data.pagination?.has_next_page;
+    hasMore = data.pagination?.has_next_page ?? false;
   } catch (err) {
     console.error("Error fetching data:", err);
     document.getElementById("loading")?.remove();
@@ -155,6 +145,7 @@ async function loadItems() {
     isLoading = false;
   }
 }
+
 
 // Infinite scroll
 window.addEventListener("scroll", () => {
