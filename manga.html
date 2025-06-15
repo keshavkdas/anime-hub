@@ -20,7 +20,6 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: none;
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
     }
 
@@ -56,15 +55,15 @@
       font-family: 'Poppins', sans-serif;
       color: #f97316;
       text-align: center;
-      margin: 1rem 0 1rem;
+      margin: 1rem 0;
       font-size: 1.8rem;
     }
 
     .carousel-wrapper {
+      position: relative;
       background-color: #1a1a1a;
       overflow: hidden;
       height: 400px;
-      position: relative;
       margin-bottom: 1rem;
     }
 
@@ -75,16 +74,15 @@
     }
 
     .carousel-item {
-  min-width: 100%;
-  display: flex;
-  flex-direction: row-reverse; /* Poster on the right */
-  align-items: center;
-  justify-content: space-between;
-  padding: 2rem;
-  box-sizing: border-box;
-  background: linear-gradient(to left, #000000 30%, rgba(0, 0, 0, 0.7));
-}
-
+      min-width: 100%;
+      display: flex;
+      flex-direction: row-reverse;
+      align-items: center;
+      justify-content: space-between;
+      padding: 2rem;
+      box-sizing: border-box;
+      background: linear-gradient(to left, #000000 30%, rgba(0, 0, 0, 0.7));
+    }
 
     .carousel-item img {
       width: 250px;
@@ -128,6 +126,34 @@
 
     .dive-button:hover {
       background-color: #fb923c;
+    }
+
+    .carousel-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background-color: rgba(0, 0, 0, 0.5);
+      color: #f97316;
+      border: none;
+      font-size: 2rem;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      z-index: 5;
+      transition: background-color 0.3s ease;
+      border-radius: 4px;
+    }
+
+    .carousel-btn:hover {
+      background-color: rgba(249, 115, 22, 0.8);
+      color: #fff;
+    }
+
+    .carousel-btn.prev {
+      left: 10px;
+    }
+
+    .carousel-btn.next {
+      right: 10px;
     }
 
     .explore-section {
@@ -177,35 +203,6 @@
       font-size: 0.9rem;
       color: #ccc;
     }
-
-    .carousel-btn {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background-color: rgba(0, 0, 0, 0.5);
-  color: #f97316;
-  border: none;
-  font-size: 2rem;
-  padding: 0.5rem 1rem;
-  cursor: pointer;
-  z-index: 5;
-  transition: background-color 0.3s ease;
-  border-radius: 4px;
-}
-
-.carousel-btn:hover {
-  background-color: rgba(249, 115, 22, 0.8);
-  color: #fff;
-}
-
-.carousel-btn.prev {
-  left: 10px;
-}
-
-.carousel-btn.next {
-  right: 10px;
-}
-
   </style>
 </head>
 <body>
@@ -222,14 +219,11 @@
   </header>
 
   <!-- Auto Carousel Section -->
-<section class="carousel-wrapper">
-  <button class="carousel-btn prev" aria-label="Previous">&#10094;</button>
-
-  <div class="carousel-track" id="carouselTrack"></div>
-
-  <button class="carousel-btn next" aria-label="Next">&#10095;</button>
-</section>
-
+  <section class="carousel-wrapper">
+    <button class="carousel-btn prev" aria-label="Previous">&#10094;</button>
+    <div class="carousel-track" id="carouselTrack"></div>
+    <button class="carousel-btn next" aria-label="Next">&#10095;</button>
+  </section>
 
   <!-- Explore Section -->
   <section class="explore-section">
@@ -240,20 +234,23 @@
   <script>
     const track = document.getElementById("carouselTrack");
     const mangaResults = document.getElementById("mangaResults");
+    const nextBtn = document.querySelector(".carousel-btn.next");
+    const prevBtn = document.querySelector(".carousel-btn.prev");
+
+    let index = 0;
     let currentPage = 1;
     let hasMore = true;
+    let mangaList = [];
 
     async function loadAutoCarousel() {
       try {
         const res = await fetch(`https://api.jikan.moe/v4/manga?order_by=popularity&limit=10&type=manga`);
         const json = await res.json();
-        const mangaList = json.data;
+        mangaList = json.data.filter(manga => manga.type?.toLowerCase() !== "manhwa");
 
-        mangaList
-          .filter(manga => manga.type?.toLowerCase() !== "manhwa") // ❌ exclude manhwa
-          .forEach(manga => {
-            const slide = document.createElement('div');
-            slide.className = 'carousel-item';
+        mangaList.forEach(manga => {
+          const slide = document.createElement('div');
+          slide.className = 'carousel-item';
 
           slide.innerHTML = `
             <img src="${manga.images.jpg.large_image_url}" alt="${manga.title}" />
@@ -265,33 +262,31 @@
               <p><strong>Synopsis:</strong> ${manga.synopsis ? manga.synopsis.slice(0, 220) + "..." : "No description available."}</p>
               <button class="dive-button" onclick="location.href='manga-details.html?id=${manga.mal_id}'">🐠 Dive In</button>
             </div>
-            `;
-
+          `;
           track.appendChild(slide);
         });
 
         // Auto-scroll
-        let index = 0;
-        const nextBtn = document.querySelector(".carousel-btn.next");
-        const prevBtn = document.querySelector(".carousel-btn.prev");
+        setInterval(() => {
+          index = (index + 1) % mangaList.length;
+          track.style.transform = `translateX(-${index * 100}%)`;
+        }, 5000);
 
-// Auto-scroll every 5 seconds
-    setInterval(() => {
-        index = (index + 1) % mangaList.length;
-        track.style.transform = `translateX(-${index * 100}%)`;
-    }, 5000);
+        // Button events
+        nextBtn.addEventListener("click", () => {
+          index = (index + 1) % mangaList.length;
+          track.style.transform = `translateX(-${index * 100}%)`;
+        });
 
-// Manual navigation
-nextBtn.addEventListener("click", () => {
-  index = (index + 1) % mangaList.length;
-  track.style.transform = `translateX(-${index * 100}%)`;
-});
+        prevBtn.addEventListener("click", () => {
+          index = (index - 1 + mangaList.length) % mangaList.length;
+          track.style.transform = `translateX(-${index * 100}%)`;
+        });
 
-prevBtn.addEventListener("click", () => {
-  index = (index - 1 + mangaList.length) % mangaList.length;
-  track.style.transform = `translateX(-${index * 100}%)`;
-});
-
+      } catch (err) {
+        console.error("Carousel error:", err);
+      }
+    }
 
     async function loadMoreManga() {
       if (!hasMore) return;
