@@ -51,10 +51,6 @@
   font-size: 1rem;
   transition: border-color 0.3s, box-shadow 0.3s;
   appearance: none;
-  background-image: url('data:image/svg+xml;utf8,<svg fill="white" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414L10 13.414 5.293 8.707a1 1 0 010-1.414z"/></svg>');
-  background-repeat: no-repeat;
-  background-position: right 0.8rem center;
-  background-size: 1rem;
   }
 
   /* Glowing effect for inputs, selects, and button */
@@ -111,24 +107,24 @@
     box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.4);
   }
 
-  #genre,
-  #typeSelect {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  justify-content: center;
-  padding: 1.5rem 1rem;
-  background: #1a1a1a;
-  border-radius: 10px;
-  margin: 2rem auto;
-  max-width: 800px;
-  }
+#typeSelect,
+#genre {
+  padding: 10px 15px;
+  border: 2px solid #e50914;
+  background-color: transparent;
+  color: #fff;
+  font-size: 16px;
+  border-radius: 5px;
+  outline: none;
+  transition: all 0.3s ease;
+  margin: 10px;
+}
 
-  #genre:focus,
-  #typeSelect:focus {
-    border-color: #f97316;
-    box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.4);
-  }
+#typeSelect:focus,
+#genre:focus {
+  border-color: #f40612;
+  box-shadow: 0 0 5px rgba(245, 6, 6, 0.5);
+}
 
   #searchBtn {
     background: linear-gradient(to right, #f97316, #fb923c);
