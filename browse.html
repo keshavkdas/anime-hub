@@ -54,21 +54,20 @@
     gap: 10px;
     align-items: center;
     justify-content: center;
-    transition: border-color 0.3s, box-shadow 0.3s;
   }
 
   .search-section input,
   .search-section select,
   .search-section button {
     padding: 0.7rem;
-    border: 2px solid #e50914;
+    border: none;
     border-radius: 8px;
     font-size: 1rem;
-    background-color: transparent;
+    background-color: #fcd9b0;
     color: #fff;
     outline: none;
-    transition: all 0.3s ease;
-    box-shadow: 0 0 8px rgba(229, 9, 20, 0.3);
+    box-shadow: 0 0 8px rgba(249, 115, 22, 0.3);
+    transition: box-shadow 0.3s ease, transform 0.2s ease;
   }
 
   .search-section input:hover,
@@ -77,15 +76,15 @@
   .search-section select:focus,
   .search-section button:hover {
     transform: translateY(-2px);
-    box-shadow: 0 0 12px 4px rgba(229, 9, 20, 0.6);
-    border-color: #f40612;
+    box-shadow: 0 0 12px 4px rgba(249, 115, 22, 0.6);
   }
 
-  #searchInput {
-    width: 260px;
+  #searchInput,
+  #typeSelect,
+  #genre {
     background: rgba(255, 255, 255, 0.05);
     color: #fff;
-    border: 2px solid #e50914;
+    border: 1px solid #2c2c2c;
     backdrop-filter: blur(4px);
   }
 
@@ -93,33 +92,16 @@
     color: #ccc;
   }
 
-  #searchInput:focus {
+  #searchInput:focus,
+  #typeSelect:focus,
+  #genre:focus {
     border-color: #f97316;
     box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.4);
   }
 
-  #typeSelect,
-  #genre {
-    padding: 10px 15px;
-    border: 2px solid #e50914;
-    background-color: transparent;
-    color: #fff;
-    font-size: 16px;
-    border-radius: 5px;
-    outline: none;
-    transition: all 0.3s ease;
-    margin: 0 5px;
-  }
-
-  #typeSelect:focus,
-  #genre:focus {
-    border-color: #f40612;
-    box-shadow: 0 0 5px rgba(245, 6, 6, 0.5);
-  }
-
   #searchBtn {
-    background: linear-gradient(to right, #f97316, #fb923c);
-    color: #fff;
+    background-color: #f97316;
+    color: white;
     font-weight: bold;
     cursor: pointer;
     border: none;
@@ -127,7 +109,7 @@
   }
 
   #searchBtn:hover {
-    background: linear-gradient(to right, #fb923c, #facc15);
+    background-color: #fb923c;
     box-shadow: 0 6px 18px rgba(249, 115, 22, 0.5);
   }
 
