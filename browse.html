@@ -10,200 +10,225 @@
   <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500&family=Poppins&display=swap" rel="stylesheet">
   
 <style>
-  body {
-    margin: 0;
-    font-family: 'Poppins', sans-serif;
-    background-color: #121212;
-    color: #ffffff;
-  }
+  /* ========== General Styles ========== */
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background-color: #121212;
+  color: #ffffff;
+}
 
-  header {
-    background-color: #1f1f1f;
-    padding: 1rem 2rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
+header {
+  background-color: #1f1f1f;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 
-  header h1 {
-    font-family: 'Oswald', sans-serif;
-    font-size: 2rem;
-    color: #f97316;
-  }
+header h1 {
+  font-family: 'Oswald', sans-serif;
+  font-size: 2rem;
+  color: #f97316;
+}
 
-  nav a {
-    color: #fff;
-    margin-left: 2rem;
-    text-decoration: none;
-    font-weight: bold;
-  }
+nav a {
+  color: #fff;
+  margin-left: 2rem;
+  text-decoration: none;
+  font-weight: bold;
+}
 
-  nav a:hover {
-    color: #f97316;
-  }
+nav a:hover {
+  color: #f97316;
+}
 
+/* ========== Search Section Wrapper ========== */
+.search-section-wrapper {
+  display: flex;
+  justify-content: center;
+  padding: 1rem;
+}
+
+/* ========== Search Section ========== */
+.search-section {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  background-color: #222;
+  color: #fff;
+  padding: 1rem;
+  border: 1px solid #444;
+  border-radius: 8px;
+  max-width: 1000px;
+  width: 100%;
+}
+
+.search-section input,
+.search-section select,
+.search-section button {
+  padding: 0.7rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+  background-color: #000; /* Dark background */
+  color: #fff;
+  outline: none;
+  box-shadow: 0 0 8px rgba(249, 115, 22, 0.3);
+  transition: box-shadow 0.3s ease, transform 0.2s ease;
+  min-width: 160px;
+}
+
+.search-section input:hover,
+.search-section input:focus,
+.search-section select:hover,
+.search-section select:focus,
+.search-section button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 12px 4px rgba(249, 115, 22, 0.6);
+}
+
+#searchInput::placeholder {
+  color: #ccc;
+}
+
+#searchInput:focus,
+#typeSelect:focus,
+#genre:focus {
+  border-color: #f97316;
+  box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.4);
+}
+
+#searchInput,
+#typeSelect,
+#genre {
+  appearance: none;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  border: 1px solid #2c2c2c;
+  backdrop-filter: blur(4px);
+}
+
+#typeSelect option,
+#genre option {
+  background-color: #121212;
+  color: #ffffff;
+}
+
+#searchBtn {
+  background-color: #f97316;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(249, 115, 22, 0.3);
+}
+
+#searchBtn:hover {
+  background-color: #fb923c;
+  box-shadow: 0 6px 18px rgba(249, 115, 22, 0.5);
+}
+
+/* ========== Responsive Search ========== */
+@media (max-width: 600px) {
   .search-section {
-    background-color: #222;
-    color: #fff;
-    padding: 0.6rem 1rem;
-    border: 1px solid #444;
-    border-radius: 6px;
-    font-size: 1rem;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    align-items: center;
-    justify-content: center;
+    flex-direction: column;
+    align-items: stretch;
   }
 
   .search-section input,
   .search-section select,
   .search-section button {
-    padding: 0.7rem;
-    border: none;
-    border-radius: 8px;
-    font-size: 1rem;
-    background-color: #fcd9b0;
-    color: #fff;
-    outline: none;
-    box-shadow: 0 0 8px rgba(249, 115, 22, 0.3);
-    transition: box-shadow 0.3s ease, transform 0.2s ease;
-  }
-
-  .search-section input:hover,
-  .search-section input:focus,
-  .search-section select:hover,
-  .search-section select:focus,
-  .search-section button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 0 12px 4px rgba(249, 115, 22, 0.6);
-  }
-
-
-  }
-
-  #searchInput::placeholder {
-    color: #ccc;
-  }
-
-  #searchInput:focus,
-  #typeSelect:focus,
-  #genre:focus {
-    border-color: #f97316;
-    box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.4);
-  }
-  #searchInput,
-  #typeSelect,
-  #genre {
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    background-color: rgba(0, 0, 0, 0.6); /* Dark dropdown */
-    color: #fff;
-    border: 1px solid #2c2c2c;
-    backdrop-filter: blur(4px);
-  }
-
-  #typeSelect option,
-  #genre option {
-    background-color: #121212;
-    color: #ffffff;
-  }
-
-  #searchBtn {
-    background-color: #f97316;
-    color: white;
-    font-weight: bold;
-    cursor: pointer;
-    border: none;
-    box-shadow: 0 4px 14px rgba(249, 115, 22, 0.3);
-  }
-
-  #searchBtn:hover {
-    background-color: #fb923c;
-    box-shadow: 0 6px 18px rgba(249, 115, 22, 0.5);
-  }
-
-  #results {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 2rem;
-    padding: 2rem;
-  }
-
-  .anime-card {
-    background-color: #1f1f1f;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
-    transition: transform 0.3s ease;
-    cursor: pointer;
-  }
-
-  .anime-card:hover {
-    transform: scale(1.05);
-  }
-
-  .anime-card img {
     width: 100%;
-    height: 320px;
-    object-fit: contain;
   }
+}
 
-  .anime-info {
-    padding: 1rem;
-  }
+/* ========== Results Grid ========== */
+#results {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 2rem;
+  padding: 2rem;
+}
 
-  .anime-info h3 {
-    font-size: 1.2rem;
-    margin: 0.5rem 0;
-    color: #f97316 !important;
-  }
+/* ========== Anime Card ========== */
+.anime-card {
+  background-color: #1f1f1f;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
+  transition: transform 0.3s ease;
+  cursor: pointer;
+}
 
-  .anime-info p {
-    color: #ddd;
-    margin: 4px 0;
-    font-size: 14px;
-  }
+.anime-card:hover {
+  transform: scale(1.05);
+}
 
-  .anime-card a,
-  .anime-card a:visited,
-  .anime-card a:hover,
-  .anime-card a:active {
-    color: inherit;
-    text-decoration: none;
-  }
+.anime-card img {
+  width: 100%;
+  height: 320px;
+  object-fit: contain;
+}
 
-  .anime-info p strong {
-    display: inline-block;
-    min-width: 75px;
-    color: #f97316;
-    font-weight: 600;
-  }
+.anime-info {
+  padding: 1rem;
+}
 
-  .genre-tag {
-    display: inline-block;
-    background-color: #2d2d2d;
-    color: #fff;
-    padding: 3px 7px;
-    margin: 4px 4px 0 0;
-    border-radius: 5px;
-    font-size: 12px;
-    transition: background-color 0.3s ease;
-  }
+.anime-info h3 {
+  font-size: 1.2rem;
+  margin: 0.5rem 0;
+  color: #f97316 !important;
+}
 
-  .genre-tag:hover {
-    background-color: #f97316;
-    color: #fff;
-    cursor: default;
-  }
+.anime-info p {
+  color: #ddd;
+  margin: 4px 0;
+  font-size: 14px;
+}
 
-  footer {
-    text-align: center;
-    padding: 1rem;
-    background-color: #1f1f1f;
-    font-size: 0.9rem;
-  }
+.anime-info p strong {
+  display: inline-block;
+  min-width: 75px;
+  color: #f97316;
+  font-weight: 600;
+}
+
+.anime-card a,
+.anime-card a:visited,
+.anime-card a:hover,
+.anime-card a:active {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ========== Genre Tags ========== */
+.genre-tag {
+  display: inline-block;
+  background-color: #2d2d2d;
+  color: #fff;
+  padding: 3px 7px;
+  margin: 4px 4px 0 0;
+  border-radius: 5px;
+  font-size: 12px;
+  transition: background-color 0.3s ease;
+}
+
+.genre-tag:hover {
+  background-color: #f97316;
+  color: #fff;
+  cursor: default;
+}
+
+/* ========== Footer ========== */
+footer {
+  text-align: center;
+  padding: 1rem;
+  background-color: #1f1f1f;
+  font-size: 0.9rem;
+}
+
 </style>
 
 
@@ -221,18 +246,20 @@
     </nav>
   </header>
 
-  <section class="search-section">
-    <input type="text" id="searchInput" placeholder="Search anime...">
-    <select id="genre">
-      <option value="">All Genres</option>
-    </select>  
+  <div class="search-section-wrapper">
+  <div class="search-section">
+    <input type="text" id="searchInput" placeholder="Search anime" />
     <select id="typeSelect">
       <option value="anime">Anime</option>
       <option value="manga">Manga</option>
       <option value="manhwa">Manhwa</option>
     </select>
+    <select id="genre">
+      <option value="">All Genres</option>
+    </select>
     <button id="searchBtn">Search</button>
-  </section>
+  </div>
+</div>
 
   <div id="results">
     <!-- Anime cards will be injected here -->
