@@ -382,35 +382,43 @@
   // }
 
       document.addEventListener("click", (e) => {
-      if (e.target.classList.contains("fav-btn")) {
-        const id = e.target.dataset.id;
-        let favorites = JSON.parse(localStorage.getItem("animeFavorites")) || [];
+  if (e.target.classList.contains("fav-btn")) {
+    const id = e.target.dataset.id;
+    if (!id) return; // safety check
 
-        const existingIndex = favorites.findIndex(fav => fav.id === id);
+    let favorites = JSON.parse(localStorage.getItem("animeFavorites")) || [];
+    const existingIndex = favorites.findIndex(fav => fav.id === id);
 
-        if (existingIndex > -1) {
-          favorites.splice(existingIndex, 1);
-          e.target.innerText = "❤️";
-          e.target.classList.remove("active");
-        } else {
-          const card = e.target.closest(".anime-card");
-          const title = card.querySelector("h3").innerText;
-          const imageUrl = card.querySelector("img").src;
+    if (existingIndex > -1) {
+      // Remove from favorites
+      favorites.splice(existingIndex, 1);
+      e.target.innerText = "❤️";
+      e.target.classList.remove("active");
+      showToast('Removed from favorites!');
+    } else {
+      // Add to favorites
+      const card = e.target.closest(".anime-card");
+      if (!card) return; // safety check if structure changes
 
-          favorites.push({
-            id,
-            title,
-            imageUrl,
-            type: "manga"
-          });
+      const title = card.querySelector("h3")?.innerText || "Unknown Title";
+      const imageUrl = card.querySelector("img")?.src || "";
 
-          e.target.innerText = "💖";
-          e.target.classList.add("active");
-        }
+      favorites.push({
+        id,
+        title,
+        imageUrl,
+        type: "manga"  // you can change this dynamically if needed
+      });
 
-        localStorage.setItem("animeFavorites", JSON.stringify(favorites));
-      }
-    });
+      e.target.innerText = "💖";
+      e.target.classList.add("active");
+      showToast('Added to favorites!');
+    }
+
+    localStorage.setItem("animeFavorites", JSON.stringify(favorites));
+  }
+});
+
 
   function showToast(message) {
     const toast = document.getElementById('toast');
