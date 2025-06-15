@@ -368,18 +368,49 @@
     return array;
   }
 
-  function addToFavorites(id, title, imageUrl) {
-    let favs = JSON.parse(localStorage.getItem('animeFavorites')) || [];
+  // function addToFavorites(id, title, imageUrl) {
+  //   let favs = JSON.parse(localStorage.getItem('animeFavorites')) || [];
 
-    if (favs.some(fav => fav.id === id)) {
-      showToast('This anime is already in your favorites!');
-      return;
-    }
+  //   if (favs.some(fav => fav.id === id)) {
+  //     showToast('This anime is already in your favorites!');
+  //     return;
+  //   }
 
-    favs.push({ id, title, imageUrl });
-    localStorage.setItem('animeFavorites', JSON.stringify(favs));
-    showToast('Added to favorites!');
-  }
+  //   favs.push({ id, title, imageUrl });
+  //   localStorage.setItem('animeFavorites', JSON.stringify(favs));
+  //   showToast('Added to favorites!');
+  // }
+
+      document.addEventListener("click", (e) => {
+      if (e.target.classList.contains("fav-btn")) {
+        const id = e.target.dataset.id;
+        let favorites = JSON.parse(localStorage.getItem("animeFavorites")) || [];
+
+        const existingIndex = favorites.findIndex(fav => fav.id === id);
+
+        if (existingIndex > -1) {
+          favorites.splice(existingIndex, 1);
+          e.target.innerText = "❤️";
+          e.target.classList.remove("active");
+        } else {
+          const card = e.target.closest(".anime-card");
+          const title = card.querySelector("h3").innerText;
+          const imageUrl = card.querySelector("img").src;
+
+          favorites.push({
+            id,
+            title,
+            imageUrl,
+            type: "manga"
+          });
+
+          e.target.innerText = "💖";
+          e.target.classList.add("active");
+        }
+
+        localStorage.setItem("animeFavorites", JSON.stringify(favorites));
+      }
+    });
 
   function showToast(message) {
     const toast = document.getElementById('toast');
