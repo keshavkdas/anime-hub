@@ -364,20 +364,31 @@
       const id = e.target.dataset.id;
       let favorites = JSON.parse(localStorage.getItem("mangaFavorites")) || [];
 
-      if (favorites.includes(id)) {
-        favorites = favorites.filter(fav => fav !== id);
+      const existingIndex = favorites.findIndex(fav => fav.id === id);
+
+      if (existingIndex > -1) {
+        favorites.splice(existingIndex, 1);
         e.target.innerText = "❤️";
         e.target.classList.remove("active");
       } else {
-        favorites.push(id);
-        e.target.innerText = "💖";
-        e.target.classList.add("active");
-      }
+        const card = e.target.closest(".anime-card");
+        const title = card.querySelector("h3").innerText;
+        const image = card.querySelector("img").src;
 
+      favorites.push({
+        id,
+        title,
+        image,
+        type: "manga"
+      });
+
+      e.target.innerText = "💖";
+      e.target.classList.add("active");
+      }
       localStorage.setItem("mangaFavorites", JSON.stringify(favorites));
+
     }
   });
-
   window.addEventListener("DOMContentLoaded", () => {
     loadAutoCarousel();
     loadMoreManga();
