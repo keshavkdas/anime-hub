@@ -72,16 +72,11 @@ async function loadGenres() {
 async function loadItems() {
   if (isLoading || !hasMore) return;
   isLoading = true;
+
   resultsContainer.insertAdjacentHTML("beforeend", "<p id='loading'>Loading...</p>");
 
-  // Always clean up old loading message first
-  const old = document.getElementById('loading');
-  if (old) old.remove();
-  
   try {
-    let url;
     if (currentType === "manhwa") {
-      // Combine top and search fetch for broader coverage
       const pageSize = 25;
       const [searchRes, topRes] = await Promise.all([
         fetch(`https://api.jikan.moe/v4/manga?page=${currentPage}&limit=${pageSize}${currentQuery ? `&q=${encodeURIComponent(currentQuery)}` : ''}`),
@@ -93,18 +88,15 @@ async function loadItems() {
       if (Array.isArray(searchData.data)) combined = combined.concat(searchData.data);
       if (Array.isArray(topData.data)) combined = combined.concat(topData.data);
 
-      // Filter types
       const allowed = ["manhwa", "manhua", "light novel", "web novel"];
       let items = combined.filter(item => allowed.includes(item.type?.toLowerCase()));
 
-      // Apply genre filter if selected
       if (currentGenre) {
         items = items.filter(item =>
           item.genres?.some(g => g.mal_id.toString() === currentGenre)
         );
       }
 
-      // Prevent duplicates using MAL ID
       const seen = new Set();
       items = items.filter(item => {
         if (seen.has(item.mal_id)) return false;
@@ -112,7 +104,6 @@ async function loadItems() {
         return true;
       });
 
-      // Limit items
       items = items.slice(0, 12);
 
       document.getElementById("loading")?.remove();
@@ -123,7 +114,6 @@ async function loadItems() {
         return;
       }
 
-      // Render the items
       items.forEach(item => {
         const card = document.createElement("div");
         card.className = "anime-card";
@@ -157,63 +147,69 @@ async function loadItems() {
       hasMore = searchData.pagination?.has_next_page || topData.pagination?.has_next_page || false;
 
     } else {
+      // Anime or Manga logic
+      const url = `https://api.jikan.moe/v4/${currentType}?page=${currentPage}&limit=12${currentQuery ? `&q=${encodeURIComponent(currentQuery)}` : ''}${currentGenre ? `&genres=${currentGenre}` : ''}`;
+      const res = await fetch(url);
+      const data = await res.json();
+
+      const items = Array.isArray(data.data) ? data.data : [];
       document.getElementById("loading")?.remove();
 
-  let url = `https://api.jikan.moe/v4/${currentType}?page=${currentPage}&limit=12${currentQuery ? `&q=${encodeURIComponent(currentQuery)}` : ''}${currentGenre ? `&genres=${currentGenre}` : ''}`;
-  console.log("Fetching:", url);
-  const res = await fetch(url);
-  const data = await res.json();
-
-  const items = Array.isArray(data.data) ? data.data : [];
-  if (!items.length && currentPage === 1) {
-    resultsContainer.innerHTML = "<p>No results found.</p>";
-    hasMore = false;
-  } else {
-    items.forEach(item => {
-      const card = document.createElement("div");
-      card.className = "anime-card";
-      const title = item.title;
-      const imageUrl = item.images?.jpg?.image_url || "";
-      const score = item.score ?? "N/A";
-      const typeVal = item.type ?? "";
-      const episodes = item.episodes;
-      const chapters = item.chapters;
-
-      let infoHTML = `
-        <h3>${title}</h3>
-        <p><strong>Score:</strong> ${score}</p>
-        <p><strong>Type:</strong> ${typeVal}</p>
-      `;
-      if (currentType === "anime" && typeVal !== "Movie" && episodes) {
-        infoHTML += `<p><strong>Episodes:</strong> ${episodes}</p>`;
-      }
-      if (["manga"].includes(currentType) && chapters) {
-        infoHTML += `<p><strong>Chapters:</strong> ${chapters}</p>`;
+      if (!items.length && currentPage === 1) {
+        resultsContainer.innerHTML = "<p>No results found.</p>";
+        hasMore = false;
+        return;
       }
 
-      card.innerHTML = `
-        <div class="card-img-wrapper"><img src="${imageUrl}" alt="${title}" /></div>
-        <div class="anime-info">${infoHTML}</div>
-      `;
-      card.querySelector(".card-img-wrapper").addEventListener("click", () => {
-        const url = currentType === "anime"
-          ? `anime.html?id=${item.mal_id}`
-          : `manga-details.html?id=${item.mal_id}`;
-        window.location.href = url;
+      items.forEach(item => {
+        const card = document.createElement("div");
+        card.className = "anime-card";
+
+        const title = item.title || "Untitled";
+        const imageUrl = item.images?.jpg?.image_url || "";
+        const score = item.score ?? "N/A";
+        const typeVal = item.type ?? "";
+        const episodes = item.episodes;
+        const chapters = item.chapters;
+
+        let infoHTML = `
+          <h3>${title}</h3>
+          <p><strong>Score:</strong> ${score}</p>
+          <p><strong>Type:</strong> ${typeVal}</p>
+        `;
+        if (currentType === "anime" && typeVal !== "Movie" && episodes) {
+          infoHTML += `<p><strong>Episodes:</strong> ${episodes}</p>`;
+        }
+        if (currentType === "manga" && chapters) {
+          infoHTML += `<p><strong>Chapters:</strong> ${chapters}</p>`;
+        }
+
+        card.innerHTML = `
+          <div class="card-img-wrapper"><img src="${imageUrl}" alt="${title}" /></div>
+          <div class="anime-info">${infoHTML}</div>
+        `;
+
+        card.querySelector(".card-img-wrapper").addEventListener("click", () => {
+          const url = currentType === "anime"
+            ? `anime.html?id=${item.mal_id}`
+            : `manga-details.html?id=${item.mal_id}`;
+          window.location.href = url;
+        });
+
+        resultsContainer.appendChild(card);
       });
-      resultsContainer.appendChild(card);
-    });
-    currentPage++;
-    hasMore = data.pagination?.has_next_page ?? false;
-  }
-}
+
+      currentPage++;
+      hasMore = data.pagination?.has_next_page ?? false;
     }
+
   } catch (err) {
     console.error("Error fetching data:", err);
     document.getElementById("loading")?.remove();
     if (currentPage === 1) resultsContainer.innerHTML = "<p>Error loading content. Try again later.</p>";
   } finally {
     isLoading = false;
+    console.log("loadItems done:", { currentType, currentPage, hasMore });
   }
 }
 
