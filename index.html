@@ -339,7 +339,13 @@
             <a href="anime.html?id=${id}">
               <img src="${imageUrl}" alt="${title}" loading="lazy" onerror="this.src='fallback.jpg';">
             </a>
-            <div class="favorite-bubble" onclick="event.stopPropagation(); addToFavorites(${id}, '${title}', '${imageUrl}')">❤️</div>
+            <div 
+              class="favorite-bubble" 
+              data-id="${id}" 
+              onclick="event.stopPropagation(); addToFavorites('${id}', \`${title}\`, \`${imageUrl}\`)"
+            >
+            ❤️
+            </div>
             <h3>${title}</h3>
           </div>
         `;
@@ -368,50 +374,40 @@
     return array;
   }
 
-  // function addToFavorites(id, title, imageUrl) {
-  //   let favs = JSON.parse(localStorage.getItem('animeFavorites')) || [];
-
-  //   if (favs.some(fav => fav.id === id)) {
-  //     showToast('This anime is already in your favorites!');
-  //     return;
-  //   }
-
-  //   favs.push({ id, title, imageUrl });
-  //   localStorage.setItem('animeFavorites', JSON.stringify(favs));
-  //   showToast('Added to favorites!');
-  // }
-
-      document.addEventListener("click", (e) => {
-  if (e.target.classList.contains("favorite-bubble")) {
-    const card = e.target.closest(".anime-card");
-    if (!card) return;
-
-    const id = card.querySelector("a")?.href.match(/id=(\d+)/)?.[1];
-    if (!id) return;
-
-    let favorites = JSON.parse(localStorage.getItem("animeFavorites")) || [];
-    const existingIndex = favorites.findIndex(fav => fav.id == id);
-
-    if (existingIndex > -1) {
-      // Remove from favorites
-      favorites.splice(existingIndex, 1);
-      e.target.classList.remove("active");
-      e.target.textContent = "❤️";
-      showToast('Removed from favorites!');
-    } else {
-      const title = card.querySelector("h3")?.innerText || "Unknown Title";
-      const imageUrl = card.querySelector("img")?.src || "";
-
-      favorites.push({ id: parseInt(id), title, imageUrl });
-      e.target.classList.add("active");
-      e.target.textContent = "💖";
-      showToast('Added to favorites!');
+function addToFavorites(id, title, imageUrl) {
+  try {
+    if (!id || !title || !imageUrl) {
+      showToast('Missing anime info!');
+      return;
     }
 
-    localStorage.setItem("animeFavorites", JSON.stringify(favorites));
-  }
-});
+    const favs = JSON.parse(localStorage.getItem('animeFavorites')) || [];
+    const index = favs.findIndex(fav => String(fav.id) === String(id));
+    const heartBtn = document.querySelector(`.favorite-bubble[data-id="${id}"]`);
 
+    if (index > -1) {
+      // Already in favorites: Remove
+      favs.splice(index, 1);
+      showToast('Removed from favorites!');
+      if (heartBtn) heartBtn.textContent = '❤️';
+    } else {
+      // Not in favorites: Add
+      favs.push({
+        id: String(id),
+        title: title.trim(),
+        imageUrl: imageUrl.trim(),
+        type: 'anime'
+      });
+      showToast('Added to favorites!');
+      if (heartBtn) heartBtn.textContent = '💖';
+    }
+
+    localStorage.setItem('animeFavorites', JSON.stringify(favs));
+  } catch (err) {
+    console.error('Error toggling favorite:', err);
+    showToast('Something went wrong!');
+  }
+}
 
 
   function showToast(message) {
@@ -500,8 +496,6 @@
     }
   });
 }
-
-// Call this after loading new anime cards
 markFavoritesActive();
 
 </script>
