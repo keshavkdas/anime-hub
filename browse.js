@@ -76,7 +76,9 @@ async function loadItems() {
   resultsContainer.insertAdjacentHTML("beforeend", "<p id='loading'>Loading...</p>");
 
   try {
-    let url = `https://api.jikan.moe/v4/${currentType === "manhwa" ? "manga" : currentType}?page=${currentPage}&limit=25`;
+    // Fetch from manga endpoint for both "manga" and "manhwa"
+    const apiType = currentType === "manhwa" ? "manga" : currentType;
+    let url = `https://api.jikan.moe/v4/${apiType}?page=${currentPage}&limit=25`;
 
     if (currentQuery) {
       url += `&q=${encodeURIComponent(currentQuery)}`;
@@ -98,18 +100,18 @@ async function loadItems() {
       return;
     }
 
-    // ✅ Filter strictly by type === "Manhwa" for manhwa section
-    const filteredData = currentType === "manhwa"
+    // Filter manhwa manually
+    const items = currentType === "manhwa"
       ? data.data.filter(item => item.type === "Manhwa")
       : data.data;
 
-    if (filteredData.length === 0 && currentPage === 1) {
+    if (items.length === 0 && currentPage === 1) {
       resultsContainer.innerHTML = "<p>No results found.</p>";
       hasMore = false;
       return;
     }
 
-    filteredData.forEach(item => {
+    items.forEach(item => {
       const card = document.createElement("div");
       card.className = "anime-card";
 
