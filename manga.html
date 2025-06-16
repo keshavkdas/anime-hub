@@ -259,6 +259,26 @@
     <div id="mangaResults" class="results-grid"></div>
   </section>
 
+  <div id="toast" style="
+  visibility: hidden;
+  min-width: 250px;
+  background-color: #f97316;
+  color: white;
+  text-align: center;
+  border-radius: 4px;
+  padding: 12px;
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-weight: bold;
+  font-size: 16px;
+  z-index: 1000;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+  ">
+  Added to favorites!
+</div>
+
   <script>
     const track = document.getElementById("carouselTrack");
     const mangaResults = document.getElementById("mangaResults");
@@ -375,7 +395,7 @@
           favorites.splice(existingIndex, 1);
           e.target.innerText = "❤️";
           e.target.classList.remove("active");
-          showToast("Removed from Favorites ✅");
+          showToast("Removed from Favorites!");
         } else {
           const card = e.target.closest(".anime-card");
           const title = card.querySelector("h3").innerText;
@@ -390,7 +410,7 @@
 
           e.target.innerText = "💖";
           e.target.classList.add("active");
-          showToast("Added to Favorites 💖");
+          showToast("Added to Favorites!");
         }
 
         localStorage.setItem("mangaFavorites", JSON.stringify(favorites));
