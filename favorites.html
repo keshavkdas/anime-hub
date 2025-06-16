@@ -65,11 +65,24 @@
     }
 
     .favorites-list {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 1rem;
-      padding: 0 1rem;
-    }
+  display: flex;
+  overflow-x: auto;
+  gap: 1rem;
+  padding: 1rem;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+}
+
+.favorites-list::-webkit-scrollbar {
+  height: 8px;
+  background: #1a1a1a;
+}
+
+.favorites-list::-webkit-scrollbar-thumb {
+  background: #f97316;
+  border-radius: 10px;
+}
+
 
     @media (max-width: 768px) {
       .favorites-list {
@@ -83,19 +96,22 @@
       }
     }
 
-    .fav-card {
-      background-color: #222;
-      border-radius: 10px;
-      overflow: hidden;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.7);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 0.5rem;
-      position: relative;
-      transition: transform 0.2s ease;
-      cursor: pointer;
-    }
+   .fav-card {
+  flex: 0 0 auto;
+  width: 200px;
+  scroll-snap-align: start;
+  background-color: #222;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.7);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.5rem;
+  position: relative;
+  transition: transform 0.2s ease;
+  cursor: pointer;
+}
 
     .fav-card:hover {
       transform: scale(1.05);
