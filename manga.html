@@ -431,19 +431,17 @@
     });
 
     function showToast(message) {
-  const toast = document.getElementById("toast");
-  toast.innerText = message;
-  toast.style.display = "block";
-  toast.style.opacity = "1";
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.style.visibility = 'visible';
+    toast.style.opacity = '1';
 
-  setTimeout(() => {
-    toast.style.opacity = "0";
-  }, 2000);
-
-  setTimeout(() => {
-    toast.style.display = "none";
-  }, 2500);
-}
+    clearTimeout(toastTimeout);
+    toastTimeout = setTimeout(() => {
+      toast.style.opacity = '0';
+      toast.style.visibility = 'hidden';
+    }, 2500);
+  }
 
   </script>
 
