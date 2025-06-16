@@ -130,31 +130,34 @@
     }
 
     .character-bubble {
-      background: #1e1e1e;
-      border-radius: 50%;
-      width: 120px;
-      height: 120px;
-      flex-shrink: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 10px;
-    }
+  width: 120px;
+  flex-shrink: 0;
+  text-align: center;
+}
 
-    .character-bubble img {
-      width: 80px;
-      height: 80px;
-      border-radius: 50%;
-      object-fit: cover;
-    }
+.character-bubble .img-wrapper {
+  width: 100px;
+  height: 100px;
+  margin: 0 auto;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid #f97316;
+  box-shadow: 0 0 10px #f97316aa;
+}
 
-    .character-name {
-      margin-top: 0.5rem;
-      font-weight: bold;
-      font-size: 0.8rem;
-    }
+.character-bubble img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.character-name {
+  margin-top: 0.5rem;
+  font-weight: bold;
+  font-size: 0.8rem;
+  color: #fff;
+}
+
 
     .related-list,
     .chapter-list {
@@ -283,11 +286,13 @@ async function fetchCharacters() {
   const { data } = await res.json();
   const html = data.slice(0, 10).map(c => `
     <div class="character-bubble">
-      <a href="character.html?id=${c.character.mal_id}">
-        <img src="${c.character.images.jpg.image_url}" alt="">
-      </a>
-      <div class="character-name">${c.character.name}</div>
+  <a href="character.html?id=${c.character.mal_id}">
+    <div class="img-wrapper">
+      <img src="${c.character.images.jpg.image_url}" alt="">
     </div>
+  </a>
+  <div class="character-name">${c.character.name}</div>
+</div>
   `).join('');
   document.getElementById('characterList').innerHTML = html;
 }
