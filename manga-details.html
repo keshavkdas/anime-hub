@@ -180,32 +180,39 @@
         </div>`;
 
       const favBtn = document.getElementById("favBtn");
-      let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
-      let isFav = favorites.some(f => f.id === data.mal_id);
 
-      // Set initial heart state
-      favBtn.textContent = isFav ? '💖' : '❤️';
+// Load current favorites from localStorage
+let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
 
-      favBtn.addEventListener("click", () => {
-        isFav = !isFav;
+// Check if this manga is already a favorite
+const mangaExists = favorites.some(f => f.id === data.mal_id);
+if (mangaExists) favBtn.classList.add("active");
 
-        if (isFav) {
-          // Add to favorites
-          favorites.push({
-            id: data.mal_id,
-            title: data.title,
-            image: img,
-            type: "manga"
-          });
-          favBtn.textContent = '💖';
-        } else {
-          // Remove from favorites
-          favorites = favorites.filter(f => f.id !== data.mal_id);
-          favBtn.textContent = '❤️';
-        }
+// Toggle favorite status
+favBtn.addEventListener("click", () => {
+  let updatedFavorites = JSON.parse(localStorage.getItem("favorites")) || [];
 
-        localStorage.setItem("favorites", JSON.stringify(favorites));
-      });
+  const index = updatedFavorites.findIndex(f => f.id === data.mal_id);
+
+  if (index === -1) {
+    // Not in favorites, so add it
+    updatedFavorites.push({
+      id: data.mal_id,
+      title: data.title,
+      image: img,
+      type: "manga"
+    });
+    favBtn.classList.add("active");
+  } else {
+    // Already in favorites, so remove it
+    updatedFavorites.splice(index, 1);
+    favBtn.classList.remove("active");
+  }
+
+  // Save back to localStorage
+  localStorage.setItem("favorites", JSON.stringify(updatedFavorites));
+});
+
 
     } catch (err) {
       container.innerHTML = `<p>Error loading manga details.</p>`;
