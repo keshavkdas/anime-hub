@@ -334,53 +334,52 @@
   }
 
   async function loadMoreManhwa() {
-    if (!hasMore) return;
-    try {
-      const res = await fetch(`https://api.jikan.moe/v4/manga?page=${currentPage}&limit=12`);
-      const json = await res.json();
-      const favorites = JSON.parse(localStorage.getItem(favKey)) || [];
+  if (!hasMore) return;
 
-      json.data.forEach(manhwa => {
-        // ✅ Fix: compare lowercase `type` properly
-        if (!manhwa.type || manhwa.type.toLowerCase() !== type) return;
+  try {
+    const res = await fetch(`https://api.jikan.moe/v4/manga?page=${currentPage}&limit=25`);
+    const json = await res.json();
 
-        const card = document.createElement("div");
-        card.className = "anime-card";
+    const favorites = JSON.parse(localStorage.getItem(favKey)) || [];
 
-        const title = manhwa.title;
-        const image = manhwa.images?.jpg?.large_image_url || manhwa.images?.jpg?.image_url || "";
-        const score = manhwa.score ?? "N/A";
-        const chapters = manhwa.chapters;
-        const isFavorited = favorites.some(fav => fav.id?.toString() === manhwa.mal_id.toString());
+    json.data.forEach(manhwa => {
+      // Filter strictly for manhwa
+      if (manhwa.type?.toLowerCase() !== "manhwa") return;
 
-        card.innerHTML = `
-          <div class="card-img-wrapper">
-            <img src="${image}" alt="${title}" />
-            <button class="fav-btn ${isFavorited ? 'active' : ''}" data-id="${manhwa.mal_id}" title="Add to favorites">${isFavorited ? '💖' : '❤️'}</button>
-          </div>
-          <div class="anime-info">
-            <h3>${title}</h3>
-            <p><strong>Score:</strong> ${score}</p>
-            <p><strong>Type:</strong> ${manhwa.type}</p>
-            ${chapters ? `<p><strong>Chapters:</strong> ${chapters}</p>` : ""}
-          </div>
-        `;
+      const isFavorited = favorites.some(fav => fav.id?.toString() === manhwa.mal_id.toString());
 
-        card.querySelector(".card-img-wrapper").addEventListener("click", (e) => {
-          if (!e.target.classList.contains("fav-btn")) {
-            window.location.href = `manga-details.html?id=${manhwa.mal_id}&type=${type}`;
-          }
-        });
+      const card = document.createElement("div");
+      card.className = "anime-card";
 
-        manhwaResults.appendChild(card);
+      card.innerHTML = `
+        <div class="card-img-wrapper">
+          <img src="${manhwa.images?.jpg?.image_url}" alt="${manhwa.title}" />
+          <button class="fav-btn ${isFavorited ? 'active' : ''}" data-id="${manhwa.mal_id}" title="Add to favorites">${isFavorited ? '💖' : '❤️'}</button>
+        </div>
+        <div class="anime-info">
+          <h3>${manhwa.title}</h3>
+          <p><strong>Score:</strong> ${manhwa.score ?? "N/A"}</p>
+          <p><strong>Type:</strong> ${manhwa.type}</p>
+          ${manhwa.chapters ? `<p><strong>Chapters:</strong> ${manhwa.chapters}</p>` : ""}
+        </div>
+      `;
+
+      card.querySelector(".card-img-wrapper").addEventListener("click", (e) => {
+        if (!e.target.classList.contains("fav-btn")) {
+          window.location.href = `manga-details.html?id=${manhwa.mal_id}&type=manhwa`;
+        }
       });
 
-      currentPage++;
-      hasMore = json.pagination?.has_next_page;
-    } catch (err) {
-      console.error("Failed to load manhwa:", err);
-    }
+      manhwaResults.appendChild(card);
+    });
+
+    currentPage++;
+    hasMore = json.pagination?.has_next_page;
+  } catch (err) {
+    console.error("Failed to load manhwa:", err);
   }
+}
+
 
   document.addEventListener("click", (e) => {
     if (e.target.classList.contains("fav-btn")) {
