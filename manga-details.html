@@ -157,7 +157,7 @@ function isInFavorites(id) {
   return favs.some(fav => String(fav.id) === String(id));
 }
 
-function addToFavorites(id, title, imageUrl, favKey, type) {
+function addToFavorites(id, title, imageUrl) {
   const favs = JSON.parse(localStorage.getItem(favKey)) || [];
   const index = favs.findIndex(fav => String(fav.id) === String(id));
   const heartBtn = document.querySelector(`.favorite-bubble[data-id="${id}"]`);
@@ -197,12 +197,11 @@ async function fetchMangaDetails() {
     const { data } = await res.json();
     const img = data.images.jpg.image_url;
 
-    // ✅ Determine if it's manhwa before using favKey or type
+    // ✅ Detect manhwa correctly before setting favKey
     const isManhwa = data.genres.some(g => g.name.toLowerCase() === 'manhwa');
     type = isManhwa ? 'manhwa' : 'manga';
     favKey = isManhwa ? 'manhwaFavorites' : 'mangaFavorites';
 
-    // ✅ Now it's safe to use favKey
     container.innerHTML = `
       <div class="anime-detail-header">
         <div class="anime-image-container">
@@ -223,7 +222,7 @@ async function fetchMangaDetails() {
 
     const heartBtn = document.querySelector(`.favorite-bubble[data-id="${data.mal_id}"]`);
     heartBtn.addEventListener('click', () => {
-      addToFavorites(data.mal_id, data.title, img);
+      addToFavorites(data.mal_id, data.title, img); // uses updated favKey + type
     });
 
     markFavoriteBubble(data.mal_id);
@@ -276,6 +275,7 @@ fetchCharacters();
 fetchRelated();
 fetchChapters();
 </script>
+
 
 </body>
 </html>
