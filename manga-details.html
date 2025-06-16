@@ -189,18 +189,20 @@
 
 <div class="container">
   <div id="mangaDetails"></div>
-  <div class="section">
-    <h3>Characters</h3>
-    <div class="character-list" id="characterList"></div>
-  </div>
-  <div class="section">
-    <h3>Related Works</h3>
-    <div class="related-list" id="relatedList"></div>
-  </div>
-  <div class="section">
-    <h3>Chapters</h3>
-    <div class="chapter-list" id="chapterList"></div>
-  </div>
+  <div class="section" id="characterSection">
+  <h3>Characters</h3>
+  <div class="character-list" id="characterList"></div>
+</div>
+
+<div class="section" id="relatedSection">
+  <h3>Related Works</h3>
+  <div class="related-list" id="relatedList"></div>
+</div>
+
+<div class="section" id="chapterSection">
+  <h3>Chapters</h3>
+  <div class="chapter-list" id="chapterList"></div>
+</div>
 </div>
 
 <script>
@@ -284,15 +286,22 @@ async function fetchMangaDetails() {
 async function fetchCharacters() {
   const res = await fetch(`https://api.jikan.moe/v4/manga/${mangaId}/characters`);
   const { data } = await res.json();
+  const characterSection = document.getElementById('characterSection');
+
+  if (!data || data.length === 0) {
+    characterSection.remove();
+    return;
+  }
+
   const html = data.slice(0, 10).map(c => `
     <div class="character-bubble">
-  <a href="character.html?id=${c.character.mal_id}">
-    <div class="img-wrapper">
-      <img src="${c.character.images.jpg.image_url}" alt="">
+      <a href="character.html?id=${c.character.mal_id}">
+        <div class="img-wrapper">
+          <img src="${c.character.images.jpg.image_url}" alt="">
+        </div>
+      </a>
+      <div class="character-name">${c.character.name}</div>
     </div>
-  </a>
-  <div class="character-name">${c.character.name}</div>
-</div>
   `).join('');
   document.getElementById('characterList').innerHTML = html;
 }
@@ -300,14 +309,39 @@ async function fetchCharacters() {
 async function fetchRelated() {
   const res = await fetch(`https://api.jikan.moe/v4/manga/${mangaId}/relations`);
   const { data } = await res.json();
-  const html = data.flatMap(r => r.entry.map(i => `<div class="related"><strong>${i.name}</strong><p>${r.relation}</p></div>`)).join('');
+  const relatedSection = document.getElementById('relatedSection');
+
+  const html = data.flatMap(r =>
+    r.entry.map(i =>
+      `<div class="related"><strong>${i.name}</strong><p>${r.relation}</p></div>`
+    )
+  ).join('');
+
+  if (!html.trim()) {
+    relatedSection.remove();
+    return;
+  }
+
   document.getElementById('relatedList').innerHTML = html;
 }
 
 async function fetchChapters() {
   const res = await fetch(`https://api.jikan.moe/v4/manga/${mangaId}/chapters`);
   const { data } = await res.json();
-  const html = data.slice(0, 20).map(c => `<div class="chapter"><strong>Chapter ${c.mal_id}</strong><p>${c.title || 'Untitled'}</p></div>`).join('');
+  const chapterSection = document.getElementById('chapterSection');
+
+  if (!data || data.length === 0) {
+    chapterSection.remove();
+    return;
+  }
+
+  const html = data.slice(0, 20).map(c => `
+    <div class="chapter">
+      <strong>Chapter ${c.mal_id}</strong>
+      <p>${c.title || 'Untitled'}</p>
+    </div>
+  `).join('');
+
   document.getElementById('chapterList').innerHTML = html;
 }
 
@@ -316,5 +350,6 @@ fetchCharacters();
 fetchRelated();
 fetchChapters();
 </script>
+
 </body>
 </html>
