@@ -210,9 +210,16 @@
 
       card.addEventListener("click", (e) => {
         if (!e.target.classList.contains("remove-btn")) {
-          window.location.href = `${type}-details.html?id=${item.id}`;
+            let detailsUrl = "";
+        if (type === "anime") {
+            detailsUrl = `anime-details.html?id=${item.id}`;
+        } else {
+            detailsUrl = `manga-details.html?id=${item.id}&type=${type}`;
         }
-      });
+        window.location.href = detailsUrl;
+      }
+    });
+
 
       container.appendChild(card);
     });
