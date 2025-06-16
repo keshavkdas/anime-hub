@@ -280,16 +280,6 @@
 </div>
 
   <script>
-    const urlParams = new URLSearchParams(window.location.search);
-    const id = urlParams.get("id");
-    const type = urlParams.get("type") || "manga";
-
-    // This is still valid for both manga and manhwa from Jikan
-    const endpoint = `https://api.jikan.moe/v4/manga/${id}`;
-
-    // You can optionally adjust the UI label like:
-    document.querySelector("#typeLabel").textContent = type === "manhwa" ? "Manhwa" : "Manga";
-
     const track = document.getElementById("carouselTrack");
     const mangaResults = document.getElementById("mangaResults");
     const nextBtn = document.querySelector(".carousel-btn.next");
