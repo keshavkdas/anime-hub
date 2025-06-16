@@ -64,16 +64,15 @@
       padding-left: 1rem;
     }
     .favorites-list {
-  display: flex;
+  display: flex !important;
+  flex-wrap: nowrap !important;
   overflow-x: auto;
-  overflow-y: hidden;
   gap: 1rem;
   padding: 1rem;
   scroll-snap-type: x mandatory;
   scroll-padding-left: 1rem;
-  scrollbar-width: thin;
-  scrollbar-color: #f97316 transparent;
 }
+
 
 .favorites-list::-webkit-scrollbar {
   height: 8px;
@@ -96,20 +95,20 @@
     }
 
    .fav-card {
-  flex: 0 0 200px;
+  flex: 0 0 200px; /* or any fixed width like 240px */
   scroll-snap-align: start;
-  background-color: #222;
-  border-radius: 10px;
-  overflow: hidden;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.7);
   display: flex;
   flex-direction: column;
   align-items: center;
+  background-color: #222;
+  border-radius: 10px;
   padding: 0.5rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.7);
   position: relative;
   transition: transform 0.2s ease;
   cursor: pointer;
 }
+
 
 
     .fav-card:hover {
