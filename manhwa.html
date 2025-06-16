@@ -267,7 +267,7 @@
   Added to favorites!
 </div>
 
-  <script>
+<script>
   const track = document.getElementById("carouselTrack");
   const manhwaResults = document.getElementById("manhwaResults");
   const nextBtn = document.querySelector(".carousel-btn.next");
@@ -340,8 +340,11 @@
       const json = await res.json();
       const favorites = JSON.parse(localStorage.getItem(favKey)) || [];
 
+      const normalizedType = type.toLowerCase();
+
       json.data.forEach(manhwa => {
-        if (manhwa.type?.toLowerCase() !== type) return;
+        const mType = manhwa.type?.toLowerCase();
+        if (mType !== normalizedType) return;
 
         const card = document.createElement("div");
         card.className = "anime-card";
