@@ -219,6 +219,28 @@
   transform: scale(1.1);
 }
 
+    #backToTop {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  width: 48px;
+  height: 48px;
+  font-size: 1.5rem;
+  background: rgba(0, 0, 0, 0.4); /* transparent + blur */
+  backdrop-filter: blur(6px);
+  border: 2px solid #f97316;
+  border-radius: 999px;
+  color: #f97316;
+  cursor: pointer;
+  z-index: 1000;
+  transition: background 0.3s, transform 0.3s;
+}
+
+#backToTop:hover {
+  background: rgba(255, 121, 18, 0.1);
+  transform: scale(1.1);
+}
+
   </style>
 </head>
 <body>
@@ -246,6 +268,8 @@
     <h2>✨ Explore More Manhwa</h2>
     <div id="manhwaResults" class="results-grid"></div>
   </section>
+
+  <button id="backToTop" title="Back to top">⮝</button>
 
   <div id="toast" style="
   visibility: hidden;
@@ -446,7 +470,17 @@
     }, 2500);
   }
 </script>
+<script>
+  const backToTopBtn = document.getElementById('backToTop');
 
+  window.addEventListener('scroll', () => {
+    backToTopBtn.style.display = window.scrollY > 300 ? 'block' : 'none';
+  });
+
+  backToTopBtn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+</script>
 
 </body>
 </html>
