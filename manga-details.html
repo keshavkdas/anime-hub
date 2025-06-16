@@ -54,15 +54,30 @@
       border-radius: 10px;
     }
     .favorite-bubble {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background: rgba(0,0,0,0.6);
-      border-radius: 50%;
-      padding: 0.5rem;
-      cursor: pointer;
-      font-size: 1.2rem;
-    }
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 1.8rem;
+  width: 48px;
+  height: 48px;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+  color: white;
+  z-index: 10;
+}
+
+.favorite-bubble.active {
+  color: #ff4d6d;
+  text-shadow: 0 0 10px #ff4d6d, 0 0 20px #ff4d6d;
+  transform: scale(1.1);
+}
+
     .anime-info h1 {
       color: #f97316;
       margin-top: 0;
@@ -166,14 +181,29 @@
 
       const favBtn = document.getElementById("favBtn");
       let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
-      if (favorites.some(f => f.id === data.mal_id)) favBtn.textContent = '✔️';
-      favBtn.onclick = () => {
-        if (!favorites.some(f => f.id === data.mal_id)) {
-          favorites.push({ id: data.mal_id, title: data.title, image: img, type: "manga" });
-          localStorage.setItem("favorites", JSON.stringify(favorites));
-          favBtn.textContent = '✔️';
+
+      // Check and apply active class if already favorited
+      let isFav = favorites.some(f => f.id === data.mal_id);
+      if (isFav) favBtn.classList.add("active");
+
+      // Toggle on click
+      favBtn.addEventListener("click", () => {
+        isFav = !isFav;
+        if (isFav) {
+          favorites.push({
+            id: data.mal_id,
+            title: data.title,
+            image: img,
+            type: "manga"
+          });
+          favBtn.classList.add("active");
+        } else {
+          favorites = favorites.filter(f => f.id !== data.mal_id);
+          favBtn.classList.remove("active");
         }
-      };
+        localStorage.setItem("favorites", JSON.stringify(favorites));
+      });
+
     } catch (err) {
       container.innerHTML = `<p>Error loading manga details.</p>`;
     }
@@ -222,5 +252,6 @@
   fetchRelated();
   fetchChapters();
 </script>
+
 </body>
 </html>
