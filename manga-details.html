@@ -197,17 +197,18 @@ async function fetchMangaDetails() {
     const { data } = await res.json();
     const img = data.images.jpg.image_url;
 
-    // Determine type: manhwa or manga
+    // Check if it's a manhwa
     if (data.genres.some(g => g.name.toLowerCase() === 'manhwa')) {
       type = 'manhwa';
       favKey = 'manhwaFavorites';
     }
 
+    // HTML without onclick!
     container.innerHTML = `
       <div class="anime-detail-header">
         <div class="anime-image-container">
           <img src="${img}" alt="${data.title}"/>
-          <div class="favorite-bubble" data-id="${data.mal_id}" onclick="addToFavorites('${data.mal_id}', \`${data.title}\`, '${img}')">❤️</div>
+          <div class="favorite-bubble" data-id="${data.mal_id}">❤️</div>
         </div>
         <div class="anime-info">
           <h1>${data.title}</h1>
@@ -220,6 +221,12 @@ async function fetchMangaDetails() {
           <p><strong>Genres:</strong> ${data.genres.map(g => g.name).join(', ')}</p>
         </div>
       </div>`;
+
+    // Add event listener dynamically
+    const heartBtn = document.querySelector(`.favorite-bubble[data-id="${data.mal_id}"]`);
+    heartBtn.addEventListener('click', () => {
+      addToFavorites(data.mal_id, data.title, img);
+    });
 
     markFavoriteBubble(data.mal_id);
 
@@ -271,6 +278,7 @@ fetchCharacters();
 fetchRelated();
 fetchChapters();
 </script>
+
 
 </body>
 </html>
