@@ -6,32 +6,156 @@
   <title>Manga Details</title>
   <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@600&family=Poppins:wght@500&display=swap" rel="stylesheet" />
   <style>
-    body { margin:0; background:#121212; font-family:'Poppins',sans-serif; color:white; }
-    header { background:#1f1f1f; padding:1rem 2rem; display:flex; justify-content:space-between; align-items:center; box-shadow:0 2px 6px rgba(0,0,0,0.3); }
-    header h1 { font-family:'Oswald'; color:#f97316; }
-    nav a { color:white; margin-left:2rem; font-weight:600; text-decoration:none; }
-    nav a:hover { color:#f97316; }
-    .container { padding:2rem; }
-    .anime-detail-header { display:flex; flex-wrap:wrap; gap:2rem; }
-    .anime-image-container { position:relative; }
-    .anime-image-container img { width:250px; border-radius:10px; }
-    .favorite-bubble {
-      width:35px; height:35px; position:absolute; top:10px; right:10px;
-      background:rgba(0,0,0,0.6); border-radius:50%; display:flex;
-      align-items:center; justify-content:center; font-size:20px;
-      cursor:pointer; transition:transform 0.2s ease, box-shadow 0.2s ease;
-      z-index:2;
-    }
-    .favorite-bubble:hover { transform:scale(1.1); box-shadow:0 0 8px rgba(255,0,0,0.6); }
-    .favorite-bubble.active { color:#ff4d4d; text-shadow:0 0 6px #ff4d4d; }
-    .anime-info h1 { color:#f97316; }
-    .anime-info p { margin:0.5rem 0; color:#ccc; }
-    .section { margin-top:3rem; }
-    .section h3 { color:#f97316; margin-bottom:1rem; }
-    .character-list, .related-list, .chapter-list { display:grid; grid-template-columns:repeat(auto-fill, minmax(180px,1fr)); gap:1rem; }
-    .character-bubble, .related, .chapter { background:#1e1e1e; padding:1rem; border-radius:8px; text-align:center; }
-    .character-bubble img { width:100%; border-radius:8px; }
-    .character-name { margin-top:0.5rem; font-weight:bold; }
+    body {
+  margin: 0;
+  background: #121212;
+  font-family: 'Poppins', sans-serif;
+  color: white;
+}
+
+header {
+  background: #1f1f1f;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+header h1 {
+  font-family: 'Oswald';
+  color: #f97316;
+}
+
+nav a {
+  color: white;
+  margin-left: 2rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+nav a:hover {
+  color: #f97316;
+}
+
+.container {
+  padding: 2rem;
+}
+
+.anime-detail-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  align-items: flex-start;
+}
+
+.anime-image-container {
+  position: relative;
+  flex: 0 0 250px;
+}
+
+.anime-image-container img {
+  width: 250px;
+  border-radius: 10px;
+}
+
+.favorite-bubble {
+  width: 35px;
+  height: 35px;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  z-index: 2;
+}
+
+.favorite-bubble:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 8px rgba(255, 0, 0, 0.6);
+}
+
+.favorite-bubble.active {
+  color: #ff4d4d;
+  text-shadow: 0 0 6px #ff4d4d;
+}
+
+.anime-info {
+  flex: 1;
+  max-width: 800px;
+}
+
+.anime-info h1 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: #f97316;
+}
+
+.anime-info p {
+  margin: 0.5rem 0;
+  color: #ccc;
+  line-height: 1.6;
+}
+
+.section {
+  margin-top: 3rem;
+}
+
+.section h3 {
+  color: #f97316;
+  margin-bottom: 1rem;
+}
+
+.character-list,
+.related-list,
+.chapter-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+.character-bubble,
+.related,
+.chapter {
+  background: #1e1e1e;
+  padding: 1rem;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.character-bubble img {
+  width: 100%;
+  border-radius: 8px;
+}
+
+.character-name {
+  margin-top: 0.5rem;
+  font-weight: bold;
+}
+
+/* Responsive layout for mobile */
+@media (max-width: 768px) {
+  .anime-detail-header {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .anime-info {
+    max-width: 100%;
+    text-align: center;
+  }
+
+  .anime-image-container {
+    margin-bottom: 1rem;
+  }
+}
+
   </style>
 </head>
 <body>
