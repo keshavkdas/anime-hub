@@ -149,14 +149,17 @@
 const params = new URLSearchParams(window.location.search);
 const mangaId = params.get("id");
 
+let type = 'manga'; // default
+let favKey = 'mangaFavorites';
+
 function isInFavorites(id) {
-  const favs = JSON.parse(localStorage.getItem('mangaFavorites')) || [];
+  const favs = JSON.parse(localStorage.getItem(favKey)) || [];
   return favs.some(fav => String(fav.id) === String(id));
 }
 
 function addToFavorites(id, title, imageUrl) {
   try {
-    const favs = JSON.parse(localStorage.getItem('mangaFavorites')) || [];
+    const favs = JSON.parse(localStorage.getItem(favKey)) || [];
     const index = favs.findIndex(fav => String(fav.id) === String(id));
     const heartBtn = document.querySelector(`.favorite-bubble[data-id="${id}"]`);
 
@@ -167,14 +170,14 @@ function addToFavorites(id, title, imageUrl) {
         heartBtn.classList.remove('active');
       }
     } else {
-      favs.push({ id: String(id), title: title.trim(), imageUrl: imageUrl.trim(), type: 'manga' });
+      favs.push({ id: String(id), title: title.trim(), imageUrl: imageUrl.trim(), type });
       if (heartBtn) {
         heartBtn.textContent = '💖';
         heartBtn.classList.add('active');
       }
     }
 
-    localStorage.setItem('mangaFavorites', JSON.stringify(favs));
+    localStorage.setItem(favKey, JSON.stringify(favs));
   } catch (err) {
     console.error('Error toggling favorite:', err);
   }
@@ -197,6 +200,12 @@ async function fetchMangaDetails() {
     const res = await fetch(`https://api.jikan.moe/v4/manga/${mangaId}/full`);
     const { data } = await res.json();
     const img = data.images.jpg.image_url;
+
+    // Determine type: manhwa or manga
+    if (data.genres.some(g => g.name.toLowerCase() === 'manhwa')) {
+      type = 'manhwa';
+      favKey = 'manhwaFavorites';
+    }
 
     container.innerHTML = `
       <div class="anime-detail-header">
@@ -266,5 +275,6 @@ fetchCharacters();
 fetchRelated();
 fetchChapters();
 </script>
+
 </body>
 </html>
