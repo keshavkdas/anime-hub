@@ -64,8 +64,14 @@
 <script>
 const params = new URLSearchParams(window.location.search);
 const mangaId = params.get('id');
-const type = 'manga';
-const favKey = 'mangaFavorites';
+
+let favKey = 'mangaFavorites'; // default
+let contentType = 'manga';     // will be 'manhwa' if detected
+
+function isManhwa(genres, type) {
+  const genreMatch = genres.some(g => g.name.toLowerCase() === 'manhwa');
+  return genreMatch || (type && type.toLowerCase() === 'manhwa');
+}
 
 function isInFavorites(id) {
   const arr = JSON.parse(localStorage.getItem(favKey)) || [];
@@ -80,7 +86,7 @@ function toggleFavorite(id, title, img) {
     arr.splice(idx, 1);
     btn.classList.remove('active');
   } else {
-    arr.push({ id:String(id), title, imageUrl:img, type });
+    arr.push({ id:String(id), title, imageUrl:img, type: contentType });
     btn.classList.add('active');
   }
   btn.textContent = btn.classList.contains('active') ? '💖' : '❤️';
@@ -101,6 +107,12 @@ async function fetchMangaDetails() {
     const res = await fetch(`https://api.jikan.moe/v4/manga/${mangaId}/full`);
     const { data } = await res.json();
     const img = data.images.jpg.image_url;
+
+    // Detect if it's manhwa and update key
+    if (isManhwa(data.genres, data.type)) {
+      favKey = 'manhwaFavorites';
+      contentType = 'manhwa';
+    }
 
     document.getElementById('mangaDetails').innerHTML = `
       <div class="anime-detail-header">
