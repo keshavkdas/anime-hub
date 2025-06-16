@@ -57,27 +57,22 @@
   position: absolute;
   top: 10px;
   right: 10px;
-  font-size: 1.8rem;
-  width: 48px;
-  height: 48px;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(8px);
+  background: rgba(0, 0, 0, 0.6);
   border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  padding: 10px;
+  font-size: 24px;
   cursor: pointer;
-  color: white;
-  z-index: 10;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  z-index: 2;
 }
-
-.favorite-bubble.active {
-  color: #ff4d6d;
-  text-shadow: 0 0 10px #ff4d6d, 0 0 20px #ff4d6d;
+.favorite-bubble:hover {
   transform: scale(1.1);
+  box-shadow: 0 0 8px rgba(255, 0, 0, 0.6);
 }
-
+.favorite-bubble.active {
+  color: #ff4d4d;
+  text-shadow: 0 0 8px #ff4d4d;
+}
     .anime-info h1 {
       color: #f97316;
       margin-top: 0;
