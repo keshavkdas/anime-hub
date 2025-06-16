@@ -157,7 +157,7 @@ function isInFavorites(id) {
   return favs.some(fav => String(fav.id) === String(id));
 }
 
-function addToFavorites(id, title, imageUrl) {
+function addToFavorites(id, title, imageUrl, favKey, type) {
   const favs = JSON.parse(localStorage.getItem(favKey)) || [];
   const index = favs.findIndex(fav => String(fav.id) === String(id));
   const heartBtn = document.querySelector(`.favorite-bubble[data-id="${id}"]`);
@@ -203,7 +203,6 @@ async function fetchMangaDetails() {
       favKey = 'manhwaFavorites';
     }
 
-    // HTML without onclick!
     container.innerHTML = `
       <div class="anime-detail-header">
         <div class="anime-image-container">
@@ -222,10 +221,9 @@ async function fetchMangaDetails() {
         </div>
       </div>`;
 
-    // Add event listener dynamically
     const heartBtn = document.querySelector(`.favorite-bubble[data-id="${data.mal_id}"]`);
     heartBtn.addEventListener('click', () => {
-      addToFavorites(data.mal_id, data.title, img);
+      addToFavorites(data.mal_id, data.title, img, favKey, type);
     });
 
     markFavoriteBubble(data.mal_id);
@@ -278,7 +276,6 @@ fetchCharacters();
 fetchRelated();
 fetchChapters();
 </script>
-
 
 </body>
 </html>
