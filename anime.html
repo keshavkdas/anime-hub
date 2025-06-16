@@ -273,19 +273,24 @@ button:hover {
   position: absolute;
   top: 10px;
   right: 10px;
-  background: transparent;
-  color: white;
-  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.6);
   border-radius: 50%;
-  font-size: 1.2rem;
+  padding: 10px;
+  font-size: 24px;
   cursor: pointer;
-  box-shadow: 0 0 10px rgba(0,0,0,0.3);
-  transition: background 0.3s;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  z-index: 2;
 }
 .favorite-bubble:hover {
-  background: rgba(249, 115, 22, 0.15); /* subtle orange hover */
   transform: scale(1.1);
+  box-shadow: 0 0 8px rgba(255, 0, 0, 0.6);
 }
+.favorite-bubble.active {
+  color: #ff4d4d;
+  text-shadow: 0 0 8px #ff4d4d;
+}
+
+
 #backToTop {
   position: fixed;
   bottom: 1.5rem;
@@ -452,60 +457,50 @@ html, body {
   <button id="backToTop" class="back-to-top">⮝</button>
 
   <script>
-    async function fetchAnimeDetails() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const animeId = urlParams.get('id');
-      const container = document.getElementById("animeDetails");
-      container.innerHTML = `<div class="loading-spinner"></div><p>Loading details...</p>`;
+async function fetchAnimeDetails() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const animeId = urlParams.get('id');
+  const container = document.getElementById("animeDetails");
+  container.innerHTML = `<div class="loading-spinner"></div><p>Loading details...</p>`;
 
-      try {
-        const res = await fetch(`https://api.jikan.moe/v4/anime/${animeId}`);
-        const { data } = await res.json();
-        const title = data.title;
-        const img = data.images.jpg.large_image_url;
+  try {
+    const res = await fetch(`https://api.jikan.moe/v4/anime/${animeId}`);
+    const { data } = await res.json();
+    const title = data.title;
+    const img = data.images.jpg.large_image_url;
 
-        container.innerHTML = `
-          <div class="anime-detail-header">
-            <div class="anime-image-container">
-              <img src="${img}" alt="${title}">
-              <div class="favorite-bubble" id="favBtn">❤️</div>
-            </div>
-            <div class="anime-info">
-              <h1>${title}</h1>
-              <p><strong>Synopsis:</strong> <span class="synopsis-text">${
-                data.synopsis?.substring(0, 200) || 'No synopsis available.'
-              }${data.synopsis && data.synopsis.length > 200 ? '...' : ''}</span>
-              ${data.synopsis?.length > 200 ? '<span class="read-more-btn">Read More</span>' : ''}</p>
-              <p><strong>Type:</strong> ${data.type}</p>
-              <p><strong>Episodes:</strong> ${data.episodes}</p>
-              <p><strong>Status:</strong> ${data.status}</p>
-              <p><strong>Score:</strong> ${data.score || 'N/A'}</p>
-              <p><strong>Aired:</strong> ${data.aired.string}</p>
-              <p><strong>Genres:</strong> ${data.genres.map(g => g.name).join(', ')}</p>
-            </div>
-          </div>
-        `;
+    container.innerHTML = `
+      <div class="anime-detail-header">
+        <div class="anime-image-container">
+          <img src="${img}" alt="${title}">
+          <div class="favorite-bubble fav-btn" data-id="${data.mal_id}" onclick="addToFavorites('${data.mal_id}', \`${title}\`, '${img}')">❤️</div>
+        </div>
+        <div class="anime-info">
+          <h1>${title}</h1>
+          <p><strong>Synopsis:</strong> <span class="synopsis-text">${
+            data.synopsis?.substring(0, 200) || 'No synopsis available.'
+          }${data.synopsis && data.synopsis.length > 200 ? '...' : ''}</span>
+          ${data.synopsis?.length > 200 ? '<span class="read-more-btn">Read More</span>' : ''}</p>
+          <p><strong>Type:</strong> ${data.type}</p>
+          <p><strong>Episodes:</strong> ${data.episodes}</p>
+          <p><strong>Status:</strong> ${data.status}</p>
+          <p><strong>Score:</strong> ${data.score || 'N/A'}</p>
+          <p><strong>Aired:</strong> ${data.aired.string}</p>
+          <p><strong>Genres:</strong> ${data.genres.map(g => g.name).join(', ')}</p>
+        </div>
+      </div>
+    `;
 
-        document.querySelector('.read-more-btn')?.addEventListener('click', e => {
-          const span = e.target.previousElementSibling;
-          span.textContent = data.synopsis;
-          e.target.remove();
-        });
+    document.querySelector('.read-more-btn')?.addEventListener('click', e => {
+      const span = e.target.previousElementSibling;
+      span.textContent = data.synopsis;
+      e.target.remove();
+    });
 
-        // Favorite
-        const favBtn = document.getElementById('favBtn');
-        let favs = JSON.parse(localStorage.getItem('favorites') || '[]');
-        if (favs.some(f => f.id === data.mal_id)) favBtn.textContent = '✔️';
-        favBtn.addEventListener('click', () => {
-          if (!favs.some(f => f.id === data.mal_id)) {
-            favs.push({ id: data.mal_id, title: title, imageUrl: img });
-            localStorage.setItem('favorites', JSON.stringify(favs));
-            favBtn.textContent = '✔️';
-          }
-        });
+    markFavoriteBubble(data.mal_id); // update fav bubble on load
 
-        // Trailer
-        if (data.trailer && data.trailer.embed_url && data.trailer.embed_url.includes("youtube.com")) {
+    // Trailer
+    if (data.trailer?.embed_url?.includes("youtube.com")) {
       const trailerWrapper = document.createElement("div");
       trailerWrapper.className = "anime-trailer";
       trailerWrapper.innerHTML = `
@@ -513,80 +508,66 @@ html, body {
       `;
       container.appendChild(trailerWrapper);
     } else {
-        const imgRes = await fetch(`https://api.jikan.moe/v4/anime/${data.mal_id}/pictures`);
-const imgData = await imgRes.json();
-const pictures = imgData.data;
+      const imgRes = await fetch(`https://api.jikan.moe/v4/anime/${data.mal_id}/pictures`);
+      const imgData = await imgRes.json();
+      const pictures = imgData.data;
 
-if (pictures.length > 0) {
-  const sceneBlock = document.createElement('div');
-  sceneBlock.className = 'scene-block';
-  sceneBlock.innerHTML = `
-    <div class="scene-carousel-wrapper">
-      <button class="prev">❮</button>
-      <div class="carousel-window">
-        <div class="carousel-track"></div>
-      </div>
-      <button class="next">❯</button>
-    </div>
-  `;
-  container.appendChild(sceneBlock);
+      if (pictures.length > 0) {
+        const sceneBlock = document.createElement('div');
+        sceneBlock.className = 'scene-block';
+        sceneBlock.innerHTML = `
+          <div class="scene-carousel-wrapper">
+            <button class="prev">❮</button>
+            <div class="carousel-window">
+              <div class="carousel-track"></div>
+            </div>
+            <button class="next">❯</button>
+          </div>
+        `;
+        container.appendChild(sceneBlock);
 
-  const track = sceneBlock.querySelector('.carousel-track');
-  pictures.forEach(pic => {
-    const url = pic.jpg.large_image_url || pic.jpg.image_url;
-    const slide = document.createElement('div');
-    slide.className = 'carousel-slide';
-    slide.innerHTML = `<img src="${url}" alt="scene" />`;
-    track.appendChild(slide);
-  });
+        const track = sceneBlock.querySelector('.carousel-track');
+        pictures.forEach(pic => {
+          const url = pic.jpg.large_image_url || pic.jpg.image_url;
+          const slide = document.createElement('div');
+          slide.className = 'carousel-slide';
+          slide.innerHTML = `<img src="${url}" alt="scene" />`;
+          track.appendChild(slide);
+        });
 
-  let idx = 0;
-const slides = track.querySelectorAll('.carousel-slide');
+        let idx = 0;
+        const slides = track.querySelectorAll('.carousel-slide');
 
-// Update carousel view
-function update() {
-  slides.forEach((slide, i) => {
-    slide.classList.remove('center', 'blur-left', 'blur-right');
+        function update() {
+          slides.forEach((slide, i) => {
+            slide.classList.remove('center', 'blur-left', 'blur-right');
+            if (i === idx) slide.classList.add('center');
+            else if (i === (idx - 1 + slides.length) % slides.length) slide.classList.add('blur-left');
+            else if (i === (idx + 1) % slides.length) slide.classList.add('blur-right');
+          });
 
-    if (i === idx) {
-      slide.classList.add('center');
-    } else if (i === (idx - 1 + slides.length) % slides.length) {
-      slide.classList.add('blur-left');
-    } else if (i === (idx + 1) % slides.length) {
-      slide.classList.add('blur-right');
-    }
-  });
+          const slideWidth = slides[idx].offsetWidth;
+          const margin = 16;
+          const totalOffset = (slideWidth + margin) * idx;
+          const centerOffset = (track.offsetWidth / 2) - (slideWidth / 2);
+          track.style.transform = `translateX(-${totalOffset - centerOffset}px)`;
+        }
 
-  // Centering the current slide
-  const slideWidth = slides[idx].offsetWidth;
-  const margin = 16; // if margin used
-  const totalOffset = (slideWidth + margin) * idx;
-  const centerOffset = (track.offsetWidth / 2) - (slideWidth / 2);
-  track.style.transform = `translateX(-${totalOffset - centerOffset}px)`;
-}
+        sceneBlock.querySelector('.prev').onclick = () => {
+          idx = (idx - 1 + slides.length) % slides.length;
+          update();
+        };
+        sceneBlock.querySelector('.next').onclick = () => {
+          idx = (idx + 1) % slides.length;
+          update();
+        };
 
-// Manual controls
-sceneBlock.querySelector('.prev').onclick = () => {
-  idx = (idx - 1 + slides.length) % slides.length;
-  update();
-};
-sceneBlock.querySelector('.next').onclick = () => {
-  idx = (idx + 1) % slides.length;
-  update();
-};
+        setInterval(() => {
+          idx = (idx + 1) % slides.length;
+          update();
+        }, 5000);
 
-// Auto scroll every 5 seconds
-setInterval(() => {
-  idx = (idx + 1) % slides.length;
-  update();
-}, 5000);
-
-// Initial render
-update();
-
-
-
-
+        update();
       }
     }
 
@@ -616,12 +597,54 @@ update();
 
 fetchAnimeDetails();
 
+// Favorite Functions
+function isInFavorites(id) {
+  const favs = JSON.parse(localStorage.getItem('animeFavorites')) || [];
+  return favs.some(fav => String(fav.id) === String(id));
+}
+
+function addToFavorites(id, title, imageUrl) {
+  try {
+    const favs = JSON.parse(localStorage.getItem('animeFavorites')) || [];
+    const index = favs.findIndex(fav => String(fav.id) === String(id));
+    const heartBtn = document.querySelector(`.favorite-bubble[data-id="${id}"]`);
+
+    if (index > -1) {
+      favs.splice(index, 1);
+      if (heartBtn) {
+        heartBtn.textContent = '❤️';
+        heartBtn.classList.remove('active');
+      }
+    } else {
+      favs.push({ id: String(id), title: title.trim(), imageUrl: imageUrl.trim(), type: 'anime' });
+      if (heartBtn) {
+        heartBtn.textContent = '💖';
+        heartBtn.classList.add('active');
+      }
+    }
+
+    localStorage.setItem('animeFavorites', JSON.stringify(favs));
+  } catch (err) {
+    console.error('Error toggling favorite:', err);
+  }
+}
+
+function markFavoriteBubble(id) {
+  const heartBtn = document.querySelector(`.favorite-bubble[data-id="${id}"]`);
+  if (!heartBtn) return;
+
+  const isFav = isInFavorites(id);
+  heartBtn.classList.toggle('active', isFav);
+  heartBtn.textContent = isFav ? '💖' : '❤️';
+}
+
 // Back to Top
 const btn = document.getElementById('backToTop');
 btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 window.addEventListener('scroll', () => {
   btn.style.display = window.scrollY > 300 ? 'block' : 'none';
 });
-  </script>
+</script>
+
 </body>
 </html>
