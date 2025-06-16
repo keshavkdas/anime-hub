@@ -91,20 +91,29 @@
       cursor: pointer;
     }
 
-    .remove-btn {
-      position: absolute;
-      top: 5px;
-      right: 8px;
-      color: white;
-      background-color: transparent;
-      border: none;
-      font-size: 18px;
-      cursor: pointer;
-    }
+    .remove-fav-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 30px;
+  height: 30px;
+  background: rgba(0, 0, 0, 0.6); /* blackish bubble */
+  border-radius: 50%;
+  color: white;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  z-index: 2;
+}
 
-    .remove-btn:hover {
-      color: #f97316;
-    }
+.remove-fav-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 8px rgba(255, 0, 0, 0.6);
+}
+
 
     .card-title {
       margin-top: 0.5rem;
@@ -154,7 +163,7 @@ function renderFavorites(key, containerId, detailsPage) {
 
   container.innerHTML = list.map((item, index) => `
     <div class="favorite-item">
-      <button class="remove-btn" onclick="removeFavorite('${key}', ${index})">&times;</button>
+      <button class="remove-fav-btn" onclick="removeFavorite('${key}', ${index})">&times;</button>
       <img src="${item.imageUrl}" alt="${item.title}" onclick="location.href='${detailsPage}?id=${item.id}'" />
       <div class="card-title">${item.title}</div>
     </div>
