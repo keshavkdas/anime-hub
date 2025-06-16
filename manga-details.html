@@ -173,6 +173,24 @@
       border-radius: 8px;
       text-align: center;
     }
+
+    /* For WebKit browsers (Chrome, Edge, Safari) */
+.character-list::-webkit-scrollbar {
+  height: 8px;
+  background-color: #000;
+}
+
+.character-list::-webkit-scrollbar-thumb {
+  background-color: #f97316;
+  border-radius: 10px;
+}
+
+/* For Firefox */
+.character-list {
+  scrollbar-color: #f97316 #000; /* thumb color, track color */
+  scrollbar-width: thin;
+}
+
   </style>
 </head>
 <body>
