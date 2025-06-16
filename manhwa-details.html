@@ -149,15 +149,15 @@
 const params = new URLSearchParams(window.location.search);
 const mangaId = params.get("id");
 
-const favKey = 'manhwaFavorites';
-const type = 'manhwa';
+let type = 'manga'; // default
+let favKey = 'mangaFavorites';
 
-function isInFavorites(id) {
+function isInFavorites(id, favKey) {
   const favs = JSON.parse(localStorage.getItem(favKey)) || [];
   return favs.some(fav => String(fav.id) === String(id));
 }
 
-function addToFavorites(id, title, imageUrl) {
+function addToFavorites(id, title, imageUrl, favKey, type) {
   const favs = JSON.parse(localStorage.getItem(favKey)) || [];
   const index = favs.findIndex(fav => String(fav.id) === String(id));
   const heartBtn = document.querySelector(`.favorite-bubble[data-id="${id}"]`);
@@ -179,23 +179,28 @@ function addToFavorites(id, title, imageUrl) {
   localStorage.setItem(favKey, JSON.stringify(favs));
 }
 
-function markFavoriteBubble(id) {
+function markFavoriteBubble(id, favKey) {
   const heartBtn = document.querySelector(`.favorite-bubble[data-id="${id}"]`);
   if (!heartBtn) return;
 
-  const isFav = isInFavorites(id);
+  const isFav = isInFavorites(id, favKey);
   heartBtn.classList.toggle('active', isFav);
   heartBtn.textContent = isFav ? '💖' : '❤️';
 }
 
-async function fetchManhwaDetails() {
-  const container = document.getElementById("manhwaDetails");
+async function fetchMangaDetails() {
+  const container = document.getElementById("mangaDetails");
   container.innerHTML = `<p>Loading details...</p>`;
 
   try {
     const res = await fetch(`https://api.jikan.moe/v4/manga/${mangaId}/full`);
     const { data } = await res.json();
     const img = data.images.jpg.image_url;
+
+    // ✅ Determine type and favKey
+    const isManhwa = data.genres.some(g => g.name.toLowerCase() === 'manhwa');
+    type = isManhwa ? 'manhwa' : 'manga';
+    favKey = isManhwa ? 'manhwaFavorites' : 'mangaFavorites';
 
     container.innerHTML = `
       <div class="anime-detail-header">
@@ -217,13 +222,13 @@ async function fetchManhwaDetails() {
 
     const heartBtn = document.querySelector(`.favorite-bubble[data-id="${data.mal_id}"]`);
     heartBtn.addEventListener('click', () => {
-      addToFavorites(data.mal_id, data.title, img);
+      addToFavorites(data.mal_id, data.title, img, favKey, type);
     });
 
-    markFavoriteBubble(data.mal_id);
+    markFavoriteBubble(data.mal_id, favKey);
 
   } catch (err) {
-    container.innerHTML = `<p>Error loading manhwa details.</p>`;
+    container.innerHTML = `<p>Error loading manga details.</p>`;
   }
 }
 
@@ -265,11 +270,12 @@ async function fetchChapters() {
   `).join('');
 }
 
-fetchManhwaDetails();
+fetchMangaDetails();
 fetchCharacters();
 fetchRelated();
 fetchChapters();
 </script>
+
 
 </body>
 </html>
