@@ -199,27 +199,25 @@
         <button class="remove-btn" title="Remove from favorites">❌</button>
       `;
 
-      const removeBtn = card.querySelector(".remove-btn");
-
-      removeBtn.addEventListener("click", (e) => {
-        e.stopPropagation(); // prevent card click
+      // Remove from favorites
+      card.querySelector(".remove-btn").addEventListener("click", (e) => {
+        e.stopPropagation();
         favs = favs.filter(f => f.id !== item.id);
         localStorage.setItem(key, JSON.stringify(favs));
         renderFavorites(type, key, containerId, emptyId);
       });
 
+      // Redirect to detail page
       card.addEventListener("click", (e) => {
-        if (!e.target.classList.contains("remove-btn")) {
-            let detailsUrl = "";
-        if (type === "anime") {
-            detailsUrl = `anime.html?id=${item.id}`;
-        } else {
-            detailsUrl = `manga.html?id=${item.id}&type=${type}`;
-        }
-        window.location.href = detailsUrl;
-      }
-    });
+        if (e.target.classList.contains("remove-btn")) return;
 
+        const url =
+          type === "anime"
+            ? `anime.html?id=${item.id}`
+            : `manga-details.html?id=${item.id}&type=${type}`;
+
+        window.location.href = url;
+      });
 
       container.appendChild(card);
     });
@@ -228,9 +226,8 @@
   document.addEventListener("DOMContentLoaded", () => {
     renderFavorites("anime", "animeFavorites", "animeFavorites", "animeEmpty");
     renderFavorites("manga", "mangaFavorites", "mangaFavorites", "mangaEmpty");
-    renderFavorites("manga", "manhwaFavorites", "manhwaFavorites", "manhwaEmpty");
+    renderFavorites("manhwa", "manhwaFavorites", "manhwaFavorites", "manhwaEmpty");
   });
 </script>
-  </script>
 </body>
 </html>
