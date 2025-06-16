@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Manga Details</title>
-  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@600&family=Poppins:wght@500&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@600&family=Poppins:wght@500&display=swap" rel="stylesheet" />
   <style>
     body { margin:0; background:#121212; font-family:'Poppins',sans-serif; color:white; }
     header { background:#1f1f1f; padding:1rem 2rem; display:flex; justify-content:space-between; align-items:center; box-shadow:0 2px 6px rgba(0,0,0,0.3); }
@@ -41,7 +41,6 @@
     <a href="index.html">Anime</a>
     <a href="browse.html">Browse</a>
     <a href="manga.html">Manga</a>
-    <a href="manhwa.html">Manhwa</a>
     <a href="favorites.html" style="color:#f97316; font-weight:bold;">❤️</a>
   </nav>
 </header>
@@ -65,15 +64,16 @@
 <script>
 const params = new URLSearchParams(window.location.search);
 const mangaId = params.get('id');
-let type = 'manga', favKey = 'mangaFavorites';
+const type = 'manga';
+const favKey = 'mangaFavorites';
 
-function isInFavorites(id, key) {
-  const arr = JSON.parse(localStorage.getItem(key)) || [];
+function isInFavorites(id) {
+  const arr = JSON.parse(localStorage.getItem(favKey)) || [];
   return arr.some(item => String(item.id) === String(id));
 }
 
-function toggleFavorite(id, title, img, key, type) {
-  const arr = JSON.parse(localStorage.getItem(key)) || [];
+function toggleFavorite(id, title, img) {
+  const arr = JSON.parse(localStorage.getItem(favKey)) || [];
   const idx = arr.findIndex(i => String(i.id) === String(id));
   const btn = document.querySelector(`.favorite-bubble[data-id="${id}"]`);
   if (idx > -1) {
@@ -84,13 +84,13 @@ function toggleFavorite(id, title, img, key, type) {
     btn.classList.add('active');
   }
   btn.textContent = btn.classList.contains('active') ? '💖' : '❤️';
-  localStorage.setItem(key, JSON.stringify(arr));
+  localStorage.setItem(favKey, JSON.stringify(arr));
 }
 
-function markFav(id, key) {
+function markFav(id) {
   const btn = document.querySelector(`.favorite-bubble[data-id="${id}"]`);
   if (!btn) return;
-  const act = isInFavorites(id, key);
+  const act = isInFavorites(id);
   btn.classList.toggle('active', act);
   btn.textContent = act ? '💖' : '❤️';
 }
@@ -101,10 +101,6 @@ async function fetchMangaDetails() {
     const res = await fetch(`https://api.jikan.moe/v4/manga/${mangaId}/full`);
     const { data } = await res.json();
     const img = data.images.jpg.image_url;
-
-    const isManhwa = data.genres.some(g => g.name.toLowerCase() === 'manhwa');
-    type = isManhwa ? 'manhwa' : 'manga';
-    favKey = isManhwa ? 'manhwaFavorites' : 'mangaFavorites';
 
     document.getElementById('mangaDetails').innerHTML = `
       <div class="anime-detail-header">
@@ -124,8 +120,8 @@ async function fetchMangaDetails() {
       </div>`;
 
     const btn = document.querySelector(`.favorite-bubble[data-id="${data.mal_id}"]`);
-    btn.addEventListener('click', () => toggleFavorite(data.mal_id, data.title, img, favKey, type));
-    markFav(data.mal_id, favKey);
+    btn.addEventListener('click', () => toggleFavorite(data.mal_id, data.title, img));
+    markFav(data.mal_id);
 
   } catch (e) {
     document.getElementById('mangaDetails').innerHTML = '<p>Error loading details.</p>';
