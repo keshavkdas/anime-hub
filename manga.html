@@ -375,6 +375,7 @@
           favorites.splice(existingIndex, 1);
           e.target.innerText = "❤️";
           e.target.classList.remove("active");
+          showToast("Removed from Favorites ✅");
         } else {
           const card = e.target.closest(".anime-card");
           const title = card.querySelector("h3").innerText;
@@ -389,11 +390,13 @@
 
           e.target.innerText = "💖";
           e.target.classList.add("active");
+          showToast("Added to Favorites 💖");
         }
 
         localStorage.setItem("mangaFavorites", JSON.stringify(favorites));
       }
     });
+    
 
     window.addEventListener("DOMContentLoaded", () => {
       loadAutoCarousel();
@@ -406,6 +409,22 @@
         loadMoreManga();
       }
     });
+
+    function showToast(message) {
+  const toast = document.getElementById("toast");
+  toast.innerText = message;
+  toast.style.display = "block";
+  toast.style.opacity = "1";
+
+  setTimeout(() => {
+    toast.style.opacity = "0";
+  }, 2000);
+
+  setTimeout(() => {
+    toast.style.display = "none";
+  }, 2500);
+}
+
   </script>
 
 </body>
