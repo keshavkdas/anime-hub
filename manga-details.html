@@ -13,65 +13,61 @@
       color: white;
     }
     header {
-  background-color: #1f1f1f;
-  padding: 1rem 2rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: none;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-}
-
-header h1 {
-  font-family: 'Oswald', sans-serif;
-  font-size: 2rem;
-  color: #f97316;
-  margin: 0;
-  font-weight: 600;
-  letter-spacing: -1px;
-}
-
-nav {
-  display: flex;
-  align-items: center;
-}
-
-nav a {
-  color: white;
-  margin-left: 2rem;
-  font-family: 'Poppins', sans-serif;
-  font-size: 1rem;
-  text-decoration: none;
-  font-weight: 600;
-  transition: color 0.3s ease;
-}
-
-nav a:hover {
-  color: #f97316;
-}
-
+      background-color: #1f1f1f;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    }
+    header h1 {
+      font-family: 'Oswald', sans-serif;
+      font-size: 2rem;
+      color: #f97316;
+      margin: 0;
+      font-weight: 600;
+      letter-spacing: -1px;
+    }
+    nav a {
+      color: white;
+      margin-left: 2rem;
+      font-size: 1rem;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    nav a:hover {
+      color: #f97316;
+    }
     .container {
       padding: 2rem;
     }
-    .manga-details {
+    .anime-detail-header {
       display: flex;
-      flex-wrap: wrap;
       gap: 2rem;
-      align-items: flex-start;
+      flex-wrap: wrap;
     }
-    .manga-details img {
+    .anime-image-container {
+      position: relative;
+    }
+    .anime-image-container img {
       width: 250px;
       border-radius: 10px;
-      box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
     }
-    .manga-info {
-      flex: 1;
+    .favorite-bubble {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(0,0,0,0.6);
+      border-radius: 50%;
+      padding: 0.5rem;
+      cursor: pointer;
+      font-size: 1.2rem;
     }
-    .manga-info h2 {
+    .anime-info h1 {
       color: #f97316;
       margin-top: 0;
     }
-    .manga-info p {
+    .anime-info p {
       margin: 0.5rem 0;
       color: #ccc;
     }
@@ -82,192 +78,104 @@ nav a:hover {
       margin-bottom: 1rem;
       color: #f97316;
     }
-    .chapter-list,
     .character-list,
-    .related-list {
+    .related-list,
+    .chapter-list {
       display: grid;
-      gap: 1rem;
       grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 1rem;
     }
-    .chapter,
-    .character,
-    .related {
+    .character-bubble,
+    .related,
+    .chapter {
       background-color: #1e1e1e;
       padding: 1rem;
       border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+      text-align: center;
     }
-    .chapter:hover,
-    .character:hover,
-    .related:hover {
-      background-color: #2a2a2a;
+    .character-bubble img {
+      width: 100%;
+      border-radius: 8px;
     }
-    button.fav-btn {
-      margin-top: 1rem;
-      padding: 0.6rem 1.2rem;
-      background-color: #f97316;
-      color: white;
-      border: none;
-      border-radius: 6px;
+    .character-name {
+      margin-top: 0.5rem;
       font-weight: bold;
-      cursor: pointer;
     }
   </style>
 </head>
 <body>
-  <header>
-    <h1>AnimeHub</h1>
-    <nav>
-      <a href="index.html">Anime</a>
-      <a href="browse.html">Browse</a>
-      <a href="/manga.html" class="hover:text-purple-400">Manga</a>
-      <a href="/manhwa.html" class="hover:text-purple-400">Manhwa</a>
-      <a href="favorites.html" style="color:#f97316; font-weight:bold;">❤️</a>
-    </nav>
-  </header>
+<header>
+  <h1>AnimeHub</h1>
+  <nav>
+    <a href="index.html">Anime</a>
+    <a href="browse.html">Browse</a>
+    <a href="/manga.html">Manga</a>
+    <a href="/manhwa.html">Manhwa</a>
+    <a href="favorites.html" style="color:#f97316; font-weight:bold;">❤️</a>
+  </nav>
+</header>
 
-  <div class="container">
-    <div class="manga-details" id="mangaDetails"></div>
+<div class="container">
+  <div id="mangaDetails"></div>
 
-    <div class="section" id="charactersSection">
-      <h3>Characters</h3>
-      <div class="character-list" id="characterList"></div>
-    </div>
-
-    <div class="section" id="relatedSection">
-      <h3>Related Works</h3>
-      <div class="related-list" id="relatedList"></div>
-    </div>
-
-    <div class="section" id="chaptersSection">
-      <h3>Chapters</h3>
-      <div class="chapter-list" id="chapterList"></div>
-    </div>
+  <div class="section">
+    <h3>Characters</h3>
+    <div class="character-list" id="characterList"></div>
   </div>
 
-  <script>
+  <div class="section">
+    <h3>Related Works</h3>
+    <div class="related-list" id="relatedList"></div>
+  </div>
+
+  <div class="section">
+    <h3>Chapters</h3>
+    <div class="chapter-list" id="chapterList"></div>
+  </div>
+</div>
+
+<script>
   const params = new URLSearchParams(window.location.search);
   const mangaId = params.get("id");
 
   async function fetchMangaDetails() {
     const container = document.getElementById("mangaDetails");
-    container.innerHTML = `<div class="loading-spinner"></div><p>Loading details...</p>`;
-
+    container.innerHTML = `<p>Loading details...</p>`;
     try {
       const res = await fetch(`https://api.jikan.moe/v4/manga/${mangaId}/full`);
       const { data } = await res.json();
-      const title = data.title;
-      const img = data.images.jpg.large_image_url;
+      const img = data.images.jpg.image_url;
 
       container.innerHTML = `
         <div class="anime-detail-header">
           <div class="anime-image-container">
-            <img src="${img}" alt="${title}">
+            <img src="${img}" alt="${data.title}"/>
             <div class="favorite-bubble" id="favBtn">❤️</div>
           </div>
           <div class="anime-info">
-            <h1>${title}</h1>
-            <p><strong>Synopsis:</strong> <span class="synopsis-text">${
-              data.synopsis?.substring(0, 200) || 'No synopsis available.'
-            }${data.synopsis && data.synopsis.length > 200 ? '...' : ''}</span>
-            ${data.synopsis?.length > 200 ? '<span class="read-more-btn">Read More</span>' : ''}</p>
+            <h1>${data.title}</h1>
+            <p><strong>Synopsis:</strong> ${data.synopsis || 'No synopsis available.'}</p>
             <p><strong>Type:</strong> ${data.type}</p>
             <p><strong>Status:</strong> ${data.status}</p>
-            <p><strong>Chapters:</strong> ${data.chapters || "Unknown"}</p>
-            <p><strong>Score:</strong> ${data.score || "N/A"}</p>
+            <p><strong>Chapters:</strong> ${data.chapters || 'Unknown'}</p>
+            <p><strong>Score:</strong> ${data.score || 'N/A'}</p>
             <p><strong>Published:</strong> ${data.published.string}</p>
             <p><strong>Genres:</strong> ${data.genres.map(g => g.name).join(', ')}</p>
           </div>
-        </div>
-      `;
+        </div>`;
 
-      document.querySelector('.read-more-btn')?.addEventListener('click', e => {
-        const span = e.target.previousElementSibling;
-        span.textContent = data.synopsis;
-        e.target.remove();
-      });
-
-      // Favorite button logic
-      const favBtn = document.getElementById('favBtn');
-      let favs = JSON.parse(localStorage.getItem('favorites') || '[]');
-      if (favs.some(f => f.id === data.mal_id)) favBtn.textContent = '✔️';
-      favBtn.addEventListener('click', () => {
-        if (!favs.some(f => f.id === data.mal_id)) {
-          favs.push({ id: data.mal_id, title, imageUrl: img, type: "manga" });
-          localStorage.setItem('favorites', JSON.stringify(favs));
+      const favBtn = document.getElementById("favBtn");
+      let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+      if (favorites.some(f => f.id === data.mal_id)) favBtn.textContent = '✔️';
+      favBtn.onclick = () => {
+        if (!favorites.some(f => f.id === data.mal_id)) {
+          favorites.push({ id: data.mal_id, title: data.title, image: img, type: "manga" });
+          localStorage.setItem("favorites", JSON.stringify(favorites));
           favBtn.textContent = '✔️';
         }
-      });
-
-      // Manga image carousel (fallback for no trailer)
-      const imgRes = await fetch(`https://api.jikan.moe/v4/manga/${data.mal_id}/pictures`);
-      const imgData = await imgRes.json();
-      const pictures = imgData.data;
-
-      if (pictures.length > 0) {
-        const sceneBlock = document.createElement('div');
-        sceneBlock.className = 'scene-block';
-        sceneBlock.innerHTML = `
-          <div class="scene-carousel-wrapper">
-            <button class="prev">❮</button>
-            <div class="carousel-window">
-              <div class="carousel-track"></div>
-            </div>
-            <button class="next">❯</button>
-          </div>
-        `;
-        container.appendChild(sceneBlock);
-
-        const track = sceneBlock.querySelector('.carousel-track');
-        pictures.forEach(pic => {
-          const url = pic.jpg.large_image_url || pic.jpg.image_url;
-          const slide = document.createElement('div');
-          slide.className = 'carousel-slide';
-          slide.innerHTML = `<img src="${url}" alt="scene" />`;
-          track.appendChild(slide);
-        });
-
-        let idx = 0;
-        const slides = track.querySelectorAll('.carousel-slide');
-
-        function update() {
-          slides.forEach((slide, i) => {
-            slide.classList.remove('center', 'blur-left', 'blur-right');
-            if (i === idx) slide.classList.add('center');
-            else if (i === (idx - 1 + slides.length) % slides.length) slide.classList.add('blur-left');
-            else if (i === (idx + 1) % slides.length) slide.classList.add('blur-right');
-          });
-
-          const slideWidth = slides[idx].offsetWidth;
-          const margin = 16;
-          const totalOffset = (slideWidth + margin) * idx;
-          const centerOffset = (track.offsetWidth / 2) - (slideWidth / 2);
-          track.style.transform = `translateX(-${totalOffset - centerOffset}px)`;
-        }
-
-        sceneBlock.querySelector('.prev').onclick = () => {
-          idx = (idx - 1 + slides.length) % slides.length;
-          update();
-        };
-        sceneBlock.querySelector('.next').onclick = () => {
-          idx = (idx + 1) % slides.length;
-          update();
-        };
-
-        setInterval(() => {
-          idx = (idx + 1) % slides.length;
-          update();
-        }, 5000);
-
-        update();
-      }
-
+      };
     } catch (err) {
-      console.error(err);
-      container.innerHTML = `
-        <a href="index.html" class="back-link">← Back to Home</a>
-        <p>Failed to load manga details. Please try again later.</p>
-      `;
+      container.innerHTML = `<p>Error loading manga details.</p>`;
     }
   }
 
@@ -275,10 +183,7 @@ nav a:hover {
     const res = await fetch(`https://api.jikan.moe/v4/manga/${mangaId}/characters`);
     const { data } = await res.json();
     const container = document.getElementById("characterList");
-    container.innerHTML = '<h2>Characters</h2><div class="character-bubbles"></div>';
-    const inner = container.querySelector(".character-bubbles");
-
-    inner.innerHTML = data.slice(0, 10).map(char => `
+    container.innerHTML = data.slice(0, 10).map(char => `
       <div class="character-bubble">
         <a href="character.html?id=${char.character.mal_id}">
           <img src="${char.character.images.jpg.image_url}" alt="${char.character.name}">
@@ -292,28 +197,22 @@ nav a:hover {
     const res = await fetch(`https://api.jikan.moe/v4/manga/${mangaId}/relations`);
     const { data } = await res.json();
     const container = document.getElementById("relatedList");
-    container.innerHTML = "<h2>Related Manga</h2>";
-
-    container.innerHTML += data.flatMap(rel =>
-      rel.entry.map(item => `
-        <div class="related">
-          <strong>${item.name}</strong>
-          <p>${rel.relation}</p>
-        </div>
-      `)
-    ).join('');
+    container.innerHTML = data.flatMap(rel => rel.entry.map(item => `
+      <div class="related">
+        <strong>${item.name}</strong>
+        <p>${rel.relation}</p>
+      </div>
+    `)).join('');
   }
 
   async function fetchChapters() {
     const res = await fetch(`https://api.jikan.moe/v4/manga/${mangaId}/chapters`);
     const { data } = await res.json();
     const container = document.getElementById("chapterList");
-    container.innerHTML = "<h2>Chapters</h2>";
-
-    container.innerHTML += data.slice(0, 20).map(ch => `
+    container.innerHTML = data.slice(0, 20).map(ch => `
       <div class="chapter">
         <strong>Chapter ${ch.mal_id}</strong>
-        <p>${ch.title || "Untitled"}</p>
+        <p>${ch.title || 'Untitled'}</p>
       </div>
     `).join('');
   }
@@ -323,6 +222,5 @@ nav a:hover {
   fetchRelated();
   fetchChapters();
 </script>
-
 </body>
 </html>
