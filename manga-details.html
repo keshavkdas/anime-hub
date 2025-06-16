@@ -130,10 +130,28 @@
     }
 
     .character-bubble {
+  background: #1e1e1e;
+  border-radius: 50%;
   width: 120px;
+  height: 120px;
   flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   text-align: center;
+  padding: 10px;
+  text-decoration: none;
+  color: white;
+  border: 2px solid #f97316; /* optional: glowing border */
+  box-shadow: 0 0 10px rgba(249, 115, 22, 0.3);
+  transition: transform 0.3s ease;
 }
+
+.character-bubble:hover {
+  transform: scale(1.05);
+}
+
 
 .character-bubble .img-wrapper {
   width: 100px;
@@ -190,6 +208,23 @@
   scrollbar-color: #f97316 #000; /* thumb color, track color */
   scrollbar-width: thin;
 }
+
+    .related {
+  background: #1e1e1e;
+  padding: 1rem;
+  border-radius: 8px;
+  text-align: center;
+  text-decoration: none;
+  color: white;
+  transition: transform 0.2s ease;
+  box-shadow: 0 0 5px rgba(249, 115, 22, 0.1);
+}
+
+.related:hover {
+  transform: scale(1.03);
+  box-shadow: 0 0 8px rgba(249, 115, 22, 0.3);
+}
+
 
   </style>
 </head>
@@ -312,15 +347,13 @@ async function fetchCharacters() {
   }
 
   const html = data.slice(0, 10).map(c => `
-    <div class="character-bubble">
-      <a href="character.html?id=${c.character.mal_id}">
-        <div class="img-wrapper">
-          <img src="${c.character.images.jpg.image_url}" alt="">
-        </div>
-      </a>
-      <div class="character-name">${c.character.name}</div>
+  <a href="character.html?id=${c.character.mal_id}" class="character-bubble">
+    <div class="img-wrapper">
+      <img src="${c.character.images.jpg.image_url}" alt="">
     </div>
-  `).join('');
+    <div class="character-name">${c.character.name}</div>
+  </a>
+`).join('');
   document.getElementById('characterList').innerHTML = html;
 }
 
@@ -330,10 +363,13 @@ async function fetchRelated() {
   const relatedSection = document.getElementById('relatedSection');
 
   const html = data.flatMap(r =>
-    r.entry.map(i =>
-      `<div class="related"><strong>${i.name}</strong><p>${r.relation}</p></div>`
-    )
-  ).join('');
+  r.entry.map(i => `
+    <a href="manga-details.html?id=${i.mal_id}" class="related">
+      <strong>${i.name}</strong>
+      <p>${r.relation}</p>
+    </a>
+  `)
+).join('');
 
   if (!html.trim()) {
     relatedSection.remove();
