@@ -149,15 +149,16 @@
 const params = new URLSearchParams(window.location.search);
 const mangaId = params.get("id");
 
-let type = 'manga'; // default
+// These will be dynamically updated
+let type = 'manga';
 let favKey = 'mangaFavorites';
 
-function isInFavorites(id) {
+function isInFavorites(id, favKey) {
   const favs = JSON.parse(localStorage.getItem(favKey)) || [];
   return favs.some(fav => String(fav.id) === String(id));
 }
 
-function addToFavorites(id, title, imageUrl) {
+function addToFavorites(id, title, imageUrl, favKey, type) {
   const favs = JSON.parse(localStorage.getItem(favKey)) || [];
   const index = favs.findIndex(fav => String(fav.id) === String(id));
   const heartBtn = document.querySelector(`.favorite-bubble[data-id="${id}"]`);
@@ -179,11 +180,11 @@ function addToFavorites(id, title, imageUrl) {
   localStorage.setItem(favKey, JSON.stringify(favs));
 }
 
-function markFavoriteBubble(id) {
+function markFavoriteBubble(id, favKey) {
   const heartBtn = document.querySelector(`.favorite-bubble[data-id="${id}"]`);
   if (!heartBtn) return;
 
-  const isFav = isInFavorites(id);
+  const isFav = isInFavorites(id, favKey);
   heartBtn.classList.toggle('active', isFav);
   heartBtn.textContent = isFav ? '💖' : '❤️';
 }
@@ -197,7 +198,7 @@ async function fetchMangaDetails() {
     const { data } = await res.json();
     const img = data.images.jpg.image_url;
 
-    // ✅ Detect manhwa correctly before setting favKey
+    // ✅ Update type & favKey based on genre
     const isManhwa = data.genres.some(g => g.name.toLowerCase() === 'manhwa');
     type = isManhwa ? 'manhwa' : 'manga';
     favKey = isManhwa ? 'manhwaFavorites' : 'mangaFavorites';
@@ -222,10 +223,10 @@ async function fetchMangaDetails() {
 
     const heartBtn = document.querySelector(`.favorite-bubble[data-id="${data.mal_id}"]`);
     heartBtn.addEventListener('click', () => {
-      addToFavorites(data.mal_id, data.title, img); // uses updated favKey + type
+      addToFavorites(data.mal_id, data.title, img, favKey, type);
     });
 
-    markFavoriteBubble(data.mal_id);
+    markFavoriteBubble(data.mal_id, favKey);
 
   } catch (err) {
     container.innerHTML = `<p>Error loading manga details.</p>`;
@@ -275,7 +276,6 @@ fetchCharacters();
 fetchRelated();
 fetchChapters();
 </script>
-
 
 </body>
 </html>
