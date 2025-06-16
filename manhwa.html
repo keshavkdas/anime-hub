@@ -340,11 +340,9 @@
       const json = await res.json();
       const favorites = JSON.parse(localStorage.getItem(favKey)) || [];
 
-      const normalizedType = type.toLowerCase();
-
       json.data.forEach(manhwa => {
-        const mType = manhwa.type?.toLowerCase();
-        if (mType !== normalizedType) return;
+        // ✅ Fix: compare lowercase `type` properly
+        if (!manhwa.type || manhwa.type.toLowerCase() !== type) return;
 
         const card = document.createElement("div");
         card.className = "anime-card";
@@ -442,6 +440,7 @@
     }, 2500);
   }
 </script>
+
 
 
 </body>
