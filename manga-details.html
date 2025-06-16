@@ -151,6 +151,7 @@
   async function fetchMangaDetails() {
     const container = document.getElementById("mangaDetails");
     container.innerHTML = `<p>Loading details...</p>`;
+
     try {
       const res = await fetch(`https://api.jikan.moe/v4/manga/${mangaId}/full`);
       const { data } = await res.json();
@@ -160,7 +161,7 @@
         <div class="anime-detail-header">
           <div class="anime-image-container">
             <img src="${img}" alt="${data.title}"/>
-            <div class="favorite-bubble" id="favBtn">❤️</div>
+            <div class="favorite-bubble" id="favBtn" title="Add to Favorites">❤️</div>
           </div>
           <div class="anime-info">
             <h1>${data.title}</h1>
@@ -176,26 +177,29 @@
 
       const favBtn = document.getElementById("favBtn");
       let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
-
-      // Check and apply active class if already favorited
       let isFav = favorites.some(f => f.id === data.mal_id);
-      if (isFav) favBtn.classList.add("active");
 
-      // Toggle on click
+      // Set initial heart state
+      favBtn.textContent = isFav ? '💖' : '❤️';
+
       favBtn.addEventListener("click", () => {
         isFav = !isFav;
+
         if (isFav) {
+          // Add to favorites
           favorites.push({
             id: data.mal_id,
             title: data.title,
             image: img,
             type: "manga"
           });
-          favBtn.classList.add("active");
+          favBtn.textContent = '💖';
         } else {
+          // Remove from favorites
           favorites = favorites.filter(f => f.id !== data.mal_id);
-          favBtn.classList.remove("active");
+          favBtn.textContent = '❤️';
         }
+
         localStorage.setItem("favorites", JSON.stringify(favorites));
       });
 
@@ -247,6 +251,7 @@
   fetchRelated();
   fetchChapters();
 </script>
+
 
 </body>
 </html>
