@@ -1,3 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Manga Details</title>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@600&family=Poppins:wght@500&display=swap" rel="stylesheet"/>
+  <style>
+    body {
+      margin: 0;
+      background-color: #121212;
+      font-family: 'Poppins', sans-serif;
+      color: white;
+    }
+    header {
+      background-color: #1f1f1f;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    }
+    header h1 {
+      font-family: 'Oswald', sans-serif;
+      font-size: 2rem;
+      color: #f97316;
+      margin: 0;
+      font-weight: 600;
+    }
+    nav a {
+      color: white;
+      margin-left: 2rem;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    nav a:hover {
+      color: #f97316;
+    }
+    .container {
+      padding: 2rem;
+    }
+    .anime-detail-header {
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+    .anime-image-container {
+      position: relative;
+    }
+    .anime-image-container img {
+      width: 250px;
+      border-radius: 10px;
+    }
+    .favorite-bubble {
+      width: 35px;
+      height: 35px;
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(0, 0, 0, 0.6);
+      border-radius: 50%;
+      padding: 10px;
+      font-size: 24px;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      z-index: 2;
+      text-align: center;
+    }
+    .favorite-bubble:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 8px rgba(255, 0, 0, 0.6);
+    }
+    .favorite-bubble.active {
+      color: #ff4d4d;
+      text-shadow: 0 0 8px #ff4d4d;
+    }
+    .anime-info h1 {
+      color: #f97316;
+      margin-top: 0;
+    }
+    .anime-info p {
+      margin: 0.5rem 0;
+      color: #ccc;
+    }
+    .section {
+      margin-top: 3rem;
+    }
+    .section h3 {
+      margin-bottom: 1rem;
+      color: #f97316;
+    }
+    .character-list,
+    .related-list,
+    .chapter-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 1rem;
+    }
+    .character-bubble,
+    .related,
+    .chapter {
+      background-color: #1e1e1e;
+      padding: 1rem;
+      border-radius: 8px;
+      text-align: center;
+    }
+    .character-bubble img {
+      width: 100%;
+      border-radius: 8px;
+    }
+    .character-name {
+      margin-top: 0.5rem;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+<header>
+  <h1>AnimeHub</h1>
+  <nav>
+    <a href="index.html">Anime</a>
+    <a href="browse.html">Browse</a>
+    <a href="/manga.html">Manga</a>
+    <a href="/manhwa.html">Manhwa</a>
+    <a href="favorites.html" style="color:#f97316; font-weight:bold;">❤️</a>
+  </nav>
+</header>
+
+<div class="container">
+  <div id="mangaDetails"></div>
+
+  <div class="section">
+    <h3>Characters</h3>
+    <div class="character-list" id="characterList"></div>
+  </div>
+
+  <div class="section">
+    <h3>Related Works</h3>
+    <div class="related-list" id="relatedList"></div>
+  </div>
+
+  <div class="section">
+    <h3>Chapters</h3>
+    <div class="chapter-list" id="chapterList"></div>
+  </div>
+</div>
+
 <script>
 const params = new URLSearchParams(window.location.search);
 const mangaId = params.get("id");
@@ -124,3 +271,6 @@ fetchCharacters();
 fetchRelated();
 fetchChapters();
 </script>
+
+</body>
+</html>
