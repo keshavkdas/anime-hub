@@ -268,161 +268,165 @@
 </div>
 
   <script>
-    const track = document.getElementById("carouselTrack");
-    const manhwaResults = document.getElementById("manhwaResults");
-    const nextBtn = document.querySelector(".carousel-btn.next");
-    const prevBtn = document.querySelector(".carousel-btn.prev");
+  const track = document.getElementById("carouselTrack");
+  const manhwaResults = document.getElementById("manhwaResults");
+  const nextBtn = document.querySelector(".carousel-btn.next");
+  const prevBtn = document.querySelector(".carousel-btn.prev");
 
-    let index = 0;
-    let currentPage = 1;
-    let hasMore = true;
-    let manhwaList = [];
-    let carouselInterval;
+  const urlParams = new URLSearchParams(window.location.search);
+  const type = urlParams.get("type") || "manhwa";
+  const favKey = type === "manga" ? "mangaFavorites" : "manhwaFavorites";
 
-    async function loadAutoCarousel() {
-      try {
-        const res = await fetch(`https://api.jikan.moe/v4/manga?order_by=popularity&limit=10&type=manhwa`);
-        const json = await res.json();
-        manhwaList = json.data;
+  let index = 0;
+  let currentPage = 1;
+  let hasMore = true;
+  let manhwaList = [];
+  let carouselInterval;
+  let toastTimeout;
 
-        manhwaList.forEach(manhwa => {
-          const slide = document.createElement('div');
-          slide.className = 'carousel-item';
+  async function loadAutoCarousel() {
+    try {
+      const res = await fetch(`https://api.jikan.moe/v4/manga?order_by=popularity&limit=10&type=${type}`);
+      const json = await res.json();
+      manhwaList = json.data.filter(m => m.type?.toLowerCase() === type);
 
-          slide.innerHTML = `
-            <img src="${manhwa.images?.jpg?.large_image_url || manhwa.images?.jpg?.image_url}" alt="${manhwa.title}" />
-            <div class="carousel-info">
-              <h2>${manhwa.title}</h2>
-              <p><strong>Score:</strong> ${manhwa.score ?? "N/A"}</p>
-              <p><strong>Type:</strong> ${manhwa.type}</p>
-              <p><strong>Chapters:</strong> ${manhwa.chapters ?? "Unknown"}</p>
-              <p><strong>Synopsis:</strong> ${manhwa.synopsis ? manhwa.synopsis.slice(0, 220) + "..." : "No description available."}</p>
-              <button class="dive-button" onclick="location.href='manga-details.html?id=${manhwa.mal_id}'">🐠 Dive In</button>
-            </div>
-          `;
-          track.appendChild(slide);
-        });
+      manhwaList.forEach(manhwa => {
+        const slide = document.createElement('div');
+        slide.className = 'carousel-item';
+        slide.innerHTML = `
+          <img src="${manhwa.images?.jpg?.large_image_url || manhwa.images?.jpg?.image_url}" alt="${manhwa.title}" />
+          <div class="carousel-info">
+            <h2>${manhwa.title}</h2>
+            <p><strong>Score:</strong> ${manhwa.score ?? "N/A"}</p>
+            <p><strong>Type:</strong> ${manhwa.type}</p>
+            <p><strong>Chapters:</strong> ${manhwa.chapters ?? "Unknown"}</p>
+            <p><strong>Synopsis:</strong> ${manhwa.synopsis ? manhwa.synopsis.slice(0, 220) + "..." : "No description available."}</p>
+            <button class="dive-button" onclick="location.href='manga-details.html?id=${manhwa.mal_id}&type=${type}'">🐠 Dive In</button>
+          </div>
+        `;
+        track.appendChild(slide);
+      });
 
-        function updateCarousel(newIndex) {
-          index = newIndex;
-          track.style.transform = `translateX(-${index * 100}%)`;
-          clearInterval(carouselInterval);
-          carouselInterval = setInterval(() => {
-            updateCarousel((index + 1) % manhwaList.length);
-          }, 5000);
-        }
-
+      function updateCarousel(newIndex) {
+        index = newIndex;
+        track.style.transform = `translateX(-${index * 100}%)`;
+        clearInterval(carouselInterval);
         carouselInterval = setInterval(() => {
           updateCarousel((index + 1) % manhwaList.length);
         }, 5000);
-
-        nextBtn.addEventListener("click", () => {
-          updateCarousel((index + 1) % manhwaList.length);
-        });
-
-        prevBtn.addEventListener("click", () => {
-          updateCarousel((index - 1 + manhwaList.length) % manhwaList.length);
-        });
-
-      } catch (err) {
-        console.error("Carousel error:", err);
       }
+
+      carouselInterval = setInterval(() => {
+        updateCarousel((index + 1) % manhwaList.length);
+      }, 5000);
+
+      nextBtn.addEventListener("click", () => {
+        updateCarousel((index + 1) % manhwaList.length);
+      });
+
+      prevBtn.addEventListener("click", () => {
+        updateCarousel((index - 1 + manhwaList.length) % manhwaList.length);
+      });
+
+    } catch (err) {
+      console.error("Carousel error:", err);
     }
+  }
 
-    async function loadMoreManhwa() {
-      if (!hasMore) return;
-      try {
-        const res = await fetch(`https://api.jikan.moe/v4/manga?page=${currentPage}&limit=12&type=manhwa`);
-        const json = await res.json();
-        const favorites = JSON.parse(localStorage.getItem("manhwaFavorites")) || [];
+  async function loadMoreManhwa() {
+    if (!hasMore) return;
+    try {
+      const res = await fetch(`https://api.jikan.moe/v4/manga?page=${currentPage}&limit=12`);
+      const json = await res.json();
+      const favorites = JSON.parse(localStorage.getItem(favKey)) || [];
 
-        json.data.forEach(manhwa => {
-          const card = document.createElement("div");
-          card.className = "anime-card";
+      json.data.forEach(manhwa => {
+        if (manhwa.type?.toLowerCase() !== type) return;
 
-          const title = manhwa.title;
-          const image = manhwa.images?.jpg?.large_image_url || manhwa.images?.jpg?.image_url || "";
-          const score = manhwa.score ?? "N/A";
-          const type = manhwa.type ?? "Unknown";
-          const chapters = manhwa.chapters;
+        const card = document.createElement("div");
+        card.className = "anime-card";
 
-          const isFavorited = favorites.some(fav => fav.id?.toString() === manhwa.mal_id.toString());
+        const title = manhwa.title;
+        const image = manhwa.images?.jpg?.large_image_url || manhwa.images?.jpg?.image_url || "";
+        const score = manhwa.score ?? "N/A";
+        const chapters = manhwa.chapters;
+        const isFavorited = favorites.some(fav => fav.id?.toString() === manhwa.mal_id.toString());
 
-          const infoHTML = `
+        card.innerHTML = `
+          <div class="card-img-wrapper">
+            <img src="${image}" alt="${title}" />
+            <button class="fav-btn ${isFavorited ? 'active' : ''}" data-id="${manhwa.mal_id}" title="Add to favorites">${isFavorited ? '💖' : '❤️'}</button>
+          </div>
+          <div class="anime-info">
             <h3>${title}</h3>
             <p><strong>Score:</strong> ${score}</p>
-            <p><strong>Type:</strong> ${type}</p>
+            <p><strong>Type:</strong> ${manhwa.type}</p>
             ${chapters ? `<p><strong>Chapters:</strong> ${chapters}</p>` : ""}
-          `;
+          </div>
+        `;
 
-          card.innerHTML = `
-            <div class="card-img-wrapper">
-              <img src="${image}" alt="${title}" />
-              <button class="fav-btn ${isFavorited ? 'active' : ''}" data-id="${manhwa.mal_id}" title="Add to favorites">${isFavorited ? '💖' : '❤️'}</button>
-            </div>
-            <div class="anime-info">${infoHTML}</div>
-          `;
-
-          card.querySelector(".card-img-wrapper").addEventListener("click", (e) => {
-            if (!e.target.classList.contains("fav-btn")) {
-              window.location.href = `manga-details.html?id=${manhwa.mal_id}`;
-            }
-          });
-
-          manhwaResults.appendChild(card);
+        card.querySelector(".card-img-wrapper").addEventListener("click", (e) => {
+          if (!e.target.classList.contains("fav-btn")) {
+            window.location.href = `manga-details.html?id=${manhwa.mal_id}&type=${type}`;
+          }
         });
 
-        currentPage++;
-        hasMore = json.pagination?.has_next_page;
-      } catch (err) {
-        console.error("Failed to load manhwa:", err);
-      }
+        manhwaResults.appendChild(card);
+      });
+
+      currentPage++;
+      hasMore = json.pagination?.has_next_page;
+    } catch (err) {
+      console.error("Failed to load manhwa:", err);
     }
+  }
 
-    document.addEventListener("click", (e) => {
-      if (e.target.classList.contains("fav-btn")) {
-        const id = e.target.dataset.id;
-        let favorites = JSON.parse(localStorage.getItem("manhwaFavorites")) || [];
+  document.addEventListener("click", (e) => {
+    if (e.target.classList.contains("fav-btn")) {
+      const id = e.target.dataset.id;
+      let favorites = JSON.parse(localStorage.getItem(favKey)) || [];
 
-        const index = favorites.findIndex(fav => fav.id?.toString() === id);
+      const index = favorites.findIndex(fav => fav.id?.toString() === id);
 
-        if (index > -1) {
-          favorites.splice(index, 1);
-          e.target.innerText = "❤️";
-          e.target.classList.remove("active");
-          showToast("Removed from Favorites!");
-        } else {
-          const card = e.target.closest(".anime-card");
-          const title = card.querySelector("h3").innerText;
-          const image = card.querySelector("img").src;
+      if (index > -1) {
+        favorites.splice(index, 1);
+        e.target.innerText = "❤️";
+        e.target.classList.remove("active");
+        showToast("Removed from Favorites!");
+      } else {
+        const card = e.target.closest(".anime-card");
+        const title = card.querySelector("h3").innerText;
+        const image = card.querySelector("img").src;
 
-          favorites.push({
-            id,
-            title,
-            imageUrl: image,
-            type: "manhwa"
-          });
+        favorites.push({
+          id,
+          title,
+          imageUrl: image,
+          type
+        });
 
-          e.target.innerText = "💖";
-          e.target.classList.add("active");
-          showToast("Added to Favorites!");
-        }
-        localStorage.setItem("manhwaFavorites", JSON.stringify(favorites));
+        e.target.innerText = "💖";
+        e.target.classList.add("active");
+        showToast("Added to Favorites!");
       }
-    });
 
-    window.addEventListener("DOMContentLoaded", () => {
-      loadAutoCarousel();
+      localStorage.setItem(favKey, JSON.stringify(favorites));
+    }
+  });
+
+  window.addEventListener("DOMContentLoaded", () => {
+    loadAutoCarousel();
+    loadMoreManhwa();
+  });
+
+  window.addEventListener("scroll", () => {
+    const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+    if (scrollTop + clientHeight >= scrollHeight - 100) {
       loadMoreManhwa();
-    });
+    }
+  });
 
-    window.addEventListener("scroll", () => {
-      const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
-      if (scrollTop + clientHeight >= scrollHeight - 100) {
-        loadMoreManhwa();
-      }
-    });
-    function showToast(message) {
+  function showToast(message) {
     const toast = document.getElementById('toast');
     toast.textContent = message;
     toast.style.visibility = 'visible';
@@ -434,8 +438,8 @@
       toast.style.visibility = 'hidden';
     }, 2500);
   }
+</script>
 
-  </script>
 
 </body>
 </html>
