@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Manhwa Details</title>
-  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@600&family=Poppins:wght@500&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@600&family=Poppins:wght@500&display=swap" rel="stylesheet" />
   <style>
     body {
       margin: 0;
@@ -25,7 +25,6 @@
       font-size: 2rem;
       color: #f97316;
       margin: 0;
-      font-weight: 600;
     }
     nav a {
       color: white;
@@ -121,8 +120,8 @@
     <a href="index.html">Anime</a>
     <a href="browse.html">Browse</a>
     <a href="/manga.html">Manga</a>
-    <a href="/manhwa.html">Manhwa</a>
-    <a href="favorites.html" style="color:#f97316; font-weight:bold;">❤️</a>
+    <a href="/manhwa.html" style="color:#f97316; font-weight:bold;">Manhwa</a>
+    <a href="favorites.html">❤️</a>
   </nav>
 </header>
 
@@ -147,17 +146,16 @@
 
 <script>
 const params = new URLSearchParams(window.location.search);
-const manhwaId = params.get("id");
+const id = params.get("id");
+const favKey = 'manhwaFavorites';
+const type = 'manhwa';
 
-let type = 'manhwa'; // default
-let favKey = 'manhwaFavorites';
-
-function isInFavorites(id, favKey) {
+function isInFavorites(id) {
   const favs = JSON.parse(localStorage.getItem(favKey)) || [];
   return favs.some(fav => String(fav.id) === String(id));
 }
 
-function addToFavorites(id, title, imageUrl, favKey, type) {
+function addToFavorites(id, title, imageUrl) {
   const favs = JSON.parse(localStorage.getItem(favKey)) || [];
   const index = favs.findIndex(fav => String(fav.id) === String(id));
   const heartBtn = document.querySelector(`.favorite-bubble[data-id="${id}"]`);
@@ -179,28 +177,30 @@ function addToFavorites(id, title, imageUrl, favKey, type) {
   localStorage.setItem(favKey, JSON.stringify(favs));
 }
 
-function markFavoriteBubble(id, favKey) {
+function markFavoriteBubble(id) {
   const heartBtn = document.querySelector(`.favorite-bubble[data-id="${id}"]`);
   if (!heartBtn) return;
 
-  const isFav = isInFavorites(id, favKey);
+  const isFav = isInFavorites(id);
   heartBtn.classList.toggle('active', isFav);
   heartBtn.textContent = isFav ? '💖' : '❤️';
 }
 
-async function fetchManhwaDetails() {
+async function fetchDetails() {
   const container = document.getElementById("manhwaDetails");
   container.innerHTML = `<p>Loading details...</p>`;
 
   try {
-    const res = await fetch(`https://api.jikan.moe/v4/manga/${mangaId}/full`);
+    const res = await fetch(`https://api.jikan.moe/v4/manga/${id}/full`);
     const { data } = await res.json();
-    const img = data.images.jpg.image_url;
 
-    // ✅ Determine type and favKey
     const isManhwa = data.genres.some(g => g.name.toLowerCase() === 'manhwa');
-    type = isManhwa ? 'manhwa' : 'manga';
-    favKey = isManhwa ? 'manhwaFavorites' : 'mangaFavorites';
+    if (!isManhwa) {
+      container.innerHTML = '<p>This title is not classified as a Manhwa.</p>';
+      return;
+    }
+
+    const img = data.images.jpg.image_url;
 
     container.innerHTML = `
       <div class="anime-detail-header">
@@ -211,7 +211,6 @@ async function fetchManhwaDetails() {
         <div class="anime-info">
           <h1>${data.title}</h1>
           <p><strong>Synopsis:</strong> ${data.synopsis || 'No synopsis available.'}</p>
-          <p><strong>Type:</strong> ${data.type}</p>
           <p><strong>Status:</strong> ${data.status}</p>
           <p><strong>Chapters:</strong> ${data.chapters || 'Unknown'}</p>
           <p><strong>Score:</strong> ${data.score || 'N/A'}</p>
@@ -222,18 +221,17 @@ async function fetchManhwaDetails() {
 
     const heartBtn = document.querySelector(`.favorite-bubble[data-id="${data.mal_id}"]`);
     heartBtn.addEventListener('click', () => {
-      addToFavorites(data.mal_id, data.title, img, favKey, type);
+      addToFavorites(data.mal_id, data.title, img);
     });
 
-    markFavoriteBubble(data.mal_id, favKey);
-
+    markFavoriteBubble(data.mal_id);
   } catch (err) {
-    container.innerHTML = `<p>Error loading manhwa details.</p>`;
+    container.innerHTML = `<p>Error loading details.</p>`;
   }
 }
 
 async function fetchCharacters() {
-  const res = await fetch(`https://api.jikan.moe/v4/manga/${mangaId}/characters`);
+  const res = await fetch(`https://api.jikan.moe/v4/manga/${id}/characters`);
   const { data } = await res.json();
   const container = document.getElementById("characterList");
   container.innerHTML = data.slice(0, 10).map(char => `
@@ -242,40 +240,35 @@ async function fetchCharacters() {
         <img src="${char.character.images.jpg.image_url}" alt="${char.character.name}">
       </a>
       <div class="character-name">${char.character.name}</div>
-    </div>
-  `).join('');
+    </div>`).join('');
 }
 
 async function fetchRelated() {
-  const res = await fetch(`https://api.jikan.moe/v4/manga/${mangaId}/relations`);
+  const res = await fetch(`https://api.jikan.moe/v4/manga/${id}/relations`);
   const { data } = await res.json();
   const container = document.getElementById("relatedList");
   container.innerHTML = data.flatMap(rel => rel.entry.map(item => `
     <div class="related">
       <strong>${item.name}</strong>
       <p>${rel.relation}</p>
-    </div>
-  `)).join('');
+    </div>`)).join('');
 }
 
 async function fetchChapters() {
-  const res = await fetch(`https://api.jikan.moe/v4/manga/${mangaId}/chapters`);
+  const res = await fetch(`https://api.jikan.moe/v4/manga/${id}/chapters`);
   const { data } = await res.json();
   const container = document.getElementById("chapterList");
   container.innerHTML = data.slice(0, 20).map(ch => `
     <div class="chapter">
       <strong>Chapter ${ch.mal_id}</strong>
       <p>${ch.title || 'Untitled'}</p>
-    </div>
-  `).join('');
+    </div>`).join('');
 }
 
-fetchManhwaDetails();
+fetchDetails();
 fetchCharacters();
 fetchRelated();
 fetchChapters();
 </script>
-
-
 </body>
 </html>
