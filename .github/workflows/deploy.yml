@@ -8,26 +8,23 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    env:
-      VITE_MANGADEX_SECRET: ${{ secrets.VITE_MANGADEX_SECRET }}
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: '20'
 
       - name: Install dependencies
         run: npm install
 
-      - name: Build site
+      - name: Inject VITE_MANGADEX_SECRET to .env
+        run: echo "VITE_MANGADEX_SECRET=${{ secrets.VITE_MANGADEX_SECRET }}" > .env
+
+      - name: Build
         run: npm run build
-
-      - name: Debug VITE env
-        run: echo "TOKEN=$VITE_MANGADEX_SECRET"
-
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
