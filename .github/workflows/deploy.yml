@@ -2,25 +2,35 @@ name: Deploy AnimeHub to GitHub Pages
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main  # or your default branch
+  workflow_dispatch:
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout Repository
+        uses: actions/checkout@v3
 
-      - name: Create .env file
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Inject VITE_MANGADEX_SECRET from GitHub Secrets
         run: echo "VITE_MANGADEX_SECRET=${{ secrets.VITE_MANGADEX_SECRET }}" > .env
 
-
-      - name: Build (if needed)
-        run: |
-          echo "<html><body><h1>AnimeHub Calendar</h1></body></html>" > index.html  # replace with your build step if needed
+      - name: Build the site with Vite
+        run: npm run build
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
-          personal_token: ${{ secrets.GH_DEPLOY_TOKEN }}
-          publish_dir: .  # change to ./dist if you're using Vite or build tools
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+
