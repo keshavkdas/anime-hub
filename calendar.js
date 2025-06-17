@@ -4,7 +4,6 @@ if (!MANGADEX_TOKEN) {
   console.warn("⚠️ MangaDex token is missing. Manga data will not load.");
 }
 
-
 // For anime releases – Kitsu
 async function fetchAnimeReleases() {
   const res = await fetch("https://kitsu.io/api/edge/anime?sort=startDate&page[limit]=20");
@@ -18,17 +17,24 @@ async function fetchAnimeReleases() {
 
 // For manga releases – MangaDex (authenticated)
 async function fetchMangaReleases() {
-  const res = await fetch("https://api.mangadex.org/manga?order[latestUploadedChapter]=desc&limit=20", {
-    headers: {
-      Authorization: `Bearer ${MANGADEX_TOKEN}`
-    }
-  });
-  const data = await res.json();
-  return data.data.map(item => ({
-    title: item.attributes.title.en || "Untitled Manga",
-    type: "Manga",
-    date: item.attributes.year ? `${item.attributes.year}-01-01` : "2025-01-01"
-  }));
+  if (!MANGADEX_TOKEN) return []; // Prevent fetch if token missing
+
+  try {
+    const res = await fetch("https://api.mangadex.org/manga?order[latestUploadedChapter]=desc&limit=20", {
+      headers: {
+        Authorization: `Bearer ${MANGADEX_TOKEN}`
+      }
+    });
+    const data = await res.json();
+    return data.data.map(item => ({
+      title: item.attributes.title.en || "Untitled Manga",
+      type: "Manga",
+      date: item.attributes.year ? `${item.attributes.year}-01-01` : "2025-01-01"
+    }));
+  } catch (error) {
+    console.error("❌ MangaDex fetch failed:", error);
+    return [];
+  }
 }
 
 async function buildCalendar() {
@@ -37,10 +43,13 @@ async function buildCalendar() {
 
   let releases = [];
   try {
-    const [anime, manga] = await Promise.all([fetchAnimeReleases(), fetchMangaReleases()]);
+    const [anime, manga] = await Promise.all([
+      fetchAnimeReleases(),
+      fetchMangaReleases()
+    ]);
     releases = [...anime, ...manga];
   } catch (e) {
-    console.error("Error fetching data:", e);
+    console.error("❌ Error fetching data:", e);
     releases = [];
   }
 
@@ -67,7 +76,7 @@ async function buildCalendar() {
   });
 
   // Zoom
-  zoomBtn.addEventListener("click", () => {
+  zoomBtn?.addEventListener("click", () => {
     calendar.classList.toggle("zoomed");
   });
 }
