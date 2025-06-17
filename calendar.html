@@ -5,13 +5,40 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Release Calendar | AnimeHub</title>
   <style>
-    body { margin:0; background:#121212; color:#fff; font-family:sans-serif; }
-    header { background:#1f1f1f; padding:1rem; display:flex; justify-content:center; }
-    .calendar-container { padding:2rem; display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:1rem; }
-    .month { background:#1f1f1f; padding:1rem; border-radius:8px; }
-    .month h3 { margin:0 0 .5rem; color:#f97316; }
-    .entry { margin-bottom:0.3rem; font-size:0.9rem; }
-    .type-tag { font-weight:bold; }
+    body {
+      margin: 0;
+      background: #121212;
+      color: #fff;
+      font-family: sans-serif;
+    }
+    header {
+      background: #1f1f1f;
+      padding: 1rem;
+      display: flex;
+      justify-content: center;
+    }
+    .calendar-container {
+      padding: 2rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 1rem;
+    }
+    .month {
+      background: #1f1f1f;
+      padding: 1rem;
+      border-radius: 8px;
+    }
+    .month h3 {
+      margin: 0 0 0.5rem;
+      color: #f97316;
+    }
+    .entry {
+      margin-bottom: 0.3rem;
+      font-size: 0.9rem;
+    }
+    .type-tag {
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
@@ -28,11 +55,16 @@
 
   async function fetchJikan(path, dateKey, type) {
     try {
-      const r = await fetch(`https://api.jikan.moe/v4/${path}`);
-      const json = await r.json();
-      console.log(`Fetched ${type}:`, json.data.length);
+      const res = await fetch(`https://api.jikan.moe/v4/${path}`);
+      const json = await res.json();
+
+      if (!json.data || !Array.isArray(json.data)) {
+        console.warn(`No data for ${type}`, json);
+        return;
+      }
+
       json.data.forEach(item => {
-        const raw = dateKey.reduce((o,k)=>o?.[k], item);
+        const raw = dateKey.reduce((o, k) => o?.[k], item);
         if (!raw) return;
         const d = new Date(raw);
         if (isNaN(d)) return;
@@ -43,7 +75,33 @@
         });
       });
     } catch (e) {
-      console.error(`Error loading ${type}:`, e);
+      console.error(`Error fetching ${type}:`, e);
+    }
+  }
+
+  async function fetchJikanManga() {
+    try {
+      const res = await fetch("https://api.jikan.moe/v4/manga?order_by=publishing_start&sort=asc&type=manga&limit=30");
+      const json = await res.json();
+
+      if (!json.data || !Array.isArray(json.data)) {
+        console.warn("No manga data:", json);
+        return;
+      }
+
+      json.data.forEach(item => {
+        const raw = item.published?.from;
+        if (!raw) return;
+        const d = new Date(raw);
+        if (isNaN(d)) return;
+        byMonth[d.getMonth()].push({
+          title: item.title,
+          type: 'Manga',
+          date: d.toDateString()
+        });
+      });
+    } catch (e) {
+      console.error("Error fetching Manga:", e);
     }
   }
 
@@ -51,61 +109,71 @@
     try {
       const query = `
         query {
-          Page(perPage:50) {
-            media(type:MANGA, format:MANGA, sort:POPULARITY_DESC, genre_in:["Manhwa"]) {
+          Page(perPage: 50) {
+            media(type: MANGA, format: MANGA, sort: POPULARITY_DESC, genre_in: ["Manhwa"]) {
               title { romaji }
               startDate { year month day }
             }
           }
         }`;
-      const r = await fetch('https://graphql.anilist.co', {
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
+
+      const res = await fetch("https://graphql.anilist.co", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ query })
       });
-      const json = await r.json();
-      console.log('Fetched Manhwa:', json.data.Page.media.length);
-      json.data.Page.media.forEach(m => {
-        const sd = m.startDate;
-        if (!sd.year || !sd.month || !sd.day) return;
-        const d = new Date(sd.year, sd.month-1, sd.day);
+
+      const json = await res.json();
+      if (!json.data?.Page?.media) {
+        console.warn("No manhwa data:", json);
+        return;
+      }
+
+      json.data.Page.media.forEach(item => {
+        const { year, month, day } = item.startDate || {};
+        if (!year || !month || !day) return;
+        const d = new Date(year, month - 1, day);
+        if (isNaN(d)) return;
         byMonth[d.getMonth()].push({
-          title: m.title.romaji,
+          title: item.title.romaji,
           type: 'Manhwa',
           date: d.toDateString()
         });
       });
     } catch (e) {
-      console.error('AniList error:', e);
+      console.error("Error fetching Manhwa:", e);
     }
   }
 
   function render() {
-    const con = document.getElementById('calendar');
-    con.innerHTML = '';
+    const container = document.getElementById('calendar');
+    container.innerHTML = '';
+
     monthNames.forEach((name, idx) => {
-      const mbox = document.createElement('div');
-      mbox.className = 'month';
-      mbox.innerHTML = `<h3>${name}</h3>`;
-      const arr = byMonth[idx];
-      if (arr.length === 0) {
-        mbox.innerHTML += `<p style="opacity:.5">No releases data.</p>`;
+      const box = document.createElement('div');
+      box.className = 'month';
+      box.innerHTML = `<h3>${name}</h3>`;
+      const entries = byMonth[idx];
+
+      if (entries.length === 0) {
+        box.innerHTML += `<p style="opacity: 0.5">No releases data.</p>`;
       } else {
-        arr.sort((a,b)=> new Date(a.date) - new Date(b.date));
-        arr.forEach(e => {
-          const p = document.createElement('div');
-          p.className = 'entry';
-          p.innerHTML = `<span class="type-tag">[${e.type}]</span> ${e.date}: ${e.title}`;
-          mbox.appendChild(p);
+        entries.sort((a, b) => new Date(a.date) - new Date(b.date));
+        entries.forEach(entry => {
+          const div = document.createElement('div');
+          div.className = 'entry';
+          div.innerHTML = `<span class="type-tag">[${entry.type}]</span> ${entry.date}: ${entry.title}`;
+          box.appendChild(div);
         });
       }
-      con.appendChild(mbox);
+
+      container.appendChild(box);
     });
   }
 
   async function init() {
-    await fetchJikan('seasons/upcoming', ['aired','from'], 'Anime');
-    await fetchJikan('manga?order_by=publishing_start&sort=asc&type=manga', ['published','from'], 'Manga');
+    await fetchJikan('seasons/upcoming', ['aired', 'from'], 'Anime');
+    await fetchJikanManga();
     await fetchAniListManhwa();
     render();
   }
