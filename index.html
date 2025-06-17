@@ -1,1 +1,639 @@
-<html><body><h1>AnimeHub Calendar</h1></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AnimeHub</title>
+  <link rel="icon" href="https://keshavkdas.github.io/anime-hub/assets/favicon-BswmXMcf.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.3/dist/css/splide.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500&family=Poppins&display=swap" rel="stylesheet">
+  <link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.3/dist/css/splide.min.css"
+  />
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background-color: #121212;
+      color: #ffffff;
+    }
+
+    header {
+      background-color: #1f1f1f;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header h1 {
+      font-family: 'Oswald', sans-serif;
+      font-size: 2rem;
+      color: #f97316;
+    }
+
+    nav a {
+      color: #fff;
+      margin-left: 2rem;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    nav a:hover {
+      color: #f97316;
+    }
+
+    .hero {
+      padding: 5rem 2rem;
+      text-align: center;
+      background: url('https://wallpaperaccess.com/full/87301.jpg') no-repeat center/cover;
+    }
+
+    .hero h2 {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      color: #fff;
+      text-shadow: 2px 2px 10px #000;
+    }
+
+    .hero p {
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+      color: #f3f3f3;
+      text-shadow: 1px 1px 5px #000;
+    }
+
+    .hero a {
+      background-color: #f97316;
+      color: #fff;
+      padding: 1rem 2rem;
+      border-radius: 5px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: background 0.3s;
+    }
+
+    .hero a:hover {
+      background-color: #fb923c;
+    }
+
+    .trending-section {
+      padding: 2rem;
+    }
+
+    .trending-section h2 {
+      margin-bottom: 1rem;
+      font-size: 2rem;
+      color: #f97316;
+    }
+
+    .anime-scroll {
+      display: flex;
+      overflow-x: auto;
+      gap: 1rem;
+      padding-bottom: 1rem;
+    }
+
+    .anime-scroll::-webkit-scrollbar {
+      height: 8px;
+    }
+
+    .anime-scroll::-webkit-scrollbar-thumb {
+      background-color: #f97316;
+      border-radius: 10px;
+    }
+
+    .anime-card {
+      min-width: 220px;
+      background-color: #1f1f1f;
+      border-radius: 10px;
+      overflow: hidden;
+      flex-shrink: 0;
+      box-shadow: 0 4px 15px rgba(255, 255, 255, 0.05);
+      transition: transform 0.3s;
+      position: relative;
+    }
+
+    .anime-card:hover {
+      transform: scale(1.05);
+    }
+
+    .anime-card img {
+      width: 100%;
+      height: 280px;
+      object-fit: cover;
+    }
+
+    .anime-card h3 {
+      padding: 0.5rem;
+      font-size: 1rem;
+      text-align: center;
+      color: #fff;
+    }
+
+    .anime-list-section {
+  padding: 2rem;
+  background-color: #121212;
+}
+
+.anime-list-section h2 {
+  color: white;
+  margin-bottom: 1rem;
+  font-size: 1.6rem;
+  text-align: center;
+}
+
+.anime-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+
+  .favorite-bubble {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: #ff4c4c;
+  border-radius: 50%;
+  padding: 0.5rem;
+  font-size: 1.2rem;
+  cursor: pointer;
+  z-index: 2;
+  transition: transform 0.2s;
+}
+.favorite-bubble:hover {
+  transform: scale(1.2);
+}
+
+    
+    footer {
+      text-align: center;
+      padding: 1rem;
+      background-color: #1f1f1f;
+      margin-top: 3rem;
+      font-size: 0.9rem;
+    }
+
+    .top-anime-slider {
+      padding: 2rem;
+      background-color: #1f1f1f;
+    }
+
+    .top-anime-slider h2 {
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+      color: #f97316;
+      text-align: center;
+    }
+
+    .splide__slide .slider-card {
+      background-color: #2a2a2a;
+      border-radius: 8px;
+      overflow: hidden;
+      text-align: center;
+      color: white;
+      transition: transform 0.3s;
+      height: 270px;
+      position: relative;
+      cursor: pointer;
+    }
+    .slider-card img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+    }
+    .slider-card h3 {
+      position: absolute;
+      bottom: 8px;
+      left: 8px;
+      right: 8px;
+      font-size: 1rem;
+      color: #fff;
+      text-shadow: 0 0 8px black;
+    }
+    #backToTop {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  width: 48px;
+  height: 48px;
+  font-size: 1.5rem;
+  background: rgba(0, 0, 0, 0.4); /* transparent + blur */
+  backdrop-filter: blur(6px);
+  border: 2px solid #f97316;
+  border-radius: 999px;
+  color: #f97316;
+  cursor: pointer;
+  z-index: 1000;
+  transition: background 0.3s, transform 0.3s;
+}
+
+#backToTop:hover {
+  background: rgba(255, 121, 18, 0.1);
+  transform: scale(1.1);
+}
+
+  </style>
+  <link rel="stylesheet" crossorigin href="https://keshavkdas.github.io/anime-hub/assets/index-DPOZo1Ci.css">
+</head>
+
+<body>
+  <header>
+    <h1>AnimeHub</h1>
+    <nav>
+      <a href="index.html">Anime</a>
+      <a href="browse.html">Browse</a>
+      <a href="Calendar.html">Schedule</a>
+      <a href="/manga.html" class="hover:text-purple-400">Manga</a>
+      <a href="/manhwa.html" class="hover:text-purple-400">Manhwa</a>
+      <a href="favorites.html" style="color:#f97316; font-weight:bold;">❤️</a>
+      
+    </nav>
+  </header>
+
+  <section class="hero">
+    <h2>Welcome to AnimeHub</h2>
+    <p>Your one-stop destination for the latest anime shows, movies, and more.</p>
+    <a href="browse.html">Start Browsing</a>
+  </section>
+
+  <section class="hianime-carousel-section" style="padding: 0; margin: 0;">
+  <h2 style="color:#f97316; text-align:center; padding: 1.5rem 0;">🔥 Top Anime this week</h2>
+  <div id="hianimeCarousel" style="position:relative; width:100%; overflow:hidden;">
+    <div id="carouselTrack" style="display:flex; transition:transform 0.5s ease-in-out;"></div>
+    <button id="prevBtn" style="position:absolute; top:50%; left:20px; transform:translateY(-50%); background:rgba(0,0,0,0.4); color:#fff; border:none; font-size:2rem; padding:5px 12px; cursor:pointer; border-radius:50%;">&#10094;</button>
+    <button id="nextBtn" style="position:absolute; top:50%; right:20px; background:rgba(0,0,0,0.4); color:#fff; border:none; font-size:2rem; padding:5px 12px; cursor:pointer; border-radius:50%;">&#10095;</button>
+  </div>
+  </section>
+
+
+  <section class="anime-list-section">
+  <h2>✨ Explore More Anime</h2>
+  <div id="animeContainer" class="anime-list">
+    <!-- Main trending anime cards will appear here -->
+  </div>
+  </section>
+
+  <button id="backToTop" title="Back to top">⮝</button>
+
+
+  <footer>
+    &copy; 2025 AnimeHub. All rights reserved.
+  </footer>
+
+  <div id="toast" style="
+  visibility: hidden;
+  min-width: 250px;
+  background-color: #f97316;
+  color: white;
+  text-align: center;
+  border-radius: 4px;
+  padding: 12px;
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-weight: bold;
+  font-size: 16px;
+  z-index: 1000;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+  ">
+  Added to favorites!
+</div>
+
+<script>
+  let currentPage = 1;
+  let isLoading = false;
+  const loadedAnimeIds = new Set();
+  let toastTimeout;
+
+  function isInFavorites(id) {
+    const favs = JSON.parse(localStorage.getItem('animeFavorites')) || [];
+    return favs.some(fav => String(fav.id) === String(id));
+  }
+
+  async function loadTrendingAnime() {
+    const container = document.getElementById("animeContainer");
+    if (isLoading) return;
+    isLoading = true;
+
+    try {
+      const res = await fetch(`https://api.jikan.moe/v4/top/anime?page=${currentPage}`);
+      const data = await res.json();
+
+      const todaySeed = parseInt(new Date().toISOString().slice(0, 10).replace(/-/g, ''));
+      const shuffledAnime = shuffleArrayWithSeed(data.data, todaySeed);
+
+      shuffledAnime.forEach(anime => {
+        if (loadedAnimeIds.has(anime.mal_id)) return;
+        loadedAnimeIds.add(anime.mal_id);
+
+        const id = anime.mal_id;
+        const title = anime.title.replace(/'/g, "\\'");
+        const imageUrl = anime.images.jpg.image_url.replace(/"/g, '&quot;');
+
+        const card = document.createElement('div');
+        card.classList.add('anime-card');
+
+        const isFav = isInFavorites(id);
+        const heartIcon = isFav ? '💖' : '❤️';
+        
+        card.innerHTML = `
+          <div class="anime-card-inner">
+            <a href="anime.html?id=${id}">
+              <img src="${imageUrl}" alt="${title}" loading="lazy" onerror="this.src='fallback.jpg';">
+            </a>
+            <div class="favorite-bubble fav-btn ${isFav ? 'active' : ''}" data-id="${id}" onclick="event.stopPropagation(); addToFavorites('${id}', '${title}', '${imageUrl}')">${heartIcon}</div>
+            <h3>${title}</h3>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+
+      currentPage++;
+    } catch (err) {
+      console.error("Failed to load anime:", err);
+    } finally {
+      isLoading = false;
+    }
+  }
+
+  function shuffleArrayWithSeed(array, seed) {
+    const seededRandom = (s) => {
+      let x = Math.sin(s++) * 10000;
+      return x - Math.floor(x);
+    };
+
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(seededRandom(seed + i) * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+
+    return array;
+  }
+
+function addToFavorites(id, title, imageUrl) {
+  try {
+    if (!id || !title || !imageUrl) {
+      showToast('Missing anime info!');
+      return;
+    }
+
+    const favs = JSON.parse(localStorage.getItem('animeFavorites')) || [];
+    const index = favs.findIndex(fav => String(fav.id) === String(id));
+    const heartBtn = document.querySelector(`.favorite-bubble[data-id="${id}"]`);
+
+    if (index > -1) {
+      // Already in favorites: Remove
+      favs.splice(index, 1);
+      showToast('Removed from favorites!');
+      if (heartBtn) heartBtn.textContent = '❤️';
+    } else {
+      // Not in favorites: Add
+      favs.push({
+        id: String(id),
+        title: title.trim(),
+        imageUrl: imageUrl.trim(),
+        type: 'anime'
+      });
+      showToast('Added to favorites!');
+      if (heartBtn) heartBtn.textContent = '💖';
+    }
+
+    localStorage.setItem('animeFavorites', JSON.stringify(favs));
+  } catch (err) {
+    console.error('Error toggling favorite:', err);
+    showToast('Something went wrong!');
+  }
+}
+
+
+  function showToast(message) {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.style.visibility = 'visible';
+    toast.style.opacity = '1';
+
+    clearTimeout(toastTimeout);
+    toastTimeout = setTimeout(() => {
+      toast.style.opacity = '0';
+      toast.style.visibility = 'hidden';
+    }, 2500);
+  }
+
+  function playTrailer(title) {
+    const query = encodeURIComponent(`${title} anime trailer`);
+    window.open(`https://www.youtube.com/results?search_query=${query}`, '_blank');
+  }
+
+  // Load top anime slider
+  const splideScript = document.createElement('script');
+  splideScript.src = "https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.3/dist/js/splide.min.js";
+  splideScript.onload = () => {
+    fetch("https://api.jikan.moe/v4/top/anime?limit=10")
+      .then(res => res.json())
+      .then(data => {
+        const list = document.getElementById("splideList");
+        data.data.forEach(anime => {
+          const li = document.createElement("li");
+          li.className = "splide__slide";
+          li.innerHTML = `
+            <div class="slider-card">
+              <img src="${anime.images.jpg.image_url}" alt="${anime.title}" loading="lazy">
+              <h3>${anime.title}</h3>
+            </div>
+          `;
+          list.appendChild(li);
+        });
+
+        new Splide('#topAnimeSlider', {
+          type: 'loop',
+          perPage: 5,
+          autoplay: true,
+          interval: 2500,
+          arrows: true,
+          pagination: false,
+          gap: '1rem',
+          breakpoints: {
+            1024: { perPage: 4 },
+            768: { perPage: 3 },
+            480: { perPage: 2 }
+          }
+        }).mount();
+      });
+  };
+  document.body.appendChild(splideScript);
+
+  // Infinite scroll with debounce
+  let scrollDebounce;
+  window.addEventListener("scroll", () => {
+    clearTimeout(scrollDebounce);
+    scrollDebounce = setTimeout(() => {
+      const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+      if (scrollTop + clientHeight >= scrollHeight - 20) {
+        loadTrendingAnime();
+      }
+    }, 150);
+  });
+
+  document.addEventListener("DOMContentLoaded", () => {
+    loadTrendingAnime();
+  });
+
+  function markFavoritesActive() {
+  const favorites = JSON.parse(localStorage.getItem('animeFavorites')) || [];
+  document.querySelectorAll('.anime-card .favorite-bubble').forEach(btn => {
+    const card = btn.closest('.anime-card');
+    const id = card.querySelector('a')?.href.match(/id=(\d+)/)?.[1];
+    if (favorites.some(fav => fav.id == id)) {
+      btn.classList.add('active');
+      btn.textContent = '💖';
+    } else {
+      btn.classList.remove('active');
+      btn.textContent = '❤️';
+    }
+  });
+}
+markFavoritesActive();
+
+</script>
+
+<script>  
+;(async () => {
+  const track = document.getElementById('carouselTrack');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+
+  try {
+    // Fetch the currently airing season anime (limit 10)
+    const res = await fetch('https://api.jikan.moe/v4/seasons/now?limit=10');
+    const data = await res.json();
+    const shows = data.data;
+
+    // Clear previous content (if any)
+    track.innerHTML = '';
+
+    shows.forEach(anime => {
+      const slide = document.createElement('div');
+      slide.style.minWidth = '100vw';
+      slide.style.height = '500px';
+      slide.style.position = 'relative';
+      slide.style.overflow = 'hidden';
+      slide.style.display = 'flex';
+      slide.style.alignItems = 'center';
+
+      const img = anime.images.jpg.large_image_url || anime.images.jpg.image_url;
+
+      slide.innerHTML = `
+  <img src="${img}" alt="${anime.title}" style="
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 100%;
+    width: auto;
+    min-width: 50vw;
+    object-fit: contain;
+    filter: brightness(0.8);
+    z-index: 1;
+    clip-path: polygon(20% 0%, 100% 0%, 100% 100%, 20% 100%);
+  " />
+  <div style="
+    position: absolute; 
+    top: 0; 
+    left: 0; 
+    height: 100%; 
+    width: 55%; 
+    background: linear-gradient(to right, rgba(0,0,0,0.85), transparent);
+    padding: 2rem; 
+    display: flex; 
+    flex-direction: column; 
+    justify-content: center; 
+    color: white;
+    z-index: 2;
+  ">
+    <h2 style="font-size:2.5rem; margin:0 0 1rem;">${anime.title}</h2>
+    <p style="
+      font-size:1rem; 
+      line-height:1.5; 
+      max-height: 4.5em; /* 3 lines * 1.5 line-height */
+      overflow: hidden; 
+      text-overflow: ellipsis; 
+      display: -webkit-box; 
+      -webkit-line-clamp: 3; 
+      -webkit-box-orient: vertical;
+    ">
+      ${anime.synopsis ? anime.synopsis.split('. ').slice(0,2).join('. ') + '.' : ''}
+    </p>
+    <p style="margin:1rem 0; font-size:0.9rem;"><strong>Episodes:</strong> ${anime.episodes ?? '—'}</p>
+     <a href="anime.html?id=${anime.mal_id}" style="
+      background:#f97316;
+  color:#fff;
+  padding:1rem 2rem;
+  font-size:1.2rem;
+  font-weight: bold;
+  border-radius:8px;
+  cursor:pointer;
+  max-width: 200px;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  transition: transform 0.2s ease;
+  a:hover {
+  transform: scale(1.05);
+  }
+    ">
+      🐠 Dive In
+    </a>
+  </div>
+`;
+
+
+      track.appendChild(slide);
+    });
+
+    let idx = 0, total = track.children.length;
+    function slideTo(i) {
+      track.style.transition = 'transform 0.5s ease-in-out';
+      track.style.transform = `translateX(-${i * 100}vw)`;
+    }
+
+    let interval = setInterval(() => {
+      idx = (idx + 1) % total;
+      slideTo(idx);
+    }, 4000);
+
+    [prevBtn, nextBtn].forEach(btn => {
+      btn.addEventListener('click', () => {
+        idx = btn === nextBtn ? (idx + 1) % total : (idx - 1 + total) % total;
+        slideTo(idx);
+        clearInterval(interval);
+        interval = setInterval(() => {
+          idx = (idx + 1) % total;
+          slideTo(idx);
+        }, 4000);
+      });
+    });
+  } catch (e) {
+    console.error('Carousel error:', e);
+  }
+})();
+
+</script>
+<script>
+  const backToTopBtn = document.getElementById('backToTop');
+
+  window.addEventListener('scroll', () => {
+    backToTopBtn.style.display = window.scrollY > 300 ? 'block' : 'none';
+  });
+
+  backToTopBtn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+</script>
