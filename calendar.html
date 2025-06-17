@@ -61,7 +61,7 @@
             type: ${type},
             format: ${format},
             ${genre ? `genre_in: ["${genre}"],` : ""}
-            sort: START_DATE
+            sort: START_DATE_DESC
           ) {
             title { romaji }
             startDate { year month day }
@@ -69,7 +69,7 @@
         }
       }`;
 
-    const pagesToFetch = [1, 2]; // Fetch more pages if needed
+    const pagesToFetch = [1, 2];
     for (const page of pagesToFetch) {
       try {
         const res = await fetch("https://graphql.anilist.co", {
