@@ -1,0 +1,16 @@
+{
+  "name": "anime-hub",
+  "version": "1.0.0",
+  "description": "Anime & Manga calendar built with Vite",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "keywords": [],
+  "author": "Keshav K Das",
+  "license": "MIT",
+  "devDependencies": {
+    "vite": "^5.0.0"
+  }
+}
