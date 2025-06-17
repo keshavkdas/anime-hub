@@ -1,6 +1,8 @@
-const MANGADEX_TOKEN = window.CONFIG?.MANGADEX_TOKEN;
+const MANGADEX_TOKEN = __MANGADEX_TOKEN__;
 
-console.log("📦 Token from env:", MANGADEX_TOKEN);
+if (!MANGADEX_TOKEN) {
+  console.warn("⚠️ MangaDex token is missing. Manga data will not load.");
+}
 
 if (!MANGADEX_TOKEN) {
   console.warn("⚠️ MangaDex token is missing. Manga data will not load.");
