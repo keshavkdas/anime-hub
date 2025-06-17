@@ -53,102 +53,54 @@
   ];
   const byMonth = Array.from({ length: 12 }, () => []);
 
-  async function fetchJikan(path, dateKey, type) {
-    try {
-      const res = await fetch(`https://api.jikan.moe/v4/${path}`);
-      const json = await res.json();
-
-      if (!json.data || !Array.isArray(json.data)) {
-  console.warn(`No valid data for ${type}`, json);
-  return;
-}
-console.log(`Fetched ${type}:`, json.data.length);
-
-
-      json.data.forEach(item => {
-        const raw = dateKey.reduce((o, k) => o?.[k], item);
-        if (!raw) return;
-        const d = new Date(raw);
-        if (isNaN(d)) return;
-        byMonth[d.getMonth()].push({
-          title: item.title,
-          type,
-          date: d.toDateString()
-        });
-      });
-    } catch (e) {
-      console.error(`Error fetching ${type}:`, e);
-    }
-  }
-
-  async function fetchJikanManga() {
-    try {
-      const res = await fetch("https://api.jikan.moe/v4/manga?order_by=publishing_start&sort=asc&type=manga&limit=30");
-      const json = await res.json();
-
-      if (!json.data || !Array.isArray(json.data)) {
-        console.warn("No manga data:", json);
-        return;
-      }
-
-      json.data.forEach(item => {
-        const raw = item.published?.from;
-        if (!raw) return;
-        const d = new Date(raw);
-        if (isNaN(d)) return;
-        byMonth[d.getMonth()].push({
-          title: item.title,
-          type: 'Manga',
-          date: d.toDateString()
-        });
-      });
-    } catch (e) {
-      console.error("Error fetching Manga:", e);
-    }
-  }
-
-  async function fetchAniListManhwa() {
-    try {
-      const query = `
-        query {
-          Page(perPage: 50) {
-            media(type: MANGA, format: MANGA, sort: POPULARITY_DESC, genre_in: ["Manhwa"]) {
-              title { romaji }
-              startDate { year month day }
-            }
+  async function fetchAniList(type, format, label, genre = null) {
+    const query = `
+      query ($page: Int) {
+        Page(perPage: 50, page: $page) {
+          media(
+            type: ${type},
+            format: ${format},
+            ${genre ? `genre_in: ["${genre}"],` : ""}
+            sort: START_DATE
+          ) {
+            title { romaji }
+            startDate { year month day }
           }
-        }`;
+        }
+      }`;
 
-      const res = await fetch("https://graphql.anilist.co", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query })
-      });
-
-      const json = await res.json();
-      if (!json.data?.Page?.media) {
-        console.warn("No manhwa data:", json);
-        return;
-      }
-
-      json.data.Page.media.forEach(item => {
-        const { year, month, day } = item.startDate || {};
-        if (!year || !month || !day) return;
-        const d = new Date(year, month - 1, day);
-        if (isNaN(d)) return;
-        byMonth[d.getMonth()].push({
-          title: item.title.romaji,
-          type: 'Manhwa',
-          date: d.toDateString()
+    const pagesToFetch = [1, 2]; // Fetch more pages if needed
+    for (const page of pagesToFetch) {
+      try {
+        const res = await fetch("https://graphql.anilist.co", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ query, variables: { page } })
         });
-      });
-    } catch (e) {
-      console.error("Error fetching Manhwa:", e);
+
+        const json = await res.json();
+        const list = json.data?.Page?.media || [];
+
+        list.forEach(item => {
+          const { year, month, day } = item.startDate || {};
+          if (!year || !month || !day) return;
+          const d = new Date(year, month - 1, day);
+          if (isNaN(d)) return;
+
+          byMonth[d.getMonth()].push({
+            title: item.title.romaji,
+            type: label,
+            date: d.toDateString()
+          });
+        });
+      } catch (e) {
+        console.error(`AniList fetch error for ${label}:`, e);
+      }
     }
   }
 
   function render() {
-    const container = document.getElementById('calendar');
+    const container = document.getElementById("calendar");
     container.innerHTML = '';
 
     monthNames.forEach((name, idx) => {
@@ -174,11 +126,11 @@ console.log(`Fetched ${type}:`, json.data.length);
   }
 
   async function init() {
-  await fetchJikan('seasons/upcoming', ['aired', 'from'], 'Anime'); // Anime
-  await fetchJikanManga(); // Manga (custom function)
-  await fetchAniListManhwa(); // Manhwa (AniList)
-  render();
-}
+    await fetchAniList("ANIME", "TV", "Anime");
+    await fetchAniList("MANGA", "MANGA", "Manga");
+    await fetchAniList("MANGA", "MANGA", "Manhwa", "Manhwa");
+    render();
+  }
 
   init();
 </script>
