@@ -1,8 +1,14 @@
-import { defineConfig } from 'vite';
+import { defineConfig, loadEnv } from 'vite';
 
-export default defineConfig({
-  base: 'https://keshavkdas.github.io/anime-hub/', // set your repo name here
-  build: {
-    outDir: 'dist'
-  }
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), '');
+  return {
+    base: '/anime-hub/',
+    build: {
+      outDir: 'dist',
+    },
+    define: {
+      'import.meta.env.VITE_MANGADEX_SECRET': JSON.stringify(env.VITE_MANGADEX_SECRET),
+    },
+  };
 });
