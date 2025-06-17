@@ -59,9 +59,11 @@
       const json = await res.json();
 
       if (!json.data || !Array.isArray(json.data)) {
-        console.warn(`No data for ${type}`, json);
-        return;
-      }
+  console.warn(`No valid data for ${type}`, json);
+  return;
+}
+console.log(`Fetched ${type}:`, json.data.length);
+
 
       json.data.forEach(item => {
         const raw = dateKey.reduce((o, k) => o?.[k], item);
@@ -172,11 +174,11 @@
   }
 
   async function init() {
-    await fetchJikan('seasons/upcoming', ['aired', 'from'], 'Anime');
-    await fetchJikanManga();
-    await fetchAniListManhwa();
-    render();
-  }
+  await fetchJikan('seasons/upcoming', ['aired', 'from'], 'Anime'); // Anime
+  await fetchJikanManga(); // Manga (custom function)
+  await fetchAniListManhwa(); // Manhwa (AniList)
+  render();
+}
 
   init();
 </script>
