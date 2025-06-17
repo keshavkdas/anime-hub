@@ -1,6 +1,5 @@
-import fetch from 'node-fetch';
-import dotenv from 'dotenv';
-dotenv.config();
+const fetch = require('node-fetch');
+require('dotenv').config();
 
 const token = process.env.MANGADEX_ACCESS_TOKEN;
 
@@ -19,7 +18,7 @@ function addToMonth(dateString, title, type) {
 }
 
 async function fetchKitsuAnime() {
-  console.log("Fetching Anime from Kitsu...");
+  console.log("🎬 Fetching Anime from Kitsu...");
   try {
     const response = await fetch("https://kitsu.io/api/edge/anime?page[limit]=20&sort=-startDate");
     const json = await response.json();
@@ -40,7 +39,7 @@ async function fetchKitsuAnime() {
 }
 
 async function fetchMangaDex() {
-  console.log("Fetching Manga/Manhwa from MangaDex...");
+  console.log("📚 Fetching Manga/Manhwa from MangaDex...");
   try {
     const response = await fetch(
       'https://api.mangadex.org/manga?limit=20&order[createdAt]=desc&includes[]=tags',
@@ -48,7 +47,7 @@ async function fetchMangaDex() {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
-          'User-Agent': 'anime-hub/1.0 (https://github.com/keshavkdas)' // Change to your actual site if public
+          'User-Agent': 'anime-hub/1.0 (https://github.com/keshavkdas)'
         }
       }
     );
@@ -77,7 +76,7 @@ async function fetchMangaDex() {
 }
 
 function renderCalendar() {
-  console.log("📅 Release Calendar");
+  console.log("\n📅 Release Calendar");
   monthNames.forEach((month, index) => {
     const entries = calendar[index];
     if (entries.length > 0) {
