@@ -1,7 +1,6 @@
 const MANGADEX_TOKEN = import.meta.env?.VITE_MANGADEX_SECRET;
 
-console.log("📦 Vite env object:", import.meta.env);
-console.log("🔐 MangaDex token:", import.meta.env.VITE_MANGADEX_SECRET);
+console.log("📦 Token from env:", MANGADEX_TOKEN);
 
 if (!MANGADEX_TOKEN) {
   console.warn("⚠️ MangaDex token is missing. Manga data will not load.");
