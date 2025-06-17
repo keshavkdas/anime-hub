@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Manga Details</title>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@600&family=Poppins:wght@500&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      margin: 0;
+      background: #121212;
+      font-family: 'Poppins', sans-serif;
+      color: white;
+    }
+
+    header {
+      background-color: #1f1f1f;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    header h1 {
+      font-family: 'Oswald', sans-serif;
+      font-size: 2rem;
+      color: #f97316;
+      margin: 0;
+      font-weight: 600;
+      letter-spacing: -1px;
+    }
+
+    nav a {
+      color: white;
+      margin-left: 2rem;
+      font-family: 'Poppins', sans-serif;
+      font-size: 1rem;
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.3s ease;
+    }
+
+    nav a:hover {
+      color: #f97316;
+    }
+
+    nav a[href="/manga.html"] {
+      color: #f97316;
+    }
+
+    .container {
+      padding: 2rem;
+    }
+
+    .anime-detail-header {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      align-items: flex-start;
+    }
+
+    .anime-image-container {
+      flex: 0 0 auto;
+      position: relative;
+    }
+
+    .anime-image-container img {
+      width: 250px;
+      border-radius: 10px;
+    }
+
+    .favorite-bubble {
+      width: 35px;
+      height: 35px;
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(0, 0, 0, 0.6);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      z-index: 2;
+    }
+
+    .favorite-bubble:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 8px rgba(255, 0, 0, 0.6);
+    }
+
+    .favorite-bubble.active {
+      color: #ff4d4d;
+      text-shadow: 0 0 6px #ff4d4d;
+    }
+
+    .anime-info {
+      flex: 1;
+      min-width: 250px;
+    }
+
+    .anime-info h1 {
+      color: #f97316;
+    }
+
+    .anime-info p {
+      margin: 0.5rem 0;
+      color: #ccc;
+      line-height: 1.6;
+    }
+
+    .section {
+      margin-top: 3rem;
+    }
+
+    .section h3 {
+      color: #f97316;
+      margin-bottom: 1rem;
+    }
+
+    .character-list {
+      display: flex;
+      overflow-x: auto;
+      gap: 1rem;
+      scroll-behavior: smooth;
+      padding-bottom: 1rem;
+    }
+
+    .character-bubble {
+  background: transparent;
+  border-radius: 0;
+  width: 100px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  text-decoration: none;
+  color: inherit;
+}
+
+.character-bubble .img-wrapper {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: 0 0 5px 2px #f97316;
+}
+
+.character-bubble img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.character-name {
+  margin-top: 0.5rem;
+  font-weight: bold;
+  font-size: 0.8rem;
+  color: white;
+}
+
+
+    .related-list,
+    .chapter-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 1rem;
+    }
+
+    .related,
+    .chapter {
+      background: #1e1e1e;
+      padding: 1rem;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    /* For WebKit browsers (Chrome, Edge, Safari) */
+.character-list::-webkit-scrollbar {
+  height: 8px;
+  background-color: #000;
+}
+
+.character-list::-webkit-scrollbar-thumb {
+  background-color: #f97316;
+  border-radius: 10px;
+}
+
+/* For Firefox */
+.character-list {
+  scrollbar-color: #f97316 #000; /* thumb color, track color */
+  scrollbar-width: thin;
+}
+
+    .related {
+  background: #1e1e1e;
+  padding: 1rem;
+  border-radius: 8px;
+  text-align: center;
+  text-decoration: none;
+  color: white;
+  transition: transform 0.2s ease;
+  box-shadow: 0 0 5px rgba(249, 115, 22, 0.1);
+}
+
+.related:hover {
+  transform: scale(1.03);
+  box-shadow: 0 0 8px rgba(249, 115, 22, 0.3);
+}
+
+
+  </style>
+</head>
+<body>
+<header>
+  <h1>AnimeHub</h1>
+  <nav>
+    <a href="index.html">Anime</a>
+    <a href="browse.html">Browse</a>
+    <a href="manga.html">Manga</a>
+    <a href="manhwa.html">Manhwa</a>
+    <a href="favorites.html" style="color:#f97316; font-weight:bold;">❤️</a>
+  </nav>
+</header>
+
+<div class="container">
+  <div id="mangaDetails"></div>
+  <div class="section" id="characterSection">
+  <h3>Characters</h3>
+  <div class="character-list" id="characterList"></div>
+</div>
+
+<div class="section" id="chapterSection">
+  <h3>Chapters</h3>
+  <div class="chapter-list" id="chapterList"></div>
+</div>
+</div>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const mangaId = params.get('id');
+
+let favKey = 'mangaFavorites';
+let contentType = 'manga';
+
+function isManhwa(genres, type) {
+  const genreMatch = genres.some(g => g.name.toLowerCase() === 'manhwa');
+  return genreMatch || (type && type.toLowerCase() === 'manhwa');
+}
+
+function isInFavorites(id) {
+  const arr = JSON.parse(localStorage.getItem(favKey)) || [];
+  return arr.some(item => String(item.id) === String(id));
+}
+
+function toggleFavorite(id, title, img) {
+  const arr = JSON.parse(localStorage.getItem(favKey)) || [];
+  const idx = arr.findIndex(i => String(i.id) === String(id));
+  const btn = document.querySelector(`.favorite-bubble[data-id="${id}"]`);
+  if (idx > -1) {
+    arr.splice(idx, 1);
+    btn.classList.remove('active');
+  } else {
+    arr.push({ id: String(id), title, imageUrl: img, type: contentType });
+    btn.classList.add('active');
+  }
+  btn.textContent = btn.classList.contains('active') ? '💖' : '❤️';
+  localStorage.setItem(favKey, JSON.stringify(arr));
+}
+
+function markFav(id) {
+  const btn = document.querySelector(`.favorite-bubble[data-id="${id}"]`);
+  if (!btn) return;
+  const act = isInFavorites(id);
+  btn.classList.toggle('active', act);
+  btn.textContent = act ? '💖' : '❤️';
+}
+
+async function fetchMangaDetails() {
+  document.getElementById('mangaDetails').innerHTML = '<p>Loading...</p>';
+  try {
+    const res = await fetch(`https://api.jikan.moe/v4/manga/${mangaId}/full`);
+    const { data } = await res.json();
+    const img = data.images.jpg.image_url;
+
+    if (isManhwa(data.genres, data.type)) {
+      favKey = 'manhwaFavorites';
+      contentType = 'manhwa';
+    }
+
+    document.getElementById('mangaDetails').innerHTML = `
+      <div class="anime-detail-header">
+        <div class="anime-image-container">
+          <img src="${img}" alt="">
+          <div class="favorite-bubble" data-id="${data.mal_id}">❤️</div>
+        </div>
+        <div class="anime-info">
+          <h1>${data.title}</h1>
+          <p><strong>Synopsis:</strong> ${data.synopsis || 'No synopsis.'}</p>
+          <p><strong>Type:</strong> ${data.type}</p>
+          <p><strong>Status:</strong> ${data.status}</p>
+          <p><strong>Chapters:</strong> ${data.chapters || 'Unknown'}</p>
+          <p><strong>Score:</strong> ${data.score || 'N/A'}</p>
+          <p><strong>Published:</strong> ${data.published.string}</p>
+        </div>
+      </div>`;
+
+    const btn = document.querySelector(`.favorite-bubble[data-id="${data.mal_id}"]`);
+    btn.addEventListener('click', () => toggleFavorite(data.mal_id, data.title, img));
+    markFav(data.mal_id);
+
+  } catch (e) {
+    document.getElementById('mangaDetails').innerHTML = '<p>Error loading details.</p>';
+  }
+}
+
+async function fetchCharacters() {
+  const res = await fetch(`https://api.jikan.moe/v4/manga/${mangaId}/characters`);
+  const { data } = await res.json();
+  const characterSection = document.getElementById('characterSection');
+
+  if (!data || data.length === 0) {
+    characterSection.remove();
+    return;
+  }
+
+  const html = data.slice(0, 10).map(c => `
+  <a href="character.html?id=${c.character.mal_id}" class="character-bubble">
+    <div class="img-wrapper">
+      <img src="${c.character.images.jpg.image_url}" alt="">
+    </div>
+    <div class="character-name">${c.character.name}</div>
+  </a>
+`).join('');
+  document.getElementById('characterList').innerHTML = html;
+}
+
+async function fetchRelated() {
+  const res = await fetch(`https://api.jikan.moe/v4/manga/${mangaId}/relations`);
+  const { data } = await res.json();
+  const relatedSection = document.getElementById('relatedSection');
+
+  const html = data.flatMap(r =>
+  r.entry.map(i => `
+    <a href="manga-details.html?id=${i.mal_id}" class="related">
+      <strong>${i.name}</strong>
+      <p>${r.relation}</p>
+    </a>
+  `)
+).join('');
+
+  if (!html.trim()) {
+    relatedSection.remove();
+    return;
+  }
+
+  document.getElementById('relatedList').innerHTML = html;
+}
+
+async function fetchChapters() {
+  const res = await fetch(`https://api.jikan.moe/v4/manga/${mangaId}/chapters`);
+  const { data } = await res.json();
+  const chapterSection = document.getElementById('chapterSection');
+
+  if (!data || data.length === 0) {
+    chapterSection.remove();
+    return;
+  }
+
+  const html = data.slice(0, 20).map(c => `
+    <div class="chapter">
+      <strong>Chapter ${c.mal_id}</strong>
+      <p>${c.title || 'Untitled'}</p>
+    </div>
+  `).join('');
+
+  document.getElementById('chapterList').innerHTML = html;
+}
+
+fetchMangaDetails();
+fetchCharacters();
+fetchChapters();
+</script>
+
+</body>
+</html>
