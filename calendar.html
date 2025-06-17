@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Release Calendar | AnimeHub</title>
+
+  <!-- FullCalendar Core + Daygrid + Interaction + Timegrid CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css" rel="stylesheet">
+
+  <style>
+    body { margin: 0; font-family: Poppins, sans-serif; background: #121212; color: #fff; }
+    header { padding: 1rem; background: #1f1f1f; text-align: center; font-size: 1.5rem; color: #f97316; }
+    #calendar { max-width: 900px; margin: 2rem auto; background: #222; border-radius: 8px; overflow: hidden; }
+    .fc .fc-daygrid-day-number { color: #f97316; }
+    .event-anime { background-color: #3b82f6; }
+    .event-manga { background-color: #10b981; }
+    .event-manhwa { background-color: #facc15; }
+    .modal-bg {
+      position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.8);
+      display:none; align-items:center; justify-content:center; z-index:1000;
+    }
+    .modal-content {
+      background:#1f1f1f; padding:1.5rem; border-radius:8px; width:80%; max-height:80%; overflow:auto;
+    }
+    .close-btn { float:right; font-size:1.25rem; cursor:pointer; color:#f97316; }
+    .month-events h3 { margin-top:1rem; color:#f97316; }
+    .month-events .item { margin:0.5rem 0; }
+  </style>
+</head>
+<body>
+  <header>📅 Release Calendar – Anime • Manga • Manhwa</header>
+  
+  <div id="calendar"></div>
+
+  <div class="modal-bg" id="modal">
+    <div class="modal-content">
+      <span class="close-btn" id="closeModal">&times;</span>
+      <div id="monthTitle"></div>
+      <div id="monthEvents" class="month-events"></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const calendarEl = document.getElementById('calendar');
+      const modal = document.getElementById('modal');
+      const closeModal = document.getElementById('closeModal');
+      const monthTitle = document.getElementById('monthTitle');
+      const monthEvents = document.getElementById('monthEvents');
+
+      let allEvents = [];
+
+      async function fetchJikanAnime() {
+        const res = await fetch(`https://api.jikan.moe/v4/seasons/upcoming`);
+        const json = await res.json();
+        return json.data.map(a => ({
+          title: a.title,
+          date: a.aired.from ? a.aired.from.split('T')[0] : null,
+          type: 'anime',
+        })).filter(e => e.date);
+      }
+
+      async function fetchJikanManga() {
+        const res = await fetch(`https://api.jikan.moe/v4/manga?order_by=publishing_start&sort=asc&limit=50`);
+        const json = await res.json();
+        return json.data.map(m => ({
+          title: m.title,
+          date: m.published.from ? m.published.from.split('T')[0] : null,
+          type: 'manga',
+        })).filter(e => e.date);
+      }
+
+      async function fetchAniListUpcoming() {
+        const query = `
+          query ($type: MediaType) {
+            Page(perPage:50) {
+              media(type: $type, status: NOT_YET_RELEASED, sort: START_DATE) {
+                title { romaji }
+                startDate { year month day }
+                type
+              }
+            }
+          }`;
+        const resp = await fetch('https://graphql.anilist.co', {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ query, variables:{ type: "ANIME" } })
+        });
+        const animeData = await resp.json();
+        const events1 = animeData.data.Page.media
+          .filter(m => m.startDate.year && m.startDate.month && m.startDate.day)
+          .map(m => ({
+            title: m.title.romaji,
+            date: `${m.startDate.year}-${String(m.startDate.month).padStart(2,'0')}-${String(m.startDate.day).padStart(2,'0')}`,
+            type: 'anime'
+          }));
+        const mangaResp = await fetch('https://graphql.anilist.co', {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ query, variables:{ type: "MANGA" } })
+        });
+        const mangaData = await mangaResp.json();
+        const events2 = mangaData.data.Page.media
+          .filter(m => m.startDate.year && m.startDate.month && m.startDate.day)
+          .map(m => ({
+            title: m.title.romaji,
+            date: `${m.startDate.year}-${String(m.startDate.month).padStart(2,'0')}-${String(m.startDate.day).padStart(2,'0')}`,
+            type: 'manga'
+          }));
+        return events1.concat(events2);
+      }
+
+      const [animeEvents, mangaJikan, anilistEvents] = await Promise.all([
+        fetchJikanAnime(),
+        fetchJikanManga(),
+        fetchAniListUpcoming()
+      ]);
+
+      allEvents = [
+        ...animeEvents.map(e => ({ ...e, className: 'event-anime' })),
+        ...mangaJikan.map(e => ({ ...e, className: 'event-manga' })),
+        ...anilistEvents.map(e => ({
+          ...e,
+          className: e.type === 'MANGA' ? 'event-manga' : 'event-anime'
+        })),
+      ];
+
+      const calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridYear',
+        height: 'auto',
+        headerToolbar: { center: 'title' },
+        events: allEvents,
+        dateClick: info => showMonth(info.date),
+      });
+
+      calendar.render();
+
+      function showMonth(date) {
+        const month = date.getMonth(), year = date.getFullYear();
+        monthTitle.textContent = `${date.toLocaleString('default', { month:'long' })} ${year}`;
+        monthEvents.innerHTML = '';
+        allEvents
+          .filter(e => {
+            const d = new Date(e.date);
+            return d.getMonth() === month && d.getFullYear() === year;
+          })
+          .sort((a,b) => new Date(a.date) - new Date(b.date))
+          .forEach(e => {
+            const div = document.createElement('div');
+            div.className = 'item';
+            div.innerHTML = `<strong>${e.date}:</strong> ${e.title} <em>(${e.type})</em>`;
+            monthEvents.appendChild(div);
+          });
+        modal.style.display = 'flex';
+      }
+
+      closeModal.addEventListener('click', () => modal.style.display = 'none');
+      modal.addEventListener('click', e => {
+        if (e.target === modal) modal.style.display = 'none';
+      });
+    });
+  </script>
+</body>
+</html>
