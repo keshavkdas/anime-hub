@@ -5,135 +5,115 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Release Calendar | AnimeHub</title>
   <style>
-    body {
-      margin: 0;
-      background: #121212;
-      color: #fff;
-      font-family: sans-serif;
+    body { margin: 0; background: #121212; color: #fff; font-family: sans-serif;}
+    header { background: #1f1f1f; padding: 1rem; text-align: center; }
+    .controls { text-align: center; margin: 1rem 0; }
+    .calendar-container { 
+      padding: 1rem; 
+      display: grid; 
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); 
+      gap: 1rem; 
+      transition: all 0.3s ease;
     }
-    header {
-      background: #1f1f1f;
-      padding: 1rem;
-      display: flex;
-      justify-content: center;
-    }
-    .calendar-container {
-      padding: 2rem;
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-      gap: 1rem;
-    }
-    .month {
-      background: #1f1f1f;
-      padding: 1rem;
-      border-radius: 8px;
-    }
-    .month h3 {
-      margin: 0 0 0.5rem;
-      color: #f97316;
-    }
-    .entry {
-      margin-bottom: 0.3rem;
-      font-size: 0.9rem;
-    }
-    .type-tag {
-      font-weight: bold;
-    }
+    .month { background: #1f1f1f; padding: 0.8rem; border-radius: 6px; }
+    .month h3 { margin: 0 0 0.5rem; color: #f97316; font-size: 1.1rem; }
+    .entry { margin-bottom: 0.2rem; font-size: 0.85rem; }
+    .type-tag { font-weight: bold; }
+    .zoomed .month { min-width: 100%; }
   </style>
 </head>
 <body>
+  <header><h2>Release Calendar • 2025</h2></header>
 
-<header><h2>Release Calendar • 2025</h2></header>
-<div class="calendar-container" id="calendar"></div>
+  <div class="controls">
+    <button id="zoomBtn">Zoom Month</button>
+  </div>
 
-<script>
-  const monthNames = [
-    'January','February','March','April','May','June',
-    'July','August','September','October','November','December'
-  ];
-  const byMonth = Array.from({ length: 12 }, () => []);
+  <div class="calendar-container" id="calendar"></div>
 
-  async function fetchAniList(type, format, label, genre = null) {
-    const query = `
-      query ($page: Int) {
-        Page(perPage: 50, page: $page) {
-          media(
-            type: ${type},
-            format: ${format},
-            ${genre ? `genre_in: ["${genre}"],` : ""}
-            sort: START_DATE_DESC
-          ) {
-            title { romaji }
-            startDate { year month day }
+  <script>
+    const months = "January February March April May June July August September October November December".split(" ");
+    const byMonth = Array.from({ length: 12 }, () => []);
+
+    // 👉 Fetch anime from Kitsu
+    async function fetchAnime() {
+      let pageUrl = 'https://kitsu.io/api/edge/anime?sort=startDate&page[limit]=20';
+      while (pageUrl) {
+        const r = await fetch(pageUrl);
+        const j = await r.json();
+        j.data.forEach(a => {
+          const d = new Date(a.attributes.startDate);
+          if (d.getFullYear() === 2025) {
+            byMonth[d.getMonth()].push({
+              title: a.attributes.titles.en_jp || a.attributes.slug,
+              type: 'Anime',
+              date: d.toDateString()
+            });
           }
-        }
-      }`;
-
-    const pagesToFetch = [1, 2];
-    for (const page of pagesToFetch) {
-      try {
-        const res = await fetch("https://graphql.anilist.co", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ query, variables: { page } })
         });
-
-        const json = await res.json();
-        const list = json.data?.Page?.media || [];
-
-        list.forEach(item => {
-          const { year, month, day } = item.startDate || {};
-          if (!year || !month || !day) return;
-          const d = new Date(year, month - 1, day);
-          if (isNaN(d)) return;
-
-          byMonth[d.getMonth()].push({
-            title: item.title.romaji,
-            type: label,
-            date: d.toDateString()
-          });
-        });
-      } catch (e) {
-        console.error(`AniList fetch error for ${label}:`, e);
+        pageUrl = j.links.next;
       }
     }
-  }
 
-  function render() {
-    const container = document.getElementById("calendar");
-    container.innerHTML = '';
-
-    monthNames.forEach((name, idx) => {
-      const box = document.createElement('div');
-      box.className = 'month';
-      box.innerHTML = `<h3>${name}</h3>`;
-      const entries = byMonth[idx];
-
-      if (entries.length === 0) {
-        box.innerHTML += `<p style="opacity: 0.5">No releases data.</p>`;
-      } else {
-        entries.sort((a, b) => new Date(a.date) - new Date(b.date));
-        entries.forEach(entry => {
-          const div = document.createElement('div');
-          div.className = 'entry';
-          div.innerHTML = `<span class="type-tag">[${entry.type}]</span> ${entry.date}: ${entry.title}`;
-          box.appendChild(div);
+    // 👉 Fetch manga/manhwa from MangaDex
+    async function fetchMangaDex(label, demographicTag) {
+      let offset = 0;
+      while (offset < 100) {
+        const r = await fetch(`https://api.mangadex.org/manga?limit=50&offset=${offset}&publicationDemographic[]=${demographicTag}`);
+        const j = await r.json();
+        j.data.forEach(m => {
+          const attr = m.attributes;
+          if (!attr.year) return;
+          const month = attr.year && attr.month ? attr.month - 1 : null;
+          if (!month) return;
+          const d = new Date(attr.year, month, 1);
+          if (d.getFullYear() === 2025) {
+            byMonth[month].push({
+              title: attr.title.en || attr.title.ja_ro || "No title",
+              type: label,
+              date: d.toDateString()
+            });
+          }
         });
+        offset += 50;
+        if (!j.data.length) break;
       }
+    }
 
-      container.appendChild(box);
-    });
-  }
+    function render() {
+      const container = document.getElementById('calendar');
+      container.innerHTML = '';
+      months.forEach((mn, idx) => {
+        const box = document.createElement('div');
+        box.className = 'month';
+        box.innerHTML = `<h3>${mn}</h3>`;
+        const arr = byMonth[idx].sort((a,b)=>new Date(a.date) - new Date(b.date));
+        if (!arr.length) {
+          box.innerHTML += `<p style="opacity:.5">No releases.</p>`;
+        } else {
+          arr.forEach(e => {
+            const d = document.createElement('div');
+            d.className = 'entry';
+            d.innerHTML = `<span class="type-tag">[${e.type}]</span> ${e.date}: ${e.title}`;
+            box.appendChild(d);
+          });
+        }
+        container.appendChild(box);
+      });
+    }
 
-  async function init() {
-    await fetchAniList("ANIME", "TV", "Anime");
-    await fetchAniList("MANGA", "MANGA", "Manga");
-    await fetchAniList("MANGA", "MANGA", "Manhwa", "Manhwa");
-    render();
-  }
+    document.getElementById('zoomBtn').onclick = () => {
+      document.getElementById('calendar').classList.toggle('zoomed');
+    };
 
-  init();
-</script>
+    async function init() {
+      await fetchAnime();
+      await fetchMangaDex('Manga','shounen');
+      await fetchMangaDex('Manhwa','manhua');
+      render();
+    }
 
+    init();
+  </script>
 </body>
 </html>
