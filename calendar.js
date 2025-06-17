@@ -1,5 +1,6 @@
 // In development or on Netlify/Vercel/GitHub Actions, fetch secret safely
-const MANGADEX_TOKEN = import.meta.env.VITE_MANGADEX_SECRET;
+const MANGADEX_TOKEN = import.meta.env.VITE_MANGADEX_SECRET || "";
+
 
 // For anime releases – Kitsu
 async function fetchAnimeReleases() {
