@@ -26,10 +26,10 @@ jobs:
       - name: Inject VITE_MANGADEX_SECRET from GitHub Secrets
         run: echo "VITE_MANGADEX_SECRET=${{ secrets.VITE_MANGADEX_SECRET }}" > .env
 
-      - name: Build the site with Vite
-        run: npm run build
-        env:
-          VITE_MANGADEX_SECRET: ${{ secrets.VITE_MANGADEX_SECRET }}
+      - name: Build with Vite
+        run: |
+          echo "VITE_MANGADEX_SECRET=${{ secrets.VITE_MANGADEX_SECRET }}" >> .env
+          npm run build
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
