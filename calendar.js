@@ -1,5 +1,8 @@
-// In development or on Netlify/Vercel/GitHub Actions, fetch secret safely
-const MANGADEX_TOKEN = import.meta.env.VITE_MANGADEX_SECRET || "";
+const MANGADEX_TOKEN = import.meta.env?.VITE_MANGADEX_SECRET;
+
+if (!MANGADEX_TOKEN) {
+  console.warn("⚠️ MangaDex token is missing. Manga data will not load.");
+}
 
 
 // For anime releases – Kitsu
