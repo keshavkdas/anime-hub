@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite'
 
 export default defineConfig({
-  base: '/anime-hub/', // use your repo name here
+  base: "https://keshavkdas.github.io/anime-hub/"
   build: {
     outDir: 'dist'
   }
