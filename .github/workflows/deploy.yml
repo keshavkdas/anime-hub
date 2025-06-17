@@ -1,4 +1,4 @@
-name: Deploy AnimeHub Static Site
+name: Deploy AnimeHub to GitHub Pages
 
 on:
   push:
@@ -9,11 +9,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-    - name: Deploy to GitHub Pages
-      uses: peaceiris/actions-gh-pages@v3
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: .  # if your index.html is in root
+      - name: Build (if needed)
+        run: |
+          echo "<html><body><h1>AnimeHub Calendar</h1></body></html>" > index.html  # replace with your build step if needed
 
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          personal_token: ${{ secrets.GH_DEPLOY_TOKEN }}
+          publish_dir: .  # change to ./dist if you're using Vite or build tools
