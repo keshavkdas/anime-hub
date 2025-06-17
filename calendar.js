@@ -1,4 +1,4 @@
-const MANGADEX_TOKEN = import.meta.env?.VITE_MANGADEX_SECRET;
+const MANGADEX_TOKEN = window.CONFIG?.MANGADEX_TOKEN;
 
 console.log("📦 Token from env:", MANGADEX_TOKEN);
 
