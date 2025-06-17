@@ -23,7 +23,7 @@ jobs:
 
       - name: Inject MangaDex token
         run: |
-          echo "window.CONFIG = { MANGADEX_TOKEN: '${{ secrets.VITE_MANGADEX_SECRET }}' };" > config.js
+          echo "window.CONFIG = { MANGADEX_TOKEN: '${{ secrets.VITE_MANGADEX_SECRET }}' };" > public/config.js
 
 
       - name: Build project
