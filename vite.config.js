@@ -3,7 +3,7 @@ import { defineConfig, loadEnv } from 'vite';
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
   return {
-    base: '/anime-hub/',
+    base: 'https://keshavkdas.github.io/anime-hub/',
     build: {
       outDir: 'dist',
     },
