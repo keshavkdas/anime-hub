@@ -28,6 +28,8 @@ jobs:
 
       - name: Build the site with Vite
         run: npm run build
+        env:
+          VITE_MANGADEX_SECRET: ${{ secrets.VITE_MANGADEX_SECRET }}
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
