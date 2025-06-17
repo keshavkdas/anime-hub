@@ -1,8 +1,4 @@
-const MANGADEX_TOKEN = __MANGADEX_TOKEN__;
-
-if (!MANGADEX_TOKEN) {
-  console.warn("⚠️ MangaDex token is missing. Manga data will not load.");
-}
+const MANGADEX_TOKEN = import.meta.env.VITE_MANGADEX_SECRET;
 
 if (!MANGADEX_TOKEN) {
   console.warn("⚠️ MangaDex token is missing. Manga data will not load.");
