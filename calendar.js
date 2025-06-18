@@ -14,17 +14,25 @@ async function fetchAnimeReleases() {
 async function fetchMangaReleases() {
   try {
     const res = await fetch("https://auth-manga-dex.keshavkdas23.workers.dev/");
-    const data = await res.json();
-    return data.data.map(item => ({
-      title: item.attributes.title.en || "Untitled Manga",
+    const json = await res.json();
+
+    // Check if valid response
+    if (!json || !json.data || !Array.isArray(json.data)) {
+      console.error("❌ Invalid response structure:", json);
+      return [];
+    }
+
+    return json.data.map(item => ({
+      title: item.attributes?.title?.en || "Untitled Manga",
       type: "Manga",
-      date: item.attributes.year ? `${item.attributes.year}-01-01` : "2025-01-01"
+      date: item.attributes?.year ? `${item.attributes.year}-01-01` : "2025-01-01"
     }));
   } catch (error) {
     console.error("❌ Cloudflare Worker fetch failed:", error);
     return [];
   }
 }
+
 
 
 async function buildCalendar() {
