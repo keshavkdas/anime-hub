@@ -15,11 +15,8 @@ async function fetchMangaReleases() {
     const res = await fetch(MANGADEX_PROXY_URL);
     const data = await res.json();
 
-    return data.data.map(item => ({
-      title: item.attributes.title.en || "Untitled Manga",
-      type: "Manga",
-      date: item.attributes.year ? `${item.attributes.year}-01-01` : "2025-01-01"
-    }));
+    // ✅ Data is already formatted by the Cloudflare Worker
+    return data;
   } catch (error) {
     console.error("❌ Failed to fetch manga:", error);
     return [];
