@@ -1,9 +1,3 @@
-const MANGADEX_TOKEN = __MANGADEX_TOKEN__;
-
-if (!MANGADEX_TOKEN) {
-  console.warn("⚠️ MangaDex token is missing. Manga data will not load.");
-}
-
 // For anime releases – Kitsu
 async function fetchAnimeReleases() {
   const res = await fetch("https://kitsu.io/api/edge/anime?sort=startDate&page[limit]=20");
@@ -15,16 +9,10 @@ async function fetchAnimeReleases() {
   }));
 }
 
-// For manga releases – MangaDex (authenticated)
+// For manga releases – uses your Cloudflare Worker (secret is hidden!)
 async function fetchMangaReleases() {
-  if (!MANGADEX_TOKEN) return []; // Prevent fetch if token missing
-
   try {
-    const res = await fetch("https://api.mangadex.org/manga?order[latestUploadedChapter]=desc&limit=20", {
-      headers: {
-        Authorization: `Bearer ${MANGADEX_TOKEN}`
-      }
-    });
+    const res = await fetch("https://green-star-4de2.keshavkdas23.workers.dev/manga?order[latestUploadedChapter]=desc&limit=20");
     const data = await res.json();
     return data.data.map(item => ({
       title: item.attributes.title.en || "Untitled Manga",
@@ -75,7 +63,7 @@ async function buildCalendar() {
     calendar.appendChild(div);
   });
 
-  // Zoom
+  // Zoom button
   zoomBtn?.addEventListener("click", () => {
     calendar.classList.toggle("zoomed");
   });
