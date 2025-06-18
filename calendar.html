@@ -3,35 +3,112 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Release Calendar | AnimeHub</title>
+  <title>2025 Release Calendar | AnimeHub</title>
   <style>
-    body { margin: 0; background: #121212; color: #fff; font-family: sans-serif;}
-    header { background: #1f1f1f; padding: 1rem; text-align: center; }
-    .controls { text-align: center; margin: 1rem 0; }
-    .calendar-container { 
-      padding: 1rem; 
-      display: grid; 
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); 
-      gap: 1rem; 
+    body {
+      margin: 0;
+      background: #121212;
+      color: #fff;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    header {
+      background: #1f1f1f;
+      padding: 1.5rem;
+      text-align: center;
+      border-bottom: 2px solid #333;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 1.8rem;
+      color: #f97316;
+    }
+
+    .controls {
+      text-align: center;
+      margin: 1rem 0;
+    }
+
+    .controls button {
+      padding: 0.5rem 1.2rem;
+      font-size: 1rem;
+      background-color: #f97316;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .controls button:hover {
+      background-color: #ea580c;
+    }
+
+    .calendar-container {
+      padding: 1rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.2rem;
       transition: all 0.3s ease;
     }
-    .month { background: #1f1f1f; padding: 0.8rem; border-radius: 6px; }
-    .month h3 { margin: 0 0 0.5rem; color: #f97316; font-size: 1.1rem; }
-    .entry { margin-bottom: 0.2rem; font-size: 0.85rem; }
-    .type-tag { font-weight: bold; }
-    .zoomed .month { min-width: 100%; }
+
+    .month {
+      background: #1f1f1f;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .month h3 {
+      margin: 0 0 0.5rem;
+      color: #f97316;
+      font-size: 1.1rem;
+      border-bottom: 1px solid #333;
+      padding-bottom: 0.3rem;
+    }
+
+    .month h4 {
+      margin: 0.6rem 0 0.3rem;
+      font-size: 1rem;
+    }
+
+    .entry {
+      font-size: 0.9rem;
+      margin: 0.2rem 0;
+      line-height: 1.4;
+    }
+
+    .zoomed .month {
+      min-width: 100%;
+    }
+
+    footer {
+      text-align: center;
+      color: #888;
+      padding: 1rem;
+      font-size: 0.85rem;
+    }
   </style>
 </head>
 <body>
-  <header><h2>Release Calendar • 2025</h2></header>
+
+  <header>
+    <h1>AnimeHub • 2025 Release Calendar</h1>
+  </header>
 
   <div class="controls">
-    <button id="zoomBtn">Zoom Month</button>
+    <button id="zoomBtn">🔍 Zoom Month</button>
   </div>
 
-  <div class="calendar-container" id="calendar"></div>
+  <div class="calendar-container" id="calendar">
+    <!-- Dynamic cards inserted by calendar.js -->
+  </div>
 
-<script type="module" src="calendar.js"></script>
+  <footer>
+    Data powered by Gemini API & MangaDex · Last updated dynamically
+  </footer>
 
+  <script type="module" src="/anime-hub/calendar.js"></script>
 </body>
 </html>
