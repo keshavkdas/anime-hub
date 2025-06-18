@@ -6,7 +6,7 @@ async function fetchReleaseData() {
     if (!res.ok) throw new Error(`HTTP error ${res.status}`);
     const text = await res.text();
 
-    // Try to parse plain JSON or strip Markdown if needed
+    // Handle possible ```json markdown wrapping
     const jsonText = text.trim().startsWith("```json")
       ? text.trim().replace(/```json|```/g, "").trim()
       : text;
@@ -18,16 +18,29 @@ async function fetchReleaseData() {
   }
 }
 
+function determineStatus(dateStr) {
+  const today = new Date();
+  const releaseDate = new Date(dateStr);
+  return releaseDate < today ? "Released" : "Upcoming";
+}
+
 function createEntry(entry) {
-  const color = entry.type === "Anime" ? "#60a5fa" :
-                entry.type === "Manga" ? "#facc15" :
-                "#a78bfa"; // Manhwa or others
-  const date = new Date(entry.date).toLocaleDateString('default', {
+  const typeColor = entry.type === "Anime" ? "#60a5fa" :
+                    entry.type === "Manga" ? "#facc15" :
+                    "#a78bfa"; // Manhwa or other
+
+  const dateFormatted = new Date(entry.date).toLocaleDateString('default', {
     day: 'numeric',
     month: 'short',
   });
 
-  return `<p class="entry"><span style="color:${color}; font-weight:bold">${entry.type}</span>: ${entry.title} <span style="color:#bbb">(${date})</span></p>`;
+  const status = determineStatus(entry.date); // Always calculate live
+
+  return `<p class="entry">
+    <span style="color:${typeColor}; font-weight:bold">${entry.type}</span>: ${entry.title}
+    <span style="color:#bbb">(${dateFormatted})</span>
+    <span style="color:${status === "Released" ? "#22c55e" : "#f43f5e"}">[${status}]</span>
+  </p>`;
 }
 
 async function buildCalendar() {
@@ -49,8 +62,13 @@ async function buildCalendar() {
     monthDiv.className = "month";
     monthDiv.innerHTML = `<h3>${month}</h3>`;
 
-    const released = data[month].filter(item => item.status === "Released");
-    const upcoming = data[month].filter(item => item.status === "Upcoming");
+    const currentMonthEntries = data[month].map(entry => ({
+      ...entry,
+      status: determineStatus(entry.date) // Update status live
+    }));
+
+    const released = currentMonthEntries.filter(item => item.status === "Released");
+    const upcoming = currentMonthEntries.filter(item => item.status === "Upcoming");
 
     if (released.length) {
       monthDiv.innerHTML += `<h4>🎉 Released</h4>`;
@@ -69,7 +87,6 @@ async function buildCalendar() {
     calendar.appendChild(monthDiv);
   }
 
-  // Enable zoom toggle
   zoomBtn?.addEventListener("click", () => {
     calendar.classList.toggle("zoomed");
   });
