@@ -53,6 +53,10 @@
       transition: all 0.3s ease;
     }
 
+    #calendar.zoomed .month {
+      min-width: 100%;
+    }
+
     .month {
       background: #1f1f1f;
       padding: 1rem;
@@ -68,19 +72,15 @@
       padding-bottom: 0.3rem;
     }
 
-    .month h4 {
-      margin: 0.6rem 0 0.3rem;
-      font-size: 1rem;
-    }
-
     .entry {
       font-size: 0.9rem;
       margin: 0.2rem 0;
       line-height: 1.4;
     }
 
-    .zoomed .month {
-      min-width: 100%;
+    .status {
+      font-style: italic;
+      color: #aaa;
     }
 
     footer {
@@ -102,7 +102,7 @@
   </div>
 
   <div class="calendar-container" id="calendar">
-    <!-- Dynamic cards inserted by calendar.js -->
+    <p style="color:#bbb;">📅 Loading release calendar...</p>
   </div>
 
   <footer>
