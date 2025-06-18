@@ -1,3 +1,4 @@
+
 const API_URL = "https://blue-sun-2738.keshavkdas23.workers.dev/";
 
 async function fetchReleaseData() {
