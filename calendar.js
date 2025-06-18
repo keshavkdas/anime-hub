@@ -1,36 +1,49 @@
-const WORKER_URL = "https://blue-sun-2738.keshavkdas23.workers.dev/";
+const API_URL = "https://blue-sun-2738.keshavkdas23.workers.dev/";
 
 async function fetchReleaseData() {
   try {
-    const res = await fetch(WORKER_URL);
-    const json = await res.json();
-    console.log("✅ Fetched calendar data:", json);
-    return json;
+    const res = await fetch(API_URL);
+    if (!res.ok) {
+      console.error(`❌ Server returned ${res.status}`);
+      return {};
+    }
+
+    const data = await res.json();
+    console.log("✅ Received data:", data); // Debug log
+    return data;
   } catch (error) {
-    console.error("❌ Failed to fetch calendar data:", error);
+    console.error("❌ Failed to fetch or parse calendar data:", error);
     return {};
   }
 }
 
-function createEntryHTML(entry) {
-  const colorMap = {
-    Anime: "#60a5fa",
-    Manga: "#facc15",
-    Manhwa: "#34d399"
-  };
+function createMonthCard(month, items) {
+  const div = document.createElement("div");
+  div.className = "month";
+  div.innerHTML = `<h3>${month}</h3>`;
 
-  const color = colorMap[entry.type] || "#ccc";
-  const dateStr = new Date(entry.date).toLocaleDateString("default", {
-    day: "numeric",
-    month: "short",
-    year: "numeric"
+  items.forEach(entry => {
+    const color =
+      entry.type === "Anime"
+        ? "#60a5fa"
+        : entry.type === "Manga"
+        ? "#facc15"
+        : "#34d399"; // Manhwa
+
+    const dateStr = new Date(entry.date).toLocaleDateString("default", {
+      day: "numeric",
+      month: "short"
+    });
+
+    div.innerHTML += `
+      <p class="entry">
+        <span style="color:${color}">${entry.type}</span>: ${entry.title} 
+        <span style="color:#bbb">(${dateStr})</span> 
+        <span style="font-style: italic; color: #888">[${entry.status}]</span>
+      </p>`;
   });
 
-  return `<p class="entry">
-    <span style="color:${color}; font-weight:bold">${entry.type}</span>: 
-    ${entry.title} 
-    <span style="color:#bbb">(${dateStr})</span>
-  </p>`;
+  return div;
 }
 
 async function buildCalendar() {
@@ -39,44 +52,27 @@ async function buildCalendar() {
 
   const data = await fetchReleaseData();
 
+  if (!data || Object.keys(data).length === 0) {
+    console.warn("⚠️ No data returned from API");
+    calendar.innerHTML = `<p style="text-align:center; color:red;">⚠️ No data available</p>`;
+    return;
+  }
+
   const orderedMonths = [
     "January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"
   ];
 
   orderedMonths.forEach(month => {
-    const items = data[month];
-    if (!items || items.length === 0) return;
-
-    const div = document.createElement("div");
-    div.classList.add("month");
-    div.innerHTML = `<h3>${month}</h3>`;
-
-    const released = items.filter(item => item.status === "Released");
-    const upcoming = items.filter(item => item.status === "Upcoming");
-
-    if (released.length > 0) {
-      div.innerHTML += `<p style="color:#4ade80; font-weight:bold;">Released</p>`;
-      released.forEach(entry => {
-        div.innerHTML += createEntryHTML(entry);
-      });
+    if (data[month] && data[month].length > 0) {
+      const monthCard = createMonthCard(month, data[month]);
+      calendar.appendChild(monthCard);
     }
-
-    if (upcoming.length > 0) {
-      div.innerHTML += `<p style="color:#f97316; font-weight:bold;">Upcoming</p>`;
-      upcoming.forEach(entry => {
-        div.innerHTML += createEntryHTML(entry);
-      });
-    }
-
-    calendar.appendChild(div);
   });
 
-  // Zoom toggle
   zoomBtn?.addEventListener("click", () => {
     calendar.classList.toggle("zoomed");
   });
 }
 
 buildCalendar();
-
