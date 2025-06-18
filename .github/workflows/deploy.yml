@@ -2,29 +2,28 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
 
 jobs:
-  build-and-deploy:
+  build-deploy:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v3
         with:
-          node-version: '20'
+          node-version: 18
 
       - name: Install dependencies
         run: npm install
 
-      - name: Inject VITE_MANGADEX_SECRET to .env
-        run: echo "VITE_MANGADEX_SECRET=${{ secrets.VITE_MANGADEX_SECRET }}" > .env
-
       - name: Build
         run: npm run build
+        env:
+          VITE_MANGADEX_TOKEN: ${{ secrets.VITE_MANGADEX_TOKEN }}
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
