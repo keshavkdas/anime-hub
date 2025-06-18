@@ -10,9 +10,10 @@ async function fetchAnimeReleases() {
 }
 
 // For manga releases – uses your Cloudflare Worker (secret is hidden!)
+// For manga releases – via Cloudflare Worker (auth-manga-dex)
 async function fetchMangaReleases() {
   try {
-    const res = await fetch("https://green-star-4de2.keshavkdas23.workers.dev/manga?order[latestUploadedChapter]=desc&limit=20");
+    const res = await fetch("https://auth-manga-dex.keshavkdas23.workers.dev/");
     const data = await res.json();
     return data.data.map(item => ({
       title: item.attributes.title.en || "Untitled Manga",
@@ -20,10 +21,11 @@ async function fetchMangaReleases() {
       date: item.attributes.year ? `${item.attributes.year}-01-01` : "2025-01-01"
     }));
   } catch (error) {
-    console.error("❌ MangaDex fetch failed:", error);
+    console.error("❌ Cloudflare Worker fetch failed:", error);
     return [];
   }
 }
+
 
 async function buildCalendar() {
   const calendar = document.getElementById("calendar");
