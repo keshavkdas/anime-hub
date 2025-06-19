@@ -265,9 +265,13 @@
 .dot.manga { background-color: #34d399; }
 .dot.manhwa { background-color: #60a5fa; }
 
-    .overlay {
+ .overlay {
   position: fixed;
-  inset: 0;
+  top: 5%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 75vw; /* 75% of viewport width */
+  height: 90vh; /* You can tweak this if needed */
   background: rgba(0, 0, 0, 0.95);
   z-index: 9999;
   display: none;
@@ -275,7 +279,11 @@
   align-items: flex-start;
   padding: 2rem;
   gap: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+   max-width: 1200px;
 }
+
 
 .overlay.active {
   display: flex;
@@ -337,6 +345,31 @@
 .sidebar .entry {
   margin-bottom: 1rem;
 }
+    /* Scrollbar for WebKit-based browsers (Chrome, Edge, Safari) */
+.overlay::-webkit-scrollbar,
+.sidebar::-webkit-scrollbar {
+  width: 10px;
+}
+
+.overlay::-webkit-scrollbar-track,
+.sidebar::-webkit-scrollbar-track {
+  background: #000;
+}
+
+.overlay::-webkit-scrollbar-thumb,
+.sidebar::-webkit-scrollbar-thumb {
+  background-color: #f97316; /* Orange */
+  border-radius: 6px;
+  border: 2px solid #000;
+}
+
+/* Firefox scrollbar (limited support) */
+.overlay,
+.sidebar {
+  scrollbar-color: #f97316 #000; /* thumb color, track color */
+  scrollbar-width: thin;
+}
+
 
 
   </style>
