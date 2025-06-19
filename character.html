@@ -5,267 +5,229 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Character Details – AnimeHub</title>
   <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@600&family=Poppins:wght@500&display=swap" rel="stylesheet">
+
   <style>
-@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@600&family=Poppins:wght@500&display=swap');
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #121212;
+      color: white;
+      font-family: 'Poppins', sans-serif;
+    }
 
-body {
-  margin: 0;
-  padding: 0;
-  font-family: 'Poppins', sans-serif;
-  background-color: #121212;
-  color: #ffffff;
-}
+    header {
+      background-color: #1f1f1f;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
 
-/* Header */
-header {
-  background-color: #1f1f1f;
-  padding: 1rem 2rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
+    header h1 {
+      font-family: 'Oswald', sans-serif;
+      font-size: 2rem;
+      color: #f97316;
+    }
 
-header h1 {
-  font-family: 'Oswald', sans-serif;
-  font-size: 2rem;
-  color: #f97316;
-}
+    nav a {
+      color: white;
+      margin-left: 2rem;
+      text-decoration: none;
+      font-weight: 600;
+    }
 
-nav a {
-  color: white;
-  margin-left: 2rem;
-  text-decoration: none;
-  font-weight: 600;
-  transition: color 0.3s ease;
-}
+    nav a[href="favorites.html"] {
+      color: #f97316;
+    }
 
-nav a:hover {
-  color: #f97316;
-}
+    nav a:hover {
+      color: #f97316;
+    }
 
-/* Force consistent link colors everywhere */
-a, a:visited, a:active {
-  color: inherit;
-  text-decoration: none;
-}
+    .container {
+      max-width: 960px;
+      margin: 2rem auto;
+      padding: 2rem;
+      background-color: #1f1f1f;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.4);
+    }
 
-a:hover {
-  color: #f97316;
-}
+    .header {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+    }
 
-/* Main Container */
-.container {
-  max-width: 900px;
-  margin: 2rem auto;
-  padding: 1rem;
-  background: #1e293b;
-  border-radius: 16px;
-  box-shadow: 0 0 20px rgba(0,0,0,0.4);
-}
+    .img-wrap {
+      flex-shrink: 0;
+      max-width: 300px;
+    }
 
-/* Character Header Layout */
-.header {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 2rem;
-}
+    .img-wrap img {
+      width: 100%;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    }
 
-.img-wrap {
-  flex-shrink: 0;
-  max-width: 300px;
-}
+    .info {
+      flex: 1;
+    }
 
-.img-wrap img {
-  width: 100%;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-}
+    .info h1 {
+      font-size: 2.4rem;
+      margin-bottom: 0.5rem;
+      font-family: 'Oswald', sans-serif;
+      color: #f97316;
+    }
 
-/* Info Area */
-.info {
-  flex: 1;
-}
+    .info p {
+      margin: 0.5rem 0;
+      line-height: 1.6;
+      font-size: 1rem;
+    }
 
-.info h1 {
-  margin: 0;
-  font-size: 2.5rem;
-  color: #f97316;
-}
+    .section {
+      margin-top: 2rem;
+    }
 
-.info p {
-  margin: 0.5rem 0;
-  line-height: 1.6;
-}
+    .section h2 {
+      font-size: 1.5rem;
+      color: #f97316;
+      margin-bottom: 1rem;
+    }
 
-/* Section Headings & List */
-.section {
-  margin-top: 1.5rem;
-}
+    .section ul {
+      list-style: none;
+      padding-left: 1rem;
+    }
 
-.section h2 {
-  margin-bottom: 0.5rem;
-  color: #f97316;
-}
+    .section li {
+      margin-bottom: 0.5rem;
+      position: relative;
+      padding-left: 1rem;
+    }
 
-.section ul {
-  list-style: none;
-  padding: 0;
-}
+    .section li::before {
+      content: '•';
+      position: absolute;
+      left: 0;
+      color: #f97316;
+    }
 
-.section li {
-  margin: 0.3rem 0;
-  padding-left: 1.2rem;
-  position: relative;
-}
+    .va-carousel-wrapper {
+      overflow-x: auto;
+      white-space: nowrap;
+      padding-bottom: 1rem;
+    }
 
-.section li::before {
-  content: '•';
-  position: absolute;
-  left: 0;
-  color: #f97316;
-}
+    .va-carousel {
+      display: flex;
+      gap: 1rem;
+    }
 
-/* Carousel for Voice Actors */
-.va-carousel-wrapper {
-  overflow-x: auto;
-  white-space: nowrap;
-  padding: 1rem 0;
-  margin-bottom: 1rem;
-  scrollbar-color: #f97316 #1e293b;
-  scrollbar-width: thin;
-}
+    .va-card {
+      display: inline-block;
+      background: #2a2a2a;
+      border-radius: 12px;
+      padding: 1rem;
+      text-align: center;
+      min-width: 140px;
+      color: white;
+      flex-shrink: 0;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+      transition: transform 0.3s;
+    }
 
-.va-carousel-wrapper::-webkit-scrollbar {
-  height: 8px;
-}
-.va-carousel-wrapper::-webkit-scrollbar-track {
-  background: #1e293b;
-  border-radius: 10px;
-}
-.va-carousel-wrapper::-webkit-scrollbar-thumb {
-  background: #f97316;
-  border-radius: 10px;
-}
-.va-carousel-wrapper::-webkit-scrollbar-thumb:hover {
-  background: #fb923c;
-}
+    .va-card:hover {
+      transform: scale(1.05);
+    }
 
-.va-carousel {
-  display: flex;
-  gap: 1rem;
-}
+    .va-card img {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-bottom: 0.5rem;
+      border: 2px solid #f97316;
+    }
 
-.va-card {
-  display: inline-block;
-  background: #334155;
-  border-radius: 12px;
-  padding: 1rem;
-  text-align: center;
-  min-width: 140px;
-  color: #e2e8f0;
-  flex-shrink: 0;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-  transition: transform 0.3s;
-}
+    .va-card div:last-child {
+      font-size: 0.85rem;
+      color: #f97316;
+    }
 
-.va-card:hover {
-  transform: scale(1.05);
-}
+    .anime-link {
+      font-weight: bold;
+      color: white;
+      text-decoration: none;
+    }
 
-.va-card img {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  object-fit: cover;
-  margin-bottom: 0.5rem;
-  border: 3px solid #f97316;
-  background-color: #1e293b;
-  box-shadow: 0 0 6px rgba(255, 121, 18, 0.4);
-}
+    .anime-link:hover {
+      color: #f97316;
+    }
 
-.va-card div:last-child {
-  font-size: 0.85rem;
-  color: #f97316;
-}
+    .read-more-btn {
+      margin-top: 0.5rem;
+      padding: 0.5rem 1rem;
+      background-color: #f97316;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
 
-/* Anime link appearance */
-.anime-link {
-  font-weight: bold;
-  color: #e2e8f0;
-}
+    .read-more-btn:hover {
+      background-color: #fb923c;
+    }
 
-.anime-link:hover {
-  color: #f97316;
-}
+    .loading {
+      text-align: center;
+      padding: 2rem;
+    }
 
-/* Read More Button */
-.read-more-btn {
-  margin-top: 0.5rem;
-  padding: 0.4rem 0.9rem;
-  background-color: #f97316;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
+    .loading-spinner {
+      border: 4px solid #f97316;
+      border-top: 4px solid transparent;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+    }
 
-.read-more-btn:hover {
-  background-color: #ea580c;
-}
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
 
-/* Loading Spinner */
-.loading {
-  text-align: center;
-  padding: 2rem;
-}
-
-.loading-spinner {
-  border: 4px solid #f97316;
-  border-top: 4px solid transparent;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  animation: spin 1s linear infinite;
-  margin: 0 auto;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* Responsive Layout */
-@media (max-width: 768px) {
-  .header {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .info h1 {
-    font-size: 2rem;
-    text-align: center;
-  }
-}
-</style>
-
+    @media (max-width: 768px) {
+      .header {
+        flex-direction: column;
+        align-items: center;
+      }
+      .info h1 {
+        text-align: center;
+        font-size: 2rem;
+      }
+    }
+  </style>
 </head>
 
 <body>
   <header>
-  <h1>AnimeHub</h1>
-  <nav>
+    <h1>AnimeHub</h1>
+    <nav>
       <a href="index.html">Anime</a>
       <a href="browse.html">Browse</a>
       <a href="calendar.html">Schedule</a>
-      <a href="/manga.html" class="hover:text-purple-400">Manga</a>
-      <a href="/manhwa.html" class="hover:text-purple-400">Manhwa</a>
-      <a href="favorites.html" style="color:#f97316; font-weight:bold;">❤️</a>
-  </nav>
-</header>
-
+      <a href="manga.html">Manga</a>
+      <a href="manhwa.html">Manhwa</a>
+      <a href="favorites.html">❤️</a>
+    </nav>
+  </header>
 
   <div class="container" id="characterDetails">
     <div class="loading">
@@ -274,104 +236,98 @@ a:hover {
     </div>
   </div>
 
- <script>
-  async function fetchCharacterDetails() {
-    const params = new URLSearchParams(window.location.search);
-    const id = params.get("id");
-    const container = document.getElementById("characterDetails");
+  <script>
+    async function fetchCharacterDetails() {
+      const params = new URLSearchParams(window.location.search);
+      const id = params.get("id");
+      const container = document.getElementById("characterDetails");
 
-    if (!id) {
-      container.innerHTML = "<p style='text-align:center;'>No character specified.</p>";
-      return;
-    }
+      if (!id) {
+        container.innerHTML = "<p style='text-align:center;'>No character specified.</p>";
+        return;
+      }
 
-    try {
-      const res = await fetch(`https://api.jikan.moe/v4/characters/${id}/full`);
-      const json = await res.json();
-      const data = json.data;
+      try {
+        const res = await fetch(`https://api.jikan.moe/v4/characters/${id}/full`);
+        const json = await res.json();
+        const data = json.data;
 
-      if (!data) throw new Error("Character not found");
+        if (!data) throw new Error("Character not found");
 
-      const voiceRes = await fetch(`https://api.jikan.moe/v4/characters/${id}/voices`);
-      const voiceJson = await voiceRes.json();
-      const voiceActors = Array.isArray(voiceJson.data) ? voiceJson.data : [];
+        const voiceRes = await fetch(`https://api.jikan.moe/v4/characters/${id}/voices`);
+        const voiceJson = await voiceRes.json();
+        const voiceActors = Array.isArray(voiceJson.data) ? voiceJson.data : [];
 
-      container.innerHTML = `
-        <div class="header">
-          <div class="img-wrap">
-            <img src="${data.images?.jpg?.image_url}" alt="${data.name}" />
-          </div>
-          <div class="info">
-            <h1>${data.name}</h1>
-            ${data.name_kanji ? `<p><em>Kanji:</em> ${data.name_kanji}</p>` : ""}
-            ${data.nicknames.length ? `<p><em>Nicknames:</em> ${data.nicknames.join(", ")}</p>` : ""}
-            ${data.about
-              ? `
-              <p id="aboutText">
-                ${data.about.slice(0, 300)}<span id="dots">...</span>
-                <span id="more" style="display: none;">${data.about.slice(300)}</span>
-              </p>
-              <button class="read-more-btn" onclick="toggleReadMore()">Read More</button>
-              `
-              : "<p>No description available.</p>"
-              }
-          </div>
-        </div>
-
-        <div class="section">
-          <h2>Voice Actors</h2>
-          <div class="va-carousel-wrapper">
-            <div class="va-carousel" id="voiceCarousel">
-              ${
-                voiceActors.length ? voiceActors.map(va => `
-                  <div class="va-card">
-                    <img src="${va.person.images.jpg.image_url}" alt="${va.person.name}" />
-                    <div><strong>${va.person.name}</strong></div>
-                    <div style="font-size: 0.85rem; color: #FFA500;">${va.language}</div>
-                  </div>
-                `).join("") : "<p>No voice actor info available.</p>"
+        container.innerHTML = `
+          <div class="header">
+            <div class="img-wrap">
+              <img src="${data.images?.jpg?.image_url}" alt="${data.name}" />
+            </div>
+            <div class="info">
+              <h1>${data.name}</h1>
+              ${data.name_kanji ? `<p><em>Kanji:</em> ${data.name_kanji}</p>` : ""}
+              ${data.nicknames.length ? `<p><em>Nicknames:</em> ${data.nicknames.join(", ")}</p>` : ""}
+              ${data.about
+                ? `<p id="aboutText">${data.about.slice(0, 300)}<span id="dots">...</span><span id="more" style="display:none;">${data.about.slice(300)}</span></p>
+                   <button class="read-more-btn" onclick="toggleReadMore()">Read More</button>`
+                : "<p>No description available.</p>"
               }
             </div>
           </div>
-        </div>
 
-        <div class="section">
-          <h2>Appears In</h2>
-          <ul>
-            ${
-              Array.isArray(data.anime)
-                ? data.anime.map(a => `<li>${a.role} in <a href="anime.html?id=${a.anime.mal_id}" class="anime-link">${a.anime.title}</a></li>`).join("")
-                : "<li>No anime appearances found.</li>"
-            }
-          </ul>
-        </div>
-      `;
-    } catch (err) {
-      console.error(err);
-      container.innerHTML = "<p style='text-align:center;'>Failed to load character info. Please try again later.</p>";
+          <div class="section">
+            <h2>Voice Actors</h2>
+            <div class="va-carousel-wrapper">
+              <div class="va-carousel">
+                ${
+                  voiceActors.length
+                    ? voiceActors.map(va => `
+                      <div class="va-card">
+                        <img src="${va.person.images.jpg.image_url}" alt="${va.person.name}" />
+                        <div><strong>${va.person.name}</strong></div>
+                        <div>${va.language}</div>
+                      </div>
+                    `).join("")
+                    : "<p>No voice actor info available.</p>"
+                }
+              </div>
+            </div>
+          </div>
+
+          <div class="section">
+            <h2>Appears In</h2>
+            <ul>
+              ${
+                Array.isArray(data.anime)
+                  ? data.anime.map(a => `<li>${a.role} in <a href="anime.html?id=${a.anime.mal_id}" class="anime-link">${a.anime.title}</a></li>`).join("")
+                  : "<li>No anime appearances found.</li>"
+              }
+            </ul>
+          </div>
+        `;
+      } catch (err) {
+        console.error(err);
+        container.innerHTML = "<p style='text-align:center;'>Failed to load character info. Please try again later.</p>";
+      }
     }
-  }
 
-  fetchCharacterDetails();
-</script>
-  <script>
-  function toggleReadMore() {
-    const dots = document.getElementById("dots");
-    const moreText = document.getElementById("more");
-    const btn = document.querySelector(".read-more-btn");
+    fetchCharacterDetails();
 
-    if (dots.style.display === "none") {
-      dots.style.display = "inline";
-      moreText.style.display = "none";
-      btn.textContent = "Read More";
-    } else {
-      dots.style.display = "none";
-      moreText.style.display = "inline";
-      btn.textContent = "Read Less";
+    function toggleReadMore() {
+      const dots = document.getElementById("dots");
+      const more = document.getElementById("more");
+      const btn = document.querySelector(".read-more-btn");
+
+      if (dots.style.display === "none") {
+        dots.style.display = "inline";
+        more.style.display = "none";
+        btn.textContent = "Read More";
+      } else {
+        dots.style.display = "none";
+        more.style.display = "inline";
+        btn.textContent = "Read Less";
+      }
     }
-  }
-</script>
-
-
+  </script>
 </body>
 </html>
