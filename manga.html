@@ -300,6 +300,7 @@
 </div>
 
   <script>
+  const displayedMangaIds = new Set(); // Global: Track already shown manga
   const track = document.getElementById("carouselTrack");
   const mangaResults = document.getElementById("mangaResults");
   const nextBtn = document.querySelector(".carousel-btn.next");
@@ -372,59 +373,67 @@
 
 
   async function loadMoreManga() {
-    if (!hasMore) return;
-    try {
-      const res = await fetch(`https://api.jikan.moe/v4/manga?page=${currentPage}&limit=12`);
-      const json = await res.json();
-      const favorites = JSON.parse(localStorage.getItem(favKey)) || [];
+  if (!hasMore) return;
 
-json.data.forEach(manga => {
-  const genres = [...(manga.genres || []), ...(manga.themes || []), ...(manga.demographics || [])]
-                  .map(g => g.name);
-  const blockedGenres = ["Erotica", "Hentai", "Ecchi"];
+  try {
+    const res = await fetch(`https://api.jikan.moe/v4/manga?page=${currentPage}&limit=12`);
+    const json = await res.json();
+    const favorites = JSON.parse(localStorage.getItem(favKey)) || [];
 
-  if ((type === "manhwa" && manga.type?.toLowerCase() !== "manhwa") ||
-      (type === "manga" && manga.type?.toLowerCase() !== "manga") ||
-      genres.some(g => blockedGenres.includes(g))) return;
+    json.data.forEach(manga => {
+      const genres = [...(manga.genres || []), ...(manga.themes || []), ...(manga.demographics || [])]
+                      .map(g => g.name);
+      const blockedGenres = ["Erotica", "Hentai", "Ecchi"];
 
+      // ❌ Skip if adult OR not matching type OR already shown
+      if (
+        (type === "manhwa" && manga.type?.toLowerCase() !== "manhwa") ||
+        (type === "manga" && manga.type?.toLowerCase() !== "manga") ||
+        genres.some(g => blockedGenres.includes(g)) ||
+        displayedMangaIds.has(manga.mal_id)
+      ) return;
 
-        const card = document.createElement("div");
-        card.className = "anime-card";
+      // ✅ Mark as displayed
+      displayedMangaIds.add(manga.mal_id);
 
-        const title = manga.title;
-        const imageUrl = manga.images?.jpg?.image_url || "";
-        const score = manga.score ?? "N/A";
-        const chapters = manga.chapters;
-        const isFavorited = favorites.some(fav => fav.id === String(manga.mal_id));
+      const card = document.createElement("div");
+      card.className = "anime-card";
 
-        card.innerHTML = `
-          <div class="card-img-wrapper">
-            <img src="${imageUrl}" alt="${title}" />
-            <button class="fav-btn ${isFavorited ? 'active' : ''}" data-id="${manga.mal_id}" title="Add to favorites">${isFavorited ? '💖' : '❤️'}</button>
-          </div>
-          <div class="anime-info">
-            <h3>${title}</h3>
-            <p><strong>Score:</strong> ${score}</p>
-            <p><strong>Type:</strong> ${manga.type}</p>
-            ${chapters ? `<p><strong>Chapters:</strong> ${chapters}</p>` : ""}
-          </div>
-        `;
+      const title = manga.title;
+      const imageUrl = manga.images?.jpg?.image_url || "";
+      const score = manga.score ?? "N/A";
+      const chapters = manga.chapters;
+      const isFavorited = favorites.some(fav => fav.id === String(manga.mal_id));
 
-        card.querySelector(".card-img-wrapper").addEventListener("click", (e) => {
-          if (!e.target.classList.contains("fav-btn")) {
-            window.location.href = `manga-details.html?id=${manga.mal_id}&type=${type}`;
-          }
-        });
+      card.innerHTML = `
+        <div class="card-img-wrapper">
+          <img src="${imageUrl}" alt="${title}" />
+          <button class="fav-btn ${isFavorited ? 'active' : ''}" data-id="${manga.mal_id}" title="Add to favorites">${isFavorited ? '💖' : '❤️'}</button>
+        </div>
+        <div class="anime-info">
+          <h3>${title}</h3>
+          <p><strong>Score:</strong> ${score}</p>
+          <p><strong>Type:</strong> ${manga.type}</p>
+          ${chapters ? `<p><strong>Chapters:</strong> ${chapters}</p>` : ""}
+        </div>
+      `;
 
-        mangaResults.appendChild(card);
+      card.querySelector(".card-img-wrapper").addEventListener("click", (e) => {
+        if (!e.target.classList.contains("fav-btn")) {
+          window.location.href = `manga-details.html?id=${manga.mal_id}&type=${type}`;
+        }
       });
 
-      currentPage++;
-      hasMore = json.pagination?.has_next_page;
-    } catch (err) {
-      console.error("Failed to load manga:", err);
-    }
+      mangaResults.appendChild(card);
+    });
+
+    currentPage++;
+    hasMore = json.pagination?.has_next_page;
+  } catch (err) {
+    console.error("Failed to load manga:", err);
   }
+}
+
 
   document.addEventListener("click", (e) => {
     if (e.target.classList.contains("fav-btn")) {
