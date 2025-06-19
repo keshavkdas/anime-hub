@@ -3,18 +3,19 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>2025 Release Calendar | AnimeHub</title>
+  <title>Release Calendar| AnimeHub</title>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500&family=Poppins:wght@500;600&display=swap" rel="stylesheet">
   <style>
     body {
       margin: 0;
       background: #121212;
       color: #fff;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Poppins', sans-serif;
     }
 
     header {
       background: #1f1f1f;
-      padding: 1rem 2rem;
+      padding: 1.1rem 2rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -24,18 +25,23 @@
 
     header h1 {
       font-family: 'Oswald', sans-serif;
-      font-size: 1.6rem;
+      font-size: 2rem;
       color: #f97316;
       margin: 0;
       font-weight: 600;
-      letter-spacing: -1px;
+      letter-spacing: -0.5px;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
     }
 
     nav a {
       color: white;
-      margin-left: 1.5rem;
+      margin-left: 2rem;
       font-family: 'Poppins', sans-serif;
-      font-size: 0.95rem;
+      font-size: 1rem;
       text-decoration: none;
       font-weight: 600;
       transition: color 0.3s ease;
@@ -51,7 +57,8 @@
     }
 
     nav a:last-child {
-      font-size: 1.2rem;
+      font-size: 1.3rem;
+      line-height: 1;
     }
 
     .calendar-container {
@@ -120,11 +127,12 @@
 
       nav {
         margin-top: 0.5rem;
+        flex-wrap: wrap;
       }
 
       nav a {
-        display: inline-block;
-        margin-left: 0.5rem;
+        margin-left: 1rem;
+        margin-bottom: 0.5rem;
       }
     }
   </style>
@@ -136,9 +144,10 @@
     <nav>
       <a href="index.html">Anime</a>
       <a href="browse.html">Browse</a>
+      <a href="schedule.html">Schedule</a>
       <a href="/manga.html">Manga</a>
       <a href="/manhwa.html">Manhwa</a>
-      <a href="favorites.html" style="color:#f97316; font-weight:bold;">❤️</a>
+      <a href="favorites.html">❤️</a>
     </nav>
   </header>
 
