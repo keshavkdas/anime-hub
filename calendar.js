@@ -51,20 +51,21 @@ overlayStyle.textContent = `
     pointer-events: all;
   }
   .calendar-grid {
-    flex: 1;
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    padding: 1rem;
-    gap: 6px;
-    overflow-y: auto;
-  }
-  .day {
-    background: #1f1f1f;
-    padding: 0.6rem;
-    border-radius: 4px;
-    min-height: 60px;
-    font-size: 0.85rem;
-  }
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  padding: 1rem;
+  gap: 6px;
+  overflow-y: auto;
+}
+.day {
+  background: #1f1f1f;
+  padding: 0.6rem;
+  border-radius: 4px;
+  min-height: 60px;
+  font-size: 0.85rem;
+}
+
   .day strong {
     display: block;
     margin-bottom: 0.2rem;
