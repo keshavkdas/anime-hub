@@ -321,14 +321,15 @@
     const json = await res.json();
 
     // ✅ Filter out adult content based on rating
-    mangaList = json.data.filter(manga => {
-      const rating = manga.rating?.toLowerCase() || "";
-      const isHentai = rating.includes("rx") || rating.includes("hentai");
-      const isRPlus = rating.includes("r+"); // optional: remove if you want to include light nudity
-      const isCorrectType = manga.type?.toLowerCase() === type;
+    mangaList = json.data.filter(manga => 
+  manga.type?.toLowerCase() !== (type === "manhwa" ? "manga" : "manhwa") &&
+  !["Erotica", "Hentai", "Ecchi"].some(genre =>
+    [...manga.genres, ...(manga.themes || []), ...(manga.demographics || [])]
+      .map(g => g.name)
+      .includes(genre)
+  )
+);
 
-      return !isHentai && !isRPlus && isCorrectType;
-    });
 
     if (!mangaList.length) return;
 
