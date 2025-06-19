@@ -1,135 +1,183 @@
 const API_URL = "https://blue-sun-2738.keshavkdas23.workers.dev/";
 const calendarEl = document.getElementById("calendar");
 
-const TYPE_CLASS = { Anime: "anime", Manga: "manga", Manhwa: "manhwa" };
+const TYPE_CLASS = {
+  Anime: "anime",
+  Manga: "manga",
+  Manhwa: "manhwa"
+};
 
-// Create Overlay
 const overlay = document.createElement("div");
-overlay.id = "calendarOverlay";
+overlay.className = "overlay";
 overlay.innerHTML = `
-  <div class="overlay-nav">
-    <button id="prevMonthBtn">‹</button>
-    <h2 id="overlayMonth">Month</h2>
-    <button id="nextMonthBtn">›</button>
-    <button class="close-overlay">✖</button>
+  <button class="close-btn">✖</button>
+  <div class="calendar-grid" id="calendarGrid"></div>
+  <div class="sidebar" id="sidebarList">
+    <h2 id="sidebarTitle">Month Details</h2>
+    <div id="sidebarEntries"></div>
   </div>
-  <div class="overlay-content">
-    <div id="calendarGrid" class="calendar-grid"></div>
-    <div id="sidebar" class="sidebar">
-      <h3 id="sidebarTitle">Details</h3>
-      <div id="sidebarEntries"></div>
-    </div>
-  </div>`;
+`;
 document.body.appendChild(overlay);
 
-// Add styles to match existing site look
-const styleTag = document.createElement("style");
-styleTag.textContent = `
-#calendarOverlay { display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:#121212DE; z-index:1000; padding:20px; }
-#calendarOverlay.active { display:flex; flex-direction:column; }
-.overlay-nav { display:flex; align-items:center; justify-content:space-between; }
-.overlay-nav button { background:#1f1f1f; color:#f97316; border:none; padding:8px 12px; cursor:pointer; border-radius:4px; }
-.overlay-content { display:flex; flex:1; margin-top:10px; }
-.calendar-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; flex:3; overflow-y:auto; }
-.calendar-grid .day { background:#1f1f1f; padding:6px; border-radius:4px; position:relative; min-height:50px; }
-.calendar-grid .day strong { display:block; }
-.calendar-grid .dot { width:8px; height:8px; border-radius:50%; position:absolute; bottom:4px; left:4px; }
-.dot.anime { background:#f97316; }
-.dot.manga { background:#34d399; }
-.dot.manhwa { background:#60a5fa; }
-.sidebar { flex:1; background:#1f1f1f; margin-left:10px; padding:10px; overflow-y:auto; border-radius:4px; }
-.sidebar h3 { margin-top:0; color:#f97316; }
-.month-card { width:120px; background:#1f1f1f; border-radius:8px; padding:10px; margin:8px; display:inline-block; vertical-align:top; color:white; cursor:pointer; }
-.month-card h4 { margin:0 0 8px; color:#f97316; }
-`;
-document.head.appendChild(styleTag);
+const calendarGrid = overlay.querySelector("#calendarGrid");
+const sidebarEntries = overlay.querySelector("#sidebarEntries");
+const sidebarTitle = overlay.querySelector("#sidebarTitle");
 
-let dataByMonth = {}, monthNames = [], currentMonthIdx = 0;
+overlay.querySelector(".close-btn").onclick = () => {
+  overlay.classList.remove("active");
+  calendarGrid.innerHTML = "";
+  sidebarEntries.innerHTML = "";
+};
 
-// Render Sidebar list
-function renderSidebar(entries, title) {
-  document.getElementById("sidebarTitle").textContent = title;
-  const container = document.getElementById("sidebarEntries");
-  container.innerHTML = "";
-  entries.forEach(e => {
+function renderSidebar(entries) {
+  sidebarEntries.innerHTML = "";
+  entries.forEach(entry => {
     const div = document.createElement("div");
-    div.innerHTML = `<strong class="${TYPE_CLASS[e.type]}">${e.title}</strong><br>
-                     <span>${e.type}, ${e.date}</span>`;
-    container.appendChild(div);
+    div.className = "entry";
+    const cls = TYPE_CLASS[entry.type] || "";
+    div.innerHTML = `<span class="${cls}">${entry.title}</span><br/>
+      <span class="meta">${entry.type} • ${entry.date} • ${entry.popularity}</span>`;
+    sidebarEntries.appendChild(div);
   });
 }
 
-// Render Overlay calendar view
-function renderOverlay(month) {
-  currentMonthIdx = monthNames.indexOf(month);
-  document.getElementById("overlayMonth").textContent = month;
-  const entries = dataByMonth[month] || [];
-  const dayMap = entries.reduce((m, e) => {
-    const d = new Date(e.date).getDate();
-    m[d] = m[d] || [];
-    m[d].push(e);
-    return m;
-  }, {});
+function openOverlay(month, entries) {
+  overlay.classList.add("active");
+  sidebarTitle.textContent = month;
 
-  const grid = document.getElementById("calendarGrid");
-  grid.innerHTML = "";
-  for (let day = 1; day <= 31; day++) {
+  const days = {};
+  entries.forEach(item => {
+    const day = parseInt(item.date.split("-")[2] || "1");
+    if (!days[day]) days[day] = [];
+    days[day].push(item);
+  });
+
+  calendarGrid.innerHTML = "";
+  for (let i = 1; i <= 31; i++) {
     const cell = document.createElement("div");
     cell.className = "day";
-    cell.innerHTML = `<strong>${day}</strong>`;
-    (dayMap[day] || []).forEach(e => {
+    cell.innerHTML = `<strong>${i}</strong>`;
+
+    const releases = days[i] || [];
+    releases.forEach(entry => {
       const dot = document.createElement("span");
-      dot.className = `dot ${e.type.toLowerCase()}`;
+      dot.className = `dot ${entry.type.toLowerCase()}`;
       cell.appendChild(dot);
     });
-    cell.onclick = () => renderSidebar(dayMap[day] || [], `Day ${day}, ${month}`);
-    grid.appendChild(cell);
+
+    cell.addEventListener("click", () => {
+      renderSidebar(days[i] || []);
+    });
+
+    calendarGrid.appendChild(cell);
   }
-  renderSidebar(entries, month);
+
+  renderSidebar(entries);
 }
 
-// Helper to create month card
-function createMonthCard(month) {
+function getMonthIndex(monthName) {
+  return [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ].indexOf(monthName);
+}
+
+function getFirstDayOfMonth(year, monthIndex) {
+  return new Date(year, monthIndex, 1).getDay();
+}
+
+function getDaysInMonth(year, monthIndex) {
+  return new Date(year, monthIndex + 1, 0).getDate();
+}
+
+function createMiniCalendar(month, entries) {
   const div = document.createElement("div");
-  div.className = "month-card";
-  div.innerHTML = `<h4>${month}</h4>`;
-  (dataByMonth[month] || []).slice(0,4).forEach(e => {
-    const d = new Date(e.date).getDate();
-    const dot = `<span class="dot ${e.type.toLowerCase()}"></span>`;
-    div.innerHTML += `<div>${d} ${dot.repeat(1)}</div>`;
+  div.className = "mini-month";
+
+  const title = document.createElement("div");
+  title.className = "month-title";
+  title.textContent = month;
+  div.appendChild(title);
+
+  const weekdayNames = ["S", "M", "T", "W", "T", "F", "S"];
+  const miniGrid = document.createElement("div");
+  miniGrid.className = "mini-grid";
+
+  weekdayNames.forEach(day => {
+    const wd = document.createElement("div");
+    wd.className = "weekday";
+    wd.textContent = day;
+    miniGrid.appendChild(wd);
   });
-  div.onclick = () => openOverlay(month);
+
+  const monthIndex = getMonthIndex(month);
+  const year = 2025;
+  const firstDay = getFirstDayOfMonth(year, monthIndex);
+  const totalDays = getDaysInMonth(year, monthIndex);
+
+  const releaseMap = {};
+  entries.forEach(item => {
+    const day = parseInt(item.date.split("-")[2] || "1");
+    if (!releaseMap[day]) releaseMap[day] = [];
+    releaseMap[day].push(item);
+  });
+
+  for (let i = 0; i < firstDay; i++) {
+    miniGrid.appendChild(document.createElement("div"));
+  }
+
+  for (let i = 1; i <= totalDays; i++) {
+    const cell = document.createElement("div");
+    cell.className = "mini-day";
+    cell.innerHTML = `<span>${i}</span>`;
+
+    const releases = releaseMap[i] || [];
+    releases.forEach(entry => {
+      const dot = document.createElement("span");
+      dot.className = `dot ${entry.type.toLowerCase()}`;
+      cell.appendChild(dot);
+    });
+
+    miniGrid.appendChild(cell);
+  }
+
+  div.appendChild(miniGrid);
+  div.addEventListener("click", () => openOverlay(month, entries));
   return div;
 }
 
-function openOverlay(month) {
-  overlay.classList.add("active");
-  renderOverlay(month);
-}
+async function loadCalendar() {
+  calendarEl.innerHTML = `<p style="color:#bbb;">⏳ Fetching releases...</p>`;
 
-document.getElementById("prevMonthBtn").onclick = () => {
-  if (currentMonthIdx > 0) renderOverlay(monthNames[--currentMonthIdx]);
-};
-document.getElementById("nextMonthBtn").onclick = () => {
-  if (currentMonthIdx < monthNames.length - 1) renderOverlay(monthNames[++currentMonthIdx]);
-};
-document.querySelector(".close-overlay").onclick = () => overlay.classList.remove("active");
-
-// Load Data and initialize
-async function initCalendar() {
-  calendarEl.innerHTML = `<p style="color:#ccc">Loading calendar…</p>`;
   try {
     const res = await fetch(API_URL);
     const { released, upcoming } = await res.json();
-    dataByMonth = { ...released, ...upcoming };
-    const monthOrder = ["January","February","March","April","May","June",
-                        "July","August","September","October","November","December"];
-    monthNames = monthOrder.filter(m => dataByMonth[m]?.length);
+
+    const combined = {};
+    for (const [month, items] of Object.entries(released)) {
+      combined[month] = [...(combined[month] || []), ...items];
+    }
+    for (const [month, items] of Object.entries(upcoming)) {
+      combined[month] = [...(combined[month] || []), ...items];
+    }
+
+    const monthOrder = [
+      "January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December"
+    ];
+
     calendarEl.innerHTML = "";
-    monthNames.forEach(m => calendarEl.appendChild(createMonthCard(m)));
+    for (const month of monthOrder) {
+      const entries = combined[month];
+      if (!entries || entries.length === 0) continue;
+
+      const card = createMiniCalendar(month, entries);
+      calendarEl.appendChild(card);
+    }
   } catch (err) {
-    calendarEl.innerHTML = `<p style="color:tomato">Failed loading calendar</p>`;
-    console.error(err);
+    console.error("Failed to fetch or render:", err);
+    calendarEl.innerHTML = `<p style="color:tomato;">❌ Failed to load calendar data.</p>`;
   }
 }
-initCalendar();
+
+loadCalendar();
