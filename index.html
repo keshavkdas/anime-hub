@@ -341,7 +341,7 @@
 
         const id = anime.mal_id;
         const title = anime.title.replace(/'/g, "\\'");
-        const imageUrl = anime.images.jpg.image_url.replace(/"/g, '&quot;');
+        const imageUrl = anime.images.jpg.large_image_url.replace(/"/g, '&quot;'); 
 
         const card = document.createElement('div');
         card.classList.add('anime-card');
