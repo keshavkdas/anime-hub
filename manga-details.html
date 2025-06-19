@@ -304,7 +304,7 @@ async function fetchMangaDetails() {
   try {
     const res = await fetch(`https://api.jikan.moe/v4/manga/${mangaId}/full`);
     const { data } = await res.json();
-    const img = data.images.jpg.image_url;
+    const img =data.images.jpg.large_image_url;
 
     if (isManhwa(data.genres, data.type)) {
       favKey = 'manhwaFavorites';
