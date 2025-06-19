@@ -378,9 +378,15 @@
       const json = await res.json();
       const favorites = JSON.parse(localStorage.getItem(favKey)) || [];
 
-      json.data.forEach(manga => {
-        if ((type === "manhwa" && manga.type?.toLowerCase() !== "manhwa") ||
-            (type === "manga" && manga.type?.toLowerCase() !== "manga")) return;
+json.data.forEach(manga => {
+  const genres = [...(manga.genres || []), ...(manga.themes || []), ...(manga.demographics || [])]
+                  .map(g => g.name);
+  const blockedGenres = ["Erotica", "Hentai", "Ecchi"];
+
+  if ((type === "manhwa" && manga.type?.toLowerCase() !== "manhwa") ||
+      (type === "manga" && manga.type?.toLowerCase() !== "manga") ||
+      genres.some(g => blockedGenres.includes(g))) return;
+
 
         const card = document.createElement("div");
         card.className = "anime-card";
