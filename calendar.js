@@ -6,46 +6,59 @@ zoomBtn.addEventListener("click", () => {
   calendarEl.classList.toggle("zoomed");
 });
 
-const TYPE_COLORS = {
-  Anime: "🟠",
-  Manga: "🟢",
-  Manhwa: "🔵"
+const TYPE_CLASS = {
+  Anime: "anime",
+  Manga: "manga",
+  Manhwa: "manhwa"
 };
 
-function createMonthSection(title, entriesByMonth) {
-  const fragment = document.createDocumentFragment();
+function createMonthCard(month, entries) {
+  const div = document.createElement("div");
+  div.className = "month";
 
-  const months = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
-  ];
+  const title = document.createElement("h3");
+  title.textContent = month;
+  div.appendChild(title);
 
-  months.forEach(month => {
-    const items = entriesByMonth[month];
-    if (!items || items.length === 0) return;
+  const entryLimit = 5;
+  const limited = entries.slice(0, entryLimit);
+  const extra = entries.length > entryLimit;
 
-    const monthDiv = document.createElement("div");
-    monthDiv.className = "month";
+  const renderEntries = (entryList) => {
+    entryList.forEach(entry => {
+      const e = document.createElement("div");
+      e.className = "entry";
 
-    const heading = document.createElement("h3");
-    heading.textContent = `${month} (${title})`;
-    monthDiv.appendChild(heading);
-
-    items.forEach(entry => {
-      const div = document.createElement("div");
-      div.className = "entry";
-
-      const color = TYPE_COLORS[entry.type] || "";
-      div.innerHTML = `${color} <strong>${entry.title}</strong> <br/>
-        <span style="color:#aaa;">${entry.type} • ${entry.date} • ${entry.popularity}</span>`;
-
-      monthDiv.appendChild(div);
+      const typeClass = TYPE_CLASS[entry.type] || "";
+      e.innerHTML = `
+        <span class="${typeClass}">${entry.title}</span><br/>
+        <span class="meta">${entry.type} • ${entry.date} • ${entry.popularity}</span>
+      `;
+      div.appendChild(e);
     });
+  };
 
-    fragment.appendChild(monthDiv);
+  renderEntries(limited);
+
+  if (extra) {
+    const remaining = entries.slice(entryLimit);
+    const hiddenContainer = document.createElement("div");
+    hiddenContainer.style.display = "none";
+    hiddenContainer.className = "hidden-entries";
+    renderEntries(remaining);
+
+    div.appendChild(hiddenContainer);
+  }
+
+  title.addEventListener("click", () => {
+    div.classList.toggle("expanded");
+    const hidden = div.querySelector(".hidden-entries");
+    if (hidden) {
+      hidden.style.display = hidden.style.display === "none" ? "block" : "none";
+    }
   });
 
-  return fragment;
+  return div;
 }
 
 async function loadCalendar() {
@@ -55,26 +68,31 @@ async function loadCalendar() {
     const res = await fetch(API_URL);
     const { released, upcoming } = await res.json();
 
+    // Merge both into one object by month
+    const combined = {};
+
+    for (const [month, items] of Object.entries(released)) {
+      combined[month] = [...(combined[month] || []), ...items];
+    }
+    for (const [month, items] of Object.entries(upcoming)) {
+      combined[month] = [...(combined[month] || []), ...items];
+    }
+
+    // Sort by month order
+    const monthOrder = [
+      "January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December"
+    ];
+
     calendarEl.innerHTML = "";
 
-    // Render released section
-    const releasedHeading = document.createElement("h2");
-    releasedHeading.textContent = "✅ Released Anime, Manga & Manhwa (Till Today)";
-    releasedHeading.style.color = "#4ade80";
-    releasedHeading.style.gridColumn = "1 / -1";
-    calendarEl.appendChild(releasedHeading);
+    for (const month of monthOrder) {
+      const entries = combined[month];
+      if (!entries || entries.length === 0) continue;
 
-    calendarEl.appendChild(createMonthSection("Released", released));
-
-    // Render upcoming section
-    const upcomingHeading = document.createElement("h2");
-    upcomingHeading.textContent = "🚀 Upcoming Releases (Daily Fetched)";
-    upcomingHeading.style.color = "#facc15";
-    upcomingHeading.style.gridColumn = "1 / -1";
-    calendarEl.appendChild(upcomingHeading);
-
-    calendarEl.appendChild(createMonthSection("Upcoming", upcoming));
-
+      const card = createMonthCard(month, entries);
+      calendarEl.appendChild(card);
+    }
   } catch (err) {
     console.error("Failed to fetch or render:", err);
     calendarEl.innerHTML = `<p style="color:tomato;">❌ Failed to load calendar data.</p>`;
@@ -82,3 +100,4 @@ async function loadCalendar() {
 }
 
 loadCalendar();
+
