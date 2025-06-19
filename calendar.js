@@ -13,7 +13,7 @@ const TYPE_CLASS = {
 const overlay = document.createElement("div");
 overlay.className = "overlay";
 overlay.innerHTML = `
-  <button class="close-btn">✖ Close</button>
+  <button class="close-btn">✖</button>
   <div class="calendar-grid" id="calendarGrid"></div>
   <div class="sidebar" id="sidebarList">
     <h2 id="sidebarTitle">Month Details</h2>
@@ -129,6 +129,26 @@ overlayStyle.textContent = `
   .close-btn:hover {
     color: #fff;
   }
+  /* Scrollbar styling */
+.overlay::-webkit-scrollbar,
+.sidebar::-webkit-scrollbar,
+.calendar-grid::-webkit-scrollbar {
+  width: 8px;
+}
+
+.overlay::-webkit-scrollbar-track,
+.sidebar::-webkit-scrollbar-track,
+.calendar-grid::-webkit-scrollbar-track {
+  background: #000;
+}
+
+.overlay::-webkit-scrollbar-thumb,
+.sidebar::-webkit-scrollbar-thumb,
+.calendar-grid::-webkit-scrollbar-thumb {
+  background-color: #f97316;
+  border-radius: 4px;
+}
+
 `;
 
 document.head.appendChild(overlayStyle);
