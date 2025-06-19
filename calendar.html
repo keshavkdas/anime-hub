@@ -295,9 +295,17 @@
   right: 1rem;
   background: transparent;
   color: #fff;
-  font-size: 1.5rem;
+  font-size: 1.1rem; /* Smaller size */
   border: none;
   cursor: pointer;
+  padding: 0.2rem 0.4rem;
+  line-height: 1;
+  transition: transform 0.2s ease;
+}
+
+.overlay .close-btn:hover {
+  transform: scale(1.2);
+  color: #f97316; /* Optional hover color */
 }
 
 #calendarGrid {
