@@ -67,7 +67,7 @@ async function loadGenres() {
 
     const filteredGenres = json.data.filter(g => {
       const name = g.name?.toLowerCase();
-      return !/hentai|ecchi|erotica|love|sex/.test(name);
+      return !/hentai|ecchi|erotica|love|harem|sex/.test(name);
     });
 
     filteredGenres
