@@ -1,7 +1,5 @@
 const API_URL = "https://blue-sun-2738.keshavkdas23.workers.dev/";
 const calendarEl = document.getElementById("calendar");
-const zoomBtn = document.getElementById("zoomBtn");
-
 
 const TYPE_CLASS = {
   Anime: "anime",
@@ -9,73 +7,89 @@ const TYPE_CLASS = {
   Manhwa: "manhwa"
 };
 
-// Create overlay modal
+// ================= Overlay Modal Setup ================= //
 const overlay = document.createElement("div");
 overlay.className = "overlay";
 overlay.innerHTML = `
   <button class="close-btn">✖</button>
+  <div class="month-nav">
+    <button id="prevMonthBtn">‹</button>
+    <h2 id="overlayMonth">Month</h2>
+    <button id="nextMonthBtn">›</button>
+  </div>
   <div class="calendar-grid" id="calendarGrid"></div>
   <div class="sidebar" id="sidebarList">
-    <h2 id="sidebarTitle">Month Details</h2>
+    <h2 id="sidebarTitle">Day Details</h2>
     <div id="sidebarEntries"></div>
   </div>
 `;
 document.body.appendChild(overlay);
 
-const overlayStyle = document.createElement("style");
-overlayStyle.textContent = `
+// Inject styles for overlay
+const style = document.createElement("style");
+style.textContent = `
   .overlay {
     position: fixed;
     top: 50%;
     left: 50%;
-    width: 75%;
-    height: 75%;
+    width: 85%;
+    height: 85%;
     transform: translate(-50%, -50%);
     background: rgba(18, 18, 18, 0.95);
     border: 1px solid #333;
     border-radius: 10px;
     display: none;
     z-index: 1000;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s ease;
     color: #fff;
     box-shadow: 0 0 30px rgba(0,0,0,0.6);
     display: flex;
     flex-direction: row;
     overflow: hidden;
-    backdrop-filter: blur(2px);
+    backdrop-filter: blur(4px);
   }
-
   .overlay.active {
-    opacity: 1;
-    pointer-events: all;
+    display: flex;
   }
-
+  .month-nav {
+    position: absolute;
+    top: 0.5rem;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    color: #facc15;
+  }
+  .month-nav h2 {
+    display: inline-block;
+    margin: 0 1rem;
+    font-size: 1.2rem;
+  }
+  .month-nav button {
+    background: transparent;
+    border: none;
+    color: #f97316;
+    font-size: 1.4rem;
+    cursor: pointer;
+  }
   .calendar-grid {
     flex: 1;
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    padding: 0.5rem;
-    gap: 4px;
+    padding: 2rem 1rem 1rem;
+    gap: 6px;
     overflow-y: auto;
-    overflow-x: hidden;
   }
-
   .day {
     background: #1f1f1f;
     padding: 0.4rem;
-    border-radius: 4px;
+    border-radius: 6px;
     min-height: 50px;
     font-size: 0.75rem;
-    word-wrap: break-word;
+    cursor: pointer;
   }
-
   .day strong {
     display: block;
     margin-bottom: 0.2rem;
   }
-
   .dot {
     width: 8px;
     height: 8px;
@@ -83,7 +97,6 @@ overlayStyle.textContent = `
     display: inline-block;
     margin: 1px;
   }
-
   .dot.anime { background-color: #f97316; }
   .dot.manga { background-color: #34d399; }
   .dot.manhwa { background-color: #60a5fa; }
@@ -92,72 +105,51 @@ overlayStyle.textContent = `
     width: 260px;
     background: #181818;
     border-left: 1px solid #333;
-    padding: 0.5rem;
+    padding: 1rem;
     overflow-y: auto;
   }
-
   .sidebar h2 {
     margin-top: 0;
     color: #facc15;
     font-size: 1rem;
   }
-
   .entry {
-    margin: 0.4rem 0;
+    margin: 0.5rem 0;
     line-height: 1.3;
-    font-size: 0.75rem;
+    font-size: 0.8rem;
   }
-
   .entry .meta {
     color: #aaa;
     font-size: 0.68rem;
   }
-
   .close-btn {
     position: absolute;
-    top: 0.5rem;
-    right: 0.5rem;
+    top: 0.4rem;
+    right: 0.8rem;
     background: transparent;
     border: none;
     color: #aaa;
-    font-size: 1.5rem;
-    padding: 0.3rem 0.6rem;
+    font-size: 1.4rem;
     cursor: pointer;
-    z-index: 1001;
   }
-
   .close-btn:hover {
     color: #fff;
   }
-  /* Scrollbar styling */
-.overlay::-webkit-scrollbar,
-.sidebar::-webkit-scrollbar,
-.calendar-grid::-webkit-scrollbar {
-  width: 8px;
-}
-
-.overlay::-webkit-scrollbar-track,
-.sidebar::-webkit-scrollbar-track,
-.calendar-grid::-webkit-scrollbar-track {
-  background: #000;
-}
-
-.overlay::-webkit-scrollbar-thumb,
-.sidebar::-webkit-scrollbar-thumb,
-.calendar-grid::-webkit-scrollbar-thumb {
-  background-color: #f97316;
-  border-radius: 4px;
-}
-
 `;
-
-document.head.appendChild(overlayStyle);
+document.head.appendChild(style);
 
 const calendarGrid = overlay.querySelector("#calendarGrid");
 const sidebarEntries = overlay.querySelector("#sidebarEntries");
 const sidebarTitle = overlay.querySelector("#sidebarTitle");
+const overlayMonth = overlay.querySelector("#overlayMonth");
+const prevMonthBtn = overlay.querySelector("#prevMonthBtn");
+const nextMonthBtn = overlay.querySelector("#nextMonthBtn");
+
 overlay.querySelector(".close-btn").onclick = () => overlay.classList.remove("active");
 
+let allData = {};
+let monthNames = [];
+let currentMonthIndex = 0;
 let selectedDay = null;
 
 function renderSidebar(entries) {
@@ -172,9 +164,10 @@ function renderSidebar(entries) {
   });
 }
 
-function openOverlay(month, entries) {
-  overlay.classList.add("active");
-  sidebarTitle.textContent = month;
+function renderCalendarGrid(month) {
+  const entries = allData[month] || [];
+  overlayMonth.textContent = month;
+  sidebarTitle.textContent = "Month: " + month;
   selectedDay = null;
 
   const days = {};
@@ -189,8 +182,8 @@ function openOverlay(month, entries) {
     const cell = document.createElement("div");
     cell.className = "day";
     cell.innerHTML = `<strong>${i}</strong>`;
-
     const releases = days[i] || [];
+
     releases.forEach(entry => {
       const dot = document.createElement("span");
       dot.className = `dot ${entry.type.toLowerCase()}`;
@@ -213,6 +206,12 @@ function openOverlay(month, entries) {
   renderSidebar(entries);
 }
 
+function openOverlay(month) {
+  overlay.classList.add("active");
+  currentMonthIndex = monthNames.indexOf(month);
+  renderCalendarGrid(month);
+}
+
 function createMonthCard(month, entries) {
   const div = document.createElement("div");
   div.className = "month";
@@ -221,23 +220,33 @@ function createMonthCard(month, entries) {
   title.textContent = month;
   div.appendChild(title);
 
-  const entryLimit = 5;
-  const limited = entries.slice(0, entryLimit);
-
+  const limited = entries.slice(0, 5);
   limited.forEach(entry => {
     const e = document.createElement("div");
     e.className = "entry";
     const typeClass = TYPE_CLASS[entry.type] || "";
-    e.innerHTML = `
-      <span class="${typeClass}">${entry.title}</span><br/>
-      <span class="meta">${entry.type} • ${entry.date} • ${entry.popularity}</span>
-    `;
+    e.innerHTML = `<span class="${typeClass}">${entry.title}</span><br/>
+                   <span class="meta">${entry.type} • ${entry.date} • ${entry.popularity}</span>`;
     div.appendChild(e);
   });
 
-  title.addEventListener("click", () => openOverlay(month, entries));
+  title.addEventListener("click", () => openOverlay(month));
   return div;
 }
+
+prevMonthBtn.addEventListener("click", () => {
+  if (currentMonthIndex > 0) {
+    currentMonthIndex--;
+    renderCalendarGrid(monthNames[currentMonthIndex]);
+  }
+});
+
+nextMonthBtn.addEventListener("click", () => {
+  if (currentMonthIndex < monthNames.length - 1) {
+    currentMonthIndex++;
+    renderCalendarGrid(monthNames[currentMonthIndex]);
+  }
+});
 
 async function loadCalendar() {
   calendarEl.innerHTML = `<p style="color:#bbb;">⏳ Fetching releases...</p>`;
@@ -246,27 +255,25 @@ async function loadCalendar() {
     const res = await fetch(API_URL);
     const { released, upcoming } = await res.json();
 
-    const combined = {};
+    allData = {};
     for (const [month, items] of Object.entries(released)) {
-      combined[month] = [...(combined[month] || []), ...items];
+      allData[month] = [...(allData[month] || []), ...items];
     }
     for (const [month, items] of Object.entries(upcoming)) {
-      combined[month] = [...(combined[month] || []), ...items];
+      allData[month] = [...(allData[month] || []), ...items];
     }
 
-    const monthOrder = [
+    const order = [
       "January", "February", "March", "April", "May", "June",
       "July", "August", "September", "October", "November", "December"
     ];
+    monthNames = order.filter(m => allData[m]);
 
     calendarEl.innerHTML = "";
-    for (const month of monthOrder) {
-      const entries = combined[month];
-      if (!entries || entries.length === 0) continue;
-
-      const card = createMonthCard(month, entries);
+    monthNames.forEach(month => {
+      const card = createMonthCard(month, allData[month]);
       calendarEl.appendChild(card);
-    }
+    });
   } catch (err) {
     console.error("Failed to fetch or render:", err);
     calendarEl.innerHTML = `<p style="color:tomato;">❌ Failed to load calendar data.</p>`;
