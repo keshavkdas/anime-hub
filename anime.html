@@ -125,43 +125,79 @@
       border-radius: 10px;
     }
 
-    .character-bubbles {
-      display: flex;
-      overflow-x: auto;
-      padding: 1rem 2rem;
-      gap: 1rem;
-      scrollbar-width: thin;
-      scrollbar-color: #f97316 #1f1f1f;
-    }
+    .character-list {
+  display: flex;
+  overflow-x: auto;
+  gap: 1rem;
+  scroll-behavior: smooth;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+}
 
-    .character-bubbles::-webkit-scrollbar {
-      height: 8px;
-    }
+/* WebKit Browsers (Chrome, Safari, Edge) */
+.character-list::-webkit-scrollbar {
+  height: 8px;
+}
 
-    .character-bubble {
-      text-align: center;
-      flex: 0 0 auto;
-      width: 100px;
-    }
+.character-list::-webkit-scrollbar-track {
+  background: transparent;
+}
 
-    .character-bubble img {
-      width: 90px;
-      height: 90px;
-      object-fit: cover;
-      border-radius: 50%;
-      border: 3px solid #f97316;
-      background-color: #1e293b;
-      box-shadow: 0 0 6px rgba(255, 121, 18, 0.4);
-    }
+.character-list::-webkit-scrollbar-thumb {
+  background-color: #f97316;
+  border-radius: 10px;
+}
 
-    .character-name {
-      color: white;
-      margin-top: 0.4rem;
-      font-size: 0.8rem;
-      line-height: 1.2;
-      word-break: break-word;
-      max-width: 90px;
-    }
+/* Firefox */
+.character-list {
+  scrollbar-color: #f97316 transparent;
+  scrollbar-width: thin;
+}
+
+.character-bubble {
+  width: 100px;
+  flex-shrink: 0;
+  text-align: center;
+  color: inherit;
+  text-decoration: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.character-bubble:hover {
+  transform: scale(1.07);
+  box-shadow: 0 0 10px #f97316;
+}
+
+.character-bubble .img-wrapper {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: 0 0 6px 2px #f97316;
+  transition: box-shadow 0.3s ease;
+}
+
+.character-bubble:hover .img-wrapper {
+  box-shadow: 0 0 10px 3px #f97316;
+}
+
+.character-bubble img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.character-name {
+  margin-top: 0.5rem;
+  font-weight: bold;
+  font-size: 0.85rem;
+  color: white;
+  word-wrap: break-word;
+}
+
 
     .loading-spinner {
       border: 4px solid #f97316;
