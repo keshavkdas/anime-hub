@@ -14,35 +14,36 @@
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
-    header {
-  background: #0f0f0f;
-  color: #f39c12;
-  padding: 1rem 0;
-}
+   header {
+      background-color: #1f1f1f;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
 
-header .logo {
-  font-family: 'Galactico', cursive;
-  font-size: 1.8rem;
-}
+    header h1 {
+      font-family: 'Oswald', sans-serif;
+      font-size: 2rem;
+      color: #f97316;
+    }
 
-nav ul {
-  list-style: none;
-  display: flex;
-  gap: 2rem;
-}
+    nav a {
+      color: white;
+      margin-left: 2rem;
+      font-family: 'Poppins', sans-serif;
+      text-decoration: none;
+      font-weight: 600;
+    }
 
-nav a {
-  color: #f39c12;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 1.1rem;
-  transition: color 0.3s;
-}
+    nav a[href="manga.html"] {
+      color: #f97316;
+    }
+    
+    nav a:hover {
+      color: #f97316;
+    }
 
-nav a.active,
-nav a:hover {
-  color: #ffd95b;
-}
     h2 {
       font-family: 'Poppins', sans-serif;
       color: #f97316;
