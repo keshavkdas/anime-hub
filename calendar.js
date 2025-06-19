@@ -27,8 +27,8 @@ async function fetchReleasedDataFromJikan() {
     if (!grouped[month]) grouped[month] = { Anime: [], Manga: [], Manhwa: [] };
 
     const isManhwa = (entry.type || "").toLowerCase() === "manhwa";
-
     const category = isManhwa ? "Manhwa" : type;
+
     grouped[month][category].push({
       title: entry.title,
       date: dateStr.slice(0, 10),
@@ -45,7 +45,6 @@ async function fetchReleasedDataFromJikan() {
     }
   });
 
-  // Sort and trim per month
   for (const month in grouped) {
     grouped[month].Anime = grouped[month].Anime.sort((a, b) => b.popularity - a.popularity).slice(0, 2);
     grouped[month].Manga = grouped[month].Manga.sort((a, b) => b.popularity - a.popularity).slice(0, 2);
@@ -56,13 +55,14 @@ async function fetchReleasedDataFromJikan() {
 }
 
 async function fetchUpcomingDataFromWorker() {
-  const res = await fetch("https://blue-sun-2738.keshavkdas23.workers.dev/");
-  if (!res.ok) {
-    console.error("Failed to fetch upcoming releases");
+  try {
+    const res = await fetch("https://blue-sun-2738.keshavkdas23.workers.dev/");
+    if (!res.ok) throw new Error("Failed to fetch upcoming releases");
+    return await res.json();
+  } catch (err) {
+    console.error("Upcoming fetch error:", err);
     return {};
   }
-
-  return await res.json();
 }
 
 function mergeReleasedAndUpcoming(released, upcoming) {
@@ -73,12 +73,11 @@ function mergeReleasedAndUpcoming(released, upcoming) {
       merged[month] = { Anime: [], Manga: [], Manhwa: [] };
     }
 
-    upcoming[month].forEach(item => {
+    for (const item of upcoming[month]) {
       if (!merged[month][item.type]) merged[month][item.type] = [];
       merged[month][item.type].push(item);
-    });
+    }
 
-    // Optional: sort after merge
     merged[month].Anime = merged[month].Anime.sort((a, b) => b.popularity - a.popularity).slice(0, 5);
     merged[month].Manga = merged[month].Manga.sort((a, b) => b.popularity - a.popularity).slice(0, 5);
     merged[month].Manhwa = merged[month].Manhwa.sort((a, b) => b.popularity - a.popularity).slice(0, 3);
@@ -100,33 +99,35 @@ function renderCalendar(data) {
     const monthData = data[month];
     if (!monthData) continue;
 
-    const section = document.createElement("details");
-    const summary = document.createElement("summary");
-    summary.textContent = month;
-    section.appendChild(summary);
+    const box = document.createElement("div");
+    box.className = "month";
+
+    const title = document.createElement("h3");
+    title.textContent = month;
+    box.appendChild(title);
 
     for (const type of ["Anime", "Manga", "Manhwa"]) {
-      const list = monthData[type];
-      if (!list?.length) continue;
+      const entries = monthData[type];
+      if (!entries?.length) continue;
 
-      const heading = document.createElement("h4");
-      heading.textContent = type;
-      section.appendChild(heading);
-
-      const ul = document.createElement("ul");
-      for (const item of list) {
-        const li = document.createElement("li");
-        li.textContent = `${item.title} (${item.date}) — Popularity: ${item.popularity}`;
-        ul.appendChild(li);
+      for (const item of entries) {
+        const entry = document.createElement("div");
+        entry.className = "entry";
+        entry.innerHTML = `<strong>${item.title}</strong> (${item.date}) <span class="status">[${type}, ${item.popularity}]</span>`;
+        box.appendChild(entry);
       }
-
-      section.appendChild(ul);
     }
 
-    container.appendChild(section);
+    container.appendChild(box);
   }
 }
 
+// 🔍 Zoom Month Button
+document.getElementById("zoomBtn").addEventListener("click", () => {
+  document.getElementById("calendar").classList.toggle("zoomed");
+});
+
+// 🚀 Load & Render on Page Load
 (async function main() {
   const [released, upcoming] = await Promise.all([
     fetchReleasedDataFromJikan(),
