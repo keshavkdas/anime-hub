@@ -170,7 +170,7 @@ function renderItems(items) {
     card.className = "anime-card";
 
     const title = item.title || "Untitled";
-    const imageUrl = item.images?.jpg?.image_url || "";
+    const imageUrl = item.images?.jpg?.large_image_url || "";
     const score = item.score ?? "N/A";
     const typeVal = item.type ?? "";
     const episodes = item.episodes;
