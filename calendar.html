@@ -196,6 +196,75 @@
       padding: 1rem;
     }
   }
+  #calendar {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+  padding: 2rem;
+}
+
+.mini-month {
+  background: #1f1f1f;
+  border: 1px solid #444;
+  border-radius: 10px;
+  padding: 0.6rem;
+  color: #fff;
+  transition: transform 0.2s ease;
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.05);
+}
+
+.mini-month:hover {
+  transform: scale(1.02);
+  box-shadow: 0 0 14px rgba(249, 115, 22, 0.3);
+}
+
+.month-title {
+  text-align: center;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  color: #f97316;
+}
+
+.mini-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+  font-size: 0.75rem;
+  text-align: center;
+}
+
+.weekday {
+  font-weight: bold;
+  color: #999;
+}
+
+.mini-day {
+  background: #2a2a2a;
+  border-radius: 6px;
+  min-height: 35px;
+  padding: 3px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.mini-day span {
+  display: block;
+}
+
+.mini-day .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: inline-block;
+  margin: 1px;
+}
+
+.dot.anime { background-color: #f97316; }
+.dot.manga { background-color: #34d399; }
+.dot.manhwa { background-color: #60a5fa; }
+
 
   </style>
 </head>
