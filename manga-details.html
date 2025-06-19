@@ -132,6 +132,10 @@
   text-decoration: none;
   color: inherit;
 }
+    .character-bubble:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 10px #f97316;
+}
 
 .character-bubble .img-wrapper {
   width: 80px;
@@ -292,7 +296,8 @@ async function fetchMangaDetails() {
         </div>
         <div class="anime-info">
           <h1>${data.title}</h1>
-          <p><strong>Synopsis:</strong> ${data.synopsis || 'No synopsis.'}</p>
+          <p><strong>Synopsis:</strong> <span id="synopsis-text">${(data.synopsis || 'No synopsis.').slice(0, 300)}</span><span id="dots">...</span><span id="more-text" style="display:none;">${(data.synopsis || '').slice(300)}</span>
+          <button id="read-more-btn" style="background:none; border:none; color:#f97316; cursor:pointer; font-weight:bold;">Read more</button></p>
           <p><strong>Type:</strong> ${data.type}</p>
           <p><strong>Status:</strong> ${data.status}</p>
           <p><strong>Chapters:</strong> ${data.chapters || 'Unknown'}</p>
@@ -304,6 +309,24 @@ async function fetchMangaDetails() {
     const btn = document.querySelector(`.favorite-bubble[data-id="${data.mal_id}"]`);
     btn.addEventListener('click', () => toggleFavorite(data.mal_id, data.title, img));
     markFav(data.mal_id);
+
+    const readMoreBtn = document.getElementById('read-more-btn');
+    if (readMoreBtn) {
+      readMoreBtn.addEventListener('click', () => {
+    const dots = document.getElementById('dots');
+    const moreText = document.getElementById('more-text');
+    if (dots.style.display === 'none') {
+      dots.style.display = 'inline';
+      moreText.style.display = 'none';
+      readMoreBtn.textContent = 'Read more';
+    } else {
+      dots.style.display = 'none';
+      moreText.style.display = 'inline';
+      readMoreBtn.textContent = 'Read less';
+    }
+  });
+}
+
 
   } catch (e) {
     document.getElementById('mangaDetails').innerHTML = '<p>Error loading details.</p>';
