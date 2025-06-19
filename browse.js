@@ -32,6 +32,15 @@ document.addEventListener("DOMContentLoaded", () => {
   searchInput.placeholder = `Search ${currentType}`;
   loadGenres();
   loadItems();
+
+  // Back to Top button
+  const backToTopBtn = document.getElementById('backToTop');
+  window.addEventListener('scroll', () => {
+    backToTopBtn.style.display = window.scrollY > 300 ? 'block' : 'none';
+  });
+  backToTopBtn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
 });
 
 // Handle search
@@ -147,7 +156,7 @@ async function loadItems() {
       hasMore = searchData.pagination?.has_next_page || topData.pagination?.has_next_page || false;
 
     } else {
-      // Anime or Manga logic
+      // Anime or Manga
       const url = `https://api.jikan.moe/v4/${currentType}?page=${currentPage}&limit=12${currentQuery ? `&q=${encodeURIComponent(currentQuery)}` : ''}${currentGenre ? `&genres=${currentGenre}` : ''}`;
       const res = await fetch(url);
       const data = await res.json();
@@ -220,68 +229,3 @@ window.addEventListener("scroll", () => {
     loadItems();
   }
 });
-
-document.addEventListener("DOMContentLoaded", () => {
-  // Set type to 'anime' and genre to '' on load
-  document.getElementById("typeSelect").value = "anime";
-  document.getElementById("genre").value = "";
-
-  // Fetch anime on initial load
-  fetchAnime("anime", "", "");
-});
-
-function fetchAnime(type, genre, query) {
-  const baseUrl = "https://api.jikan.moe/v4";
-  let url = `${baseUrl}/${type}?limit=24`;
-
-  if (genre) {
-    url += `&genres=${genre}`;
-  }
-
-  if (query) {
-    url += `&q=${query}`;
-  }
-
-  document.getElementById("results").innerHTML = `<p style="text-align:center;">Loading...</p>`;
-
-  fetch(url)
-    .then((res) => res.json())
-    .then((data) => {
-      const resultsContainer = document.getElementById("results");
-      resultsContainer.innerHTML = "";
-
-      if (data.data.length === 0) {
-        resultsContainer.innerHTML = "<p>No results found.</p>";
-        return;
-      }
-
-      data.data.forEach((item) => {
-        const card = `
-          <div class="anime-card" onclick="location.href='anime-details.html?id=${item.mal_id}'">
-            <img src="${item.images.webp.large_image_url}" alt="${item.title}">
-            <div class="anime-info">
-              <h3>${item.title}</h3>
-              <p><strong>Score:</strong> ${item.score || "N/A"}</p>
-              <p><strong>Type:</strong> ${item.type}</p>
-              <p><strong>Episodes:</strong> ${item.episodes || "-"}</p>
-            </div>
-          </div>
-        `;
-        resultsContainer.insertAdjacentHTML("beforeend", card);
-      });
-    })
-    .catch((err) => {
-      document.getElementById("results").innerHTML = "<p>Error loading data.</p>";
-      console.error(err);
-    });
-}
-const backToTopBtn = document.getElementById('backToTop');
-
-  window.addEventListener('scroll', () => {
-    backToTopBtn.style.display = window.scrollY > 300 ? 'block' : 'none';
-  });
-
-  backToTopBtn.addEventListener('click', () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  });
-
