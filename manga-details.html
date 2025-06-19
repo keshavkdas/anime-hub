@@ -370,7 +370,7 @@ async function fetchCharacters() {
     return;
   }
 
-  const html = data.slice(0, 10).map(c => `
+  const html = data.map(c => `
   <a href="character.html?id=${c.character.mal_id}" class="character-bubble">
     <div class="img-wrapper">
       <img src="${c.character.images.jpg.image_url}" alt="">
