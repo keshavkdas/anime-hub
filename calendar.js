@@ -46,33 +46,36 @@ overlayStyle.textContent = `
     overflow: hidden;
     backdrop-filter: blur(2px);
   }
+
   .overlay.active {
     opacity: 1;
     pointer-events: all;
   }
-   .calendar-grid {
-  flex: 1;
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  padding: 0.5rem;
-  gap: 4px;
-  overflow-y: auto;
-  overflow-x: hidden;
-}
 
-.day {
-  background: #1f1f1f;
-  padding: 0.4rem;
-  border-radius: 4px;
-  min-height: 50px;
-  font-size: 0.75rem;
-  word-wrap: break-word;
-}
+  .calendar-grid {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    padding: 0.5rem;
+    gap: 4px;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  .day {
+    background: #1f1f1f;
+    padding: 0.4rem;
+    border-radius: 4px;
+    min-height: 50px;
+    font-size: 0.75rem;
+    word-wrap: break-word;
+  }
 
   .day strong {
     display: block;
     margin-bottom: 0.2rem;
   }
+
   .dot {
     width: 8px;
     height: 8px;
@@ -80,42 +83,51 @@ overlayStyle.textContent = `
     display: inline-block;
     margin: 1px;
   }
+
   .dot.anime { background-color: #f97316; }
   .dot.manga { background-color: #34d399; }
   .dot.manhwa { background-color: #60a5fa; }
+
   .sidebar {
-    width: 280px;
+    width: 260px;
     background: #181818;
     border-left: 1px solid #333;
-    padding: 1rem;
+    padding: 0.5rem;
     overflow-y: auto;
   }
+
   .sidebar h2 {
     margin-top: 0;
     color: #facc15;
+    font-size: 1rem;
   }
+
   .entry {
-    margin: 0.5rem 0;
-    line-height: 1.4;
-  }
-  .entry .meta {
-    color: #aaa;
+    margin: 0.4rem 0;
+    line-height: 1.3;
     font-size: 0.75rem;
   }
+
+  .entry .meta {
+    color: #aaa;
+    font-size: 0.68rem;
+  }
+
   .close-btn {
     position: absolute;
-    top: 0.8rem;
-    right: 0.8rem;
-    background: #333;
+    top: 0.5rem;
+    right: 0.5rem;
+    background: transparent;
     border: none;
-    color: #fff;
-    padding: 0.4rem 0.8rem;
+    color: #aaa;
+    font-size: 1.5rem;
+    padding: 0.3rem 0.6rem;
     cursor: pointer;
-    border-radius: 4px;
     z-index: 1001;
   }
+
   .close-btn:hover {
-    background: #555;
+    color: #fff;
   }
 `;
 
