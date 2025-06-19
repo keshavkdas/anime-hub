@@ -263,6 +263,44 @@ button:hover {
   color: #0f172a;
 }
 
+    /* Completely override all link styles */
+a, a:visited, a:active {
+  color: inherit !important;
+  text-decoration: none !important;
+}
+
+a:hover {
+  color: #f97316 !important;
+}
+
+/* Remove any default focus blue outlines */
+*:focus {
+  outline: 2px solid #f97316 !important;
+  outline-offset: 2px;
+}
+
+/* Buttons (e.g. carousel arrows) - ensure no blue shadows or borders */
+button {
+  background-color: #1e293b;
+  color: #f97316;
+  border: 2px solid #f97316;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+button:hover {
+  background-color: #f97316;
+  color: #0f172a;
+}
+
+/* Set default selection highlight to orange too */
+::selection {
+  background: #f97316;
+  color: #0f172a;
+}
+
+
   </style>
 </head>
 <body>
