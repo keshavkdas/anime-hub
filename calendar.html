@@ -265,6 +265,79 @@
 .dot.manga { background-color: #34d399; }
 .dot.manhwa { background-color: #60a5fa; }
 
+    .overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.95);
+  z-index: 9999;
+  display: none;
+  flex-direction: row;
+  align-items: flex-start;
+  padding: 2rem;
+  gap: 2rem;
+}
+
+.overlay.active {
+  display: flex;
+}
+
+.overlay .close-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: transparent;
+  color: #fff;
+  font-size: 1.5rem;
+  border: none;
+  cursor: pointer;
+}
+
+#calendarGrid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.5rem;
+}
+
+.day {
+  background: #1f1f1f;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 0.5rem;
+  text-align: center;
+  min-height: 60px;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.day .dot {
+  display: block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  margin: 2px auto 0;
+}
+
+.sidebar {
+  width: 300px;
+  max-height: 80vh;
+  overflow-y: auto;
+  background: #181818;
+  padding: 1rem;
+  border: 1px solid #333;
+  border-radius: 10px;
+}
+
+.sidebar h2 {
+  margin-top: 0;
+  color: #f97316;
+  text-align: center;
+}
+
+.sidebar .entry {
+  margin-bottom: 1rem;
+}
+
 
   </style>
 </head>
