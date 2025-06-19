@@ -316,47 +316,59 @@
   let toastTimeout;
 
   async function loadAutoCarousel() {
-    try {
-      const res = await fetch(`https://api.jikan.moe/v4/manga?order_by=popularity&limit=10&type=${type}`);
-      const json = await res.json();
-      mangaList = json.data.filter(manga => manga.type?.toLowerCase() !== (type === "manhwa" ? "manga" : "manhwa"));
+  try {
+    const res = await fetch(`https://api.jikan.moe/v4/manga?order_by=popularity&limit=25&type=${type}`);
+    const json = await res.json();
 
-      mangaList.forEach(manga => {
-        const slide = document.createElement('div');
-        slide.className = 'carousel-item';
-        slide.innerHTML = `
-          <img src="${manga.images.jpg.large_image_url}" alt="${manga.title}" />
-          <div class="carousel-info">
-            <h2>${manga.title}</h2>
-            <p><strong>Score:</strong> ${manga.score ?? "N/A"}</p>
-            <p><strong>Type:</strong> ${manga.type}</p>
-            <p><strong>Chapters:</strong> ${manga.chapters ?? "Unknown"}</p>
-            <p><strong>Synopsis:</strong> ${manga.synopsis ? manga.synopsis.slice(0, 220) + "..." : "No description available."}</p>
-            <button class="dive-button" onclick="location.href='manga-details.html?id=${manga.mal_id}&type=${type}'">🐠 Dive In</button>
-          </div>
-        `;
-        track.appendChild(slide);
-      });
+    // ✅ Filter out adult content based on rating
+    mangaList = json.data.filter(manga => {
+      const rating = manga.rating?.toLowerCase() || "";
+      const isHentai = rating.includes("rx") || rating.includes("hentai");
+      const isRPlus = rating.includes("r+"); // optional: remove if you want to include light nudity
+      const isCorrectType = manga.type?.toLowerCase() === type;
 
-      setInterval(() => {
-        index = (index + 1) % mangaList.length;
-        track.style.transform = `translateX(-${index * 100}%)`;
-      }, 5000);
+      return !isHentai && !isRPlus && isCorrectType;
+    });
 
-      nextBtn.addEventListener("click", () => {
-        index = (index + 1) % mangaList.length;
-        track.style.transform = `translateX(-${index * 100}%)`;
-      });
+    if (!mangaList.length) return;
 
-      prevBtn.addEventListener("click", () => {
-        index = (index - 1 + mangaList.length) % mangaList.length;
-        track.style.transform = `translateX(-${index * 100}%)`;
-      });
+    mangaList.forEach(manga => {
+      const slide = document.createElement('div');
+      slide.className = 'carousel-item';
+      slide.innerHTML = `
+        <img src="${manga.images.jpg.large_image_url}" alt="${manga.title}" />
+        <div class="carousel-info">
+          <h2>${manga.title}</h2>
+          <p><strong>Score:</strong> ${manga.score ?? "N/A"}</p>
+          <p><strong>Type:</strong> ${manga.type}</p>
+          <p><strong>Chapters:</strong> ${manga.chapters ?? "Unknown"}</p>
+          <p><strong>Synopsis:</strong> ${manga.synopsis ? manga.synopsis.slice(0, 220) + "..." : "No description available."}</p>
+          <button class="dive-button" onclick="location.href='manga-details.html?id=${manga.mal_id}&type=${type}'">🐠 Dive In</button>
+        </div>
+      `;
+      track.appendChild(slide);
+    });
 
-    } catch (err) {
-      console.error("Carousel error:", err);
-    }
+    setInterval(() => {
+      index = (index + 1) % mangaList.length;
+      track.style.transform = `translateX(-${index * 100}%)`;
+    }, 5000);
+
+    nextBtn.addEventListener("click", () => {
+      index = (index + 1) % mangaList.length;
+      track.style.transform = `translateX(-${index * 100}%)`;
+    });
+
+    prevBtn.addEventListener("click", () => {
+      index = (index - 1 + mangaList.length) % mangaList.length;
+      track.style.transform = `translateX(-${index * 100}%)`;
+    });
+
+  } catch (err) {
+    console.error("Carousel error:", err);
   }
+}
+
 
   async function loadMoreManga() {
     if (!hasMore) return;
