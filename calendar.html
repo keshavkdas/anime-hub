@@ -378,8 +378,34 @@
   scrollbar-width: thin;
 }
 
+.nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #1f1f1f;
+  color: #f97316;
+  border: none;
+  font-size: 1.5rem;
+  padding: 0.5rem;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 10001;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
 
+.nav-btn:hover {
+  background: #333;
+  transform: translateY(-50%) scale(1.1);
+}
 
+.left-btn {
+  left: 1rem;
+}
+
+.right-btn {
+  right: 1rem;
+}
+    
   </style>
 </head>
 <body>
