@@ -50,20 +50,23 @@ overlayStyle.textContent = `
     opacity: 1;
     pointer-events: all;
   }
-  .calendar-grid {
+   .calendar-grid {
   flex: 1;
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  padding: 1rem;
-  gap: 6px;
+  padding: 0.5rem;
+  gap: 4px;
   overflow-y: auto;
+  overflow-x: hidden;
 }
+
 .day {
   background: #1f1f1f;
-  padding: 0.6rem;
+  padding: 0.4rem;
   border-radius: 4px;
-  min-height: 60px;
-  font-size: 0.85rem;
+  min-height: 50px;
+  font-size: 0.75rem;
+  word-wrap: break-word;
 }
 
   .day strong {
