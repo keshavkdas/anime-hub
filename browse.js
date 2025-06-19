@@ -29,7 +29,16 @@ typeSelect.addEventListener("change", () => {
 
 searchBtn.addEventListener("click", () => {
   currentQuery = searchInput.value.trim();
+  currentPage = 1;
+  hasMore = true;
+  resultsContainer.innerHTML = "";
+  loadItems();
+});
+
+// Auto search when genre is selected
+genreSelect.addEventListener("change", () => {
   currentGenre = genreSelect.value;
+  currentQuery = searchInput.value.trim();
   currentPage = 1;
   hasMore = true;
   resultsContainer.innerHTML = "";
@@ -38,8 +47,12 @@ searchBtn.addEventListener("click", () => {
 
 function isAdult(item) {
   const allGenres = [...(item.genres || []), ...(item.themes || []), ...(item.demographics || [])]
-    .map(g => g.name);
-  return allGenres.some(g => blockedGenres.includes(g));
+    .map(g => g.name?.toLowerCase());
+  return allGenres.some(g =>
+    blockedGenres.includes(g) ||
+    g.includes("love") ||
+    g.includes("sex")
+  );
 }
 
 async function loadGenres() {
@@ -54,7 +67,7 @@ async function loadGenres() {
 
     const filteredGenres = json.data.filter(g => {
       const name = g.name?.toLowerCase();
-      return name !== "hentai" && name !== "ecchi" && name !== "erotica";
+      return !/hentai|ecchi|erotica|love|sex/.test(name);
     });
 
     filteredGenres
@@ -70,7 +83,6 @@ async function loadGenres() {
     console.error("Failed to load genres:", err);
   }
 }
-
 
 async function loadItems() {
   if (isLoading || !hasMore) return;
@@ -110,7 +122,6 @@ async function loadItems() {
       });
 
       items = items.slice(0, 12);
-
       document.getElementById("loading")?.remove();
 
       if (items.length === 0 && currentPage === 1) {
