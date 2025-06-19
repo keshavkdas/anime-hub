@@ -26,17 +26,25 @@ const overlayStyle = document.createElement("style");
 overlayStyle.textContent = `
   .overlay {
     position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(0,0,0,0.95);
+    top: 50%;
+    left: 50%;
+    width: 75%;
+    height: 75%;
+    transform: translate(-50%, -50%);
+    background: rgba(18, 18, 18, 0.95);
+    border: 1px solid #333;
+    border-radius: 10px;
     display: none;
     z-index: 1000;
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.3s ease;
     color: #fff;
+    box-shadow: 0 0 30px rgba(0,0,0,0.6);
     display: flex;
     flex-direction: row;
+    overflow: hidden;
+    backdrop-filter: blur(2px);
   }
   .overlay.active {
     opacity: 1;
@@ -72,7 +80,7 @@ overlayStyle.textContent = `
   .dot.manga { background-color: #34d399; }
   .dot.manhwa { background-color: #60a5fa; }
   .sidebar {
-    width: 300px;
+    width: 280px;
     background: #181818;
     border-left: 1px solid #333;
     padding: 1rem;
@@ -92,12 +100,12 @@ overlayStyle.textContent = `
   }
   .close-btn {
     position: absolute;
-    top: 1rem;
-    right: 1rem;
+    top: 0.8rem;
+    right: 0.8rem;
     background: #333;
     border: none;
     color: #fff;
-    padding: 0.5rem 1rem;
+    padding: 0.4rem 0.8rem;
     cursor: pointer;
     border-radius: 4px;
     z-index: 1001;
@@ -106,6 +114,7 @@ overlayStyle.textContent = `
     background: #555;
   }
 `;
+
 document.head.appendChild(overlayStyle);
 
 const calendarGrid = overlay.querySelector("#calendarGrid");
