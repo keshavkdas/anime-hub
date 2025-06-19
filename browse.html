@@ -291,6 +291,99 @@ footer {
   scrollbar-width: thin;
   scrollbar-color: #f97316 #2a2a2a;
 }
+/* Unified style for input, select, and button */
+.search-section input,
+.search-section select,
+.search-section button {
+  padding: 0.7rem 1rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 10px; /* Rounded corners for all */
+  background-color: #000;
+  color: #fff;
+  outline: none;
+  box-shadow: 0 0 8px rgba(249, 115, 22, 0.3);
+  transition: box-shadow 0.3s ease, transform 0.2s ease;
+  min-width: 160px;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+/* Hover & Focus effect */
+.search-section input:hover,
+.search-section input:focus,
+.search-section select:hover,
+.search-section select:focus,
+.search-section button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 12px 4px rgba(249, 115, 22, 0.6);
+}
+
+#searchInput::placeholder {
+  color: #ccc;
+}
+
+/* Type & Genre Select Specific Styles */
+#typeSelect,
+#genre {
+  background-color: #000;
+  color: #fff;
+  border: 1px solid #444;
+  padding: 0.6rem 1rem;
+  font-size: 1rem;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 220px;
+  cursor: pointer;
+  overflow-y: auto;
+  max-height: 200px;
+  scrollbar-width: thin;
+  scrollbar-color: #f97316 #2a2a2a;
+}
+
+/* Dropdown Scrollbar: WebKit */
+#typeSelect::-webkit-scrollbar,
+#genre::-webkit-scrollbar {
+  width: 8px;
+}
+
+#typeSelect::-webkit-scrollbar-track,
+#genre::-webkit-scrollbar-track {
+  background: #2a2a2a;
+}
+
+#typeSelect::-webkit-scrollbar-thumb,
+#genre::-webkit-scrollbar-thumb {
+  background-color: #f97316;
+  border-radius: 10px;
+}
+
+/* Dropdown Options */
+#typeSelect option,
+#genre option {
+  background-color: #121212;
+  color: #ffffff;
+  padding: 10px;
+  border-radius: 10px; /* Smooth corners inside dropdown */
+  margin: 4px 0;
+  font-size: 1rem;
+}
+
+/* Search Button */
+#searchBtn {
+  background-color: #f97316;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(249, 115, 22, 0.3);
+}
+
+#searchBtn:hover {
+  background-color: #fb923c;
+  box-shadow: 0 6px 18px rgba(249, 115, 22, 0.5);
+}
+
 
 
 </style>
