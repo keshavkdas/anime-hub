@@ -2,9 +2,6 @@ const API_URL = "https://blue-sun-2738.keshavkdas23.workers.dev/";
 const calendarEl = document.getElementById("calendar");
 const zoomBtn = document.getElementById("zoomBtn");
 
-zoomBtn.addEventListener("click", () => {
-  calendarEl.classList.toggle("zoomed");
-});
 
 const TYPE_CLASS = {
   Anime: "anime",
