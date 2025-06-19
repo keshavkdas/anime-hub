@@ -1,139 +1,84 @@
-async function fetchReleasedDataFromJikan() {
-  const grouped = {};
-  const currentYear = 2025;
-  const today = new Date();
+const API_URL = "https://blue-sun-2738.keshavkdas23.workers.dev/";
+const calendarEl = document.getElementById("calendar");
+const zoomBtn = document.getElementById("zoomBtn");
 
-  async function fetchMonth(type, monthIndex) {
-    const start = `${currentYear}-${String(monthIndex).padStart(2, "0")}-01`;
-    const endDate = new Date(currentYear, monthIndex, 0); // last day of month
-    const end = endDate.toISOString().split("T")[0];
+zoomBtn.addEventListener("click", () => {
+  calendarEl.classList.toggle("zoomed");
+});
 
-    const url = `https://api.jikan.moe/v4/${type}?start_date=${start}&end_date=${end}&order_by=members&sort=desc&limit=15`;
+const TYPE_COLORS = {
+  Anime: "🟠",
+  Manga: "🟢",
+  Manhwa: "🔵"
+};
 
-    const res = await fetch(url);
-    const json = await res.json();
-    return json.data || [];
-  }
+function createMonthSection(title, entriesByMonth) {
+  const fragment = document.createDocumentFragment();
 
-  for (let month = 1; month <= today.getMonth() + 1; month++) {
-    const animeList = await fetchMonth("anime", month);
-    const mangaList = await fetchMonth("manga", month);
-
-    const monthName = new Date(currentYear, month - 1).toLocaleString("default", { month: "long" });
-    if (!grouped[monthName]) grouped[monthName] = [];
-
-    animeList.slice(0, 10).forEach(entry => {
-      const dateStr = entry.aired?.from;
-      if (!dateStr || new Date(dateStr) > today) return;
-
-      grouped[monthName].push({
-        title: entry.title,
-        date: dateStr.slice(0, 10),
-        popularity: entry.members,
-        type: "Anime"
-      });
-    });
-
-    mangaList.slice(0, 15).forEach(entry => {
-      const dateStr = entry.published?.from;
-      if (!dateStr || new Date(dateStr) > today) return;
-
-      const type = (entry.type || "").toLowerCase() === "manhwa" ? "Manhwa" : "Manga";
-
-      grouped[monthName].push({
-        title: entry.title,
-        date: dateStr.slice(0, 10),
-        popularity: entry.members,
-        type
-      });
-    });
-
-    // Limit per type
-    const byType = { Anime: [], Manga: [], Manhwa: [] };
-    for (const entry of grouped[monthName]) {
-      if (byType[entry.type].length < (entry.type === "Manhwa" ? 2 : 3)) {
-        byType[entry.type].push(entry);
-      }
-    }
-    grouped[monthName] = [...byType.Anime, ...byType.Manga, ...byType.Manhwa];
-  }
-
-  return grouped;
-}
-
-async function fetchUpcomingDataFromWorker() {
-  try {
-    const res = await fetch("https://blue-sun-2738.keshavkdas23.workers.dev/");
-    if (!res.ok) throw new Error("Failed to fetch upcoming releases");
-    return await res.json();
-  } catch (err) {
-    console.error("Upcoming fetch error:", err);
-    return {};
-  }
-}
-
-function renderCalendar(released, upcoming) {
-  const container = document.getElementById("calendar");
-  container.innerHTML = "";
-
-  const allMonths = [
+  const months = [
     "January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"
   ];
 
-  const today = new Date();
+  months.forEach(month => {
+    const items = entriesByMonth[month];
+    if (!items || items.length === 0) return;
 
-  for (const month of allMonths) {
-    const section = document.createElement("div");
-    section.className = "month";
+    const monthDiv = document.createElement("div");
+    monthDiv.className = "month";
 
     const heading = document.createElement("h3");
-    heading.textContent = month;
-    section.appendChild(heading);
+    heading.textContent = `${month} (${title})`;
+    monthDiv.appendChild(heading);
 
-    const entries = [];
+    items.forEach(entry => {
+      const div = document.createElement("div");
+      div.className = "entry";
 
-    if (released[month]) {
-      entries.push(...released[month]);
-    }
+      const color = TYPE_COLORS[entry.type] || "";
+      div.innerHTML = `${color} <strong>${entry.title}</strong> <br/>
+        <span style="color:#aaa;">${entry.type} • ${entry.date} • ${entry.popularity}</span>`;
 
-    if (upcoming[month] && (new Date(`${month} 1, 2025`) > today)) {
-      entries.push(...upcoming[month]);
-    }
+      monthDiv.appendChild(div);
+    });
 
-    for (const item of entries) {
-      const entry = document.createElement("div");
-      entry.className = "entry";
+    fragment.appendChild(monthDiv);
+  });
 
-      // Assign class based on type
-      const color =
-        item.type === "Anime" ? "orange" :
-        item.type === "Manga" ? "limegreen" :
-        item.type === "Manhwa" ? "deepskyblue" : "#aaa";
+  return fragment;
+}
 
-      entry.innerHTML = `
-        <strong style="color:${color}">${item.title}</strong> 
-        (${item.date}) 
-        <span class="status">[${item.type}${item.popularity ? ", " + item.popularity : ""}]</span>
-      `;
-      section.appendChild(entry);
-    }
+async function loadCalendar() {
+  calendarEl.innerHTML = `<p style="color:#bbb;">⏳ Fetching releases...</p>`;
 
-    if (entries.length > 0) container.appendChild(section);
+  try {
+    const res = await fetch(API_URL);
+    const { released, upcoming } = await res.json();
+
+    calendarEl.innerHTML = "";
+
+    // Render released section
+    const releasedHeading = document.createElement("h2");
+    releasedHeading.textContent = "✅ Released Anime, Manga & Manhwa (Till Today)";
+    releasedHeading.style.color = "#4ade80";
+    releasedHeading.style.gridColumn = "1 / -1";
+    calendarEl.appendChild(releasedHeading);
+
+    calendarEl.appendChild(createMonthSection("Released", released));
+
+    // Render upcoming section
+    const upcomingHeading = document.createElement("h2");
+    upcomingHeading.textContent = "🚀 Upcoming Releases (Daily Fetched)";
+    upcomingHeading.style.color = "#facc15";
+    upcomingHeading.style.gridColumn = "1 / -1";
+    calendarEl.appendChild(upcomingHeading);
+
+    calendarEl.appendChild(createMonthSection("Upcoming", upcoming));
+
+  } catch (err) {
+    console.error("Failed to fetch or render:", err);
+    calendarEl.innerHTML = `<p style="color:tomato;">❌ Failed to load calendar data.</p>`;
   }
 }
 
-// 🔍 Zoom Button
-document.getElementById("zoomBtn").addEventListener("click", () => {
-  document.getElementById("calendar").classList.toggle("zoomed");
-});
-
-// 🚀 Load on Start
-(async function main() {
-  const [released, upcoming] = await Promise.all([
-    fetchReleasedDataFromJikan(),
-    fetchUpcomingDataFromWorker()
-  ]);
-
-  renderCalendar(released, upcoming);
-})();
+loadCalendar();
