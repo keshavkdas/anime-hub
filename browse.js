@@ -52,7 +52,10 @@ async function loadGenres() {
 
     if (!json.data) throw new Error("Invalid API response");
 
-    const filteredGenres = json.data.filter(g => !blockedGenres.includes(g.name));
+    const filteredGenres = json.data.filter(g => {
+      const name = g.name?.toLowerCase();
+      return name !== "hentai" && name !== "ecchi" && name !== "erotica";
+    });
 
     filteredGenres
       .sort((a, b) => a.name.localeCompare(b.name))
@@ -67,6 +70,7 @@ async function loadGenres() {
     console.error("Failed to load genres:", err);
   }
 }
+
 
 async function loadItems() {
   if (isLoading || !hasMore) return;
