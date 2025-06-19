@@ -6,87 +6,148 @@
   <title>Character Details – AnimeHub</title>
   <link rel="stylesheet" href="style.css" />
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@600&family=Poppins:wght@500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@600&family=Poppins:wght@500&display=swap');
 
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Poppins', sans-serif;
+  background-color: #121212;
+  color: #ffffff;
+}
+
+/* Header */
 header {
-      background-color: #1e293b;
-      padding: 1rem 2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+  background-color: #1f1f1f;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 
-    header h1 {
-      font-family: 'Oswald', sans-serif;
-      font-size: 2rem;
-      color: #f97316;
-    }
+header h1 {
+  font-family: 'Oswald', sans-serif;
+  font-size: 2rem;
+  color: #f97316;
+}
 
-    nav a {
-      color: white;
-      margin-left: 2rem;
-      font-family: 'Poppins', sans-serif;
-      text-decoration: none;
-      font-weight: 600;
-    }
-    
-    nav a:hover {
-      color: #f97316;
-    }
+nav a {
+  color: white;
+  margin-left: 2rem;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
 
-    /* Styles same as anime-detail layout */
-    body {
-      margin: 0; padding: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #0f172a; color: #e2e8f0;
-    }
-    .container {
-      max-width: 900px; margin: 2rem auto; padding: 1rem;
-      background: #1e293b; border-radius: 16px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.4);
-    }
-    .header {
-      display: flex; flex-wrap: wrap; gap: 2rem;
-    }
-    .img-wrap {
-      flex-shrink: 0; max-width: 300px;
-    }
-    .img-wrap img {
-      width: 100%; border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-    }
-    .info {
-      flex: 1;
-    }
-    .info h1 {
-      margin: 0; font-size: 2.5rem; color: #f97316;
-    }
-    .info p {
-      margin: 0.5rem 0; line-height: 1.6;
-    }
+nav a:hover {
+  color: #f97316;
+}
 
-    .section {
-      margin-top: 1.5rem;
-    }
-    .section h2 {
-      margin-bottom: 0.5rem; color: #f97316;
-    }
-    .section ul {
-      list-style: none; padding: 0;
-    }
-    .section li {
-      margin: 0.3rem 0; padding-left: 1.2rem;
-      position: relative;
-    }
-    .section li::before {
-      content: '•'; position: absolute; left: 0;
-      color: #f97316;
-    }
-    .va-carousel-wrapper {
+/* Force consistent link colors everywhere */
+a, a:visited, a:active {
+  color: inherit;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #f97316;
+}
+
+/* Main Container */
+.container {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 1rem;
+  background: #1e293b;
+  border-radius: 16px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.4);
+}
+
+/* Character Header Layout */
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+
+.img-wrap {
+  flex-shrink: 0;
+  max-width: 300px;
+}
+
+.img-wrap img {
+  width: 100%;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+/* Info Area */
+.info {
+  flex: 1;
+}
+
+.info h1 {
+  margin: 0;
+  font-size: 2.5rem;
+  color: #f97316;
+}
+
+.info p {
+  margin: 0.5rem 0;
+  line-height: 1.6;
+}
+
+/* Section Headings & List */
+.section {
+  margin-top: 1.5rem;
+}
+
+.section h2 {
+  margin-bottom: 0.5rem;
+  color: #f97316;
+}
+
+.section ul {
+  list-style: none;
+  padding: 0;
+}
+
+.section li {
+  margin: 0.3rem 0;
+  padding-left: 1.2rem;
+  position: relative;
+}
+
+.section li::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  color: #f97316;
+}
+
+/* Carousel for Voice Actors */
+.va-carousel-wrapper {
   overflow-x: auto;
   white-space: nowrap;
   padding: 1rem 0;
   margin-bottom: 1rem;
+  scrollbar-color: #f97316 #1e293b;
+  scrollbar-width: thin;
+}
+
+.va-carousel-wrapper::-webkit-scrollbar {
+  height: 8px;
+}
+.va-carousel-wrapper::-webkit-scrollbar-track {
+  background: #1e293b;
+  border-radius: 10px;
+}
+.va-carousel-wrapper::-webkit-scrollbar-thumb {
+  background: #f97316;
+  border-radius: 10px;
+}
+.va-carousel-wrapper::-webkit-scrollbar-thumb:hover {
+  background: #fb923c;
 }
 
 .va-carousel {
@@ -112,53 +173,32 @@ header {
 }
 
 .va-card img {
-  width: 100%;
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
   object-fit: cover;
-  max-width: 100px;
-  height: 100px;
   margin-bottom: 0.5rem;
+  border: 3px solid #f97316;
+  background-color: #1e293b;
+  box-shadow: 0 0 6px rgba(255, 121, 18, 0.4);
 }
-/* Voice actor language text */
+
 .va-card div:last-child {
   font-size: 0.85rem;
-  color: #f97316; /* Bright orange */
+  color: #f97316;
 }
 
-/* Custom scrollbar styling */
-.va-carousel-wrapper::-webkit-scrollbar {
-  height: 8px;
-}
-
-.va-carousel-wrapper::-webkit-scrollbar-track {
-  background: #1e293b;
-  border-radius: 10px;
-}
-
-.va-carousel-wrapper::-webkit-scrollbar-thumb {
-  background: #f97316;
-  border-radius: 10px;
-}
-
-.va-carousel-wrapper::-webkit-scrollbar-thumb:hover {
-  background: #fb923c;
-}
-
-/* Firefox support */
-.va-carousel-wrapper {
-  scrollbar-color: #f97316 #1e293b;
-  scrollbar-width: thin;
-}
+/* Anime link appearance */
 .anime-link {
   font-weight: bold;
-  text-decoration: none;
-  color: #e2e8f0; /* same as normal text */
-  cursor: pointer;
+  color: #e2e8f0;
 }
 
 .anime-link:hover {
-  color: #f97316; /* orange on hover */
+  color: #f97316;
 }
+
+/* Read More Button */
 .read-more-btn {
   margin-top: 0.5rem;
   padding: 0.4rem 0.9rem;
@@ -175,27 +215,42 @@ header {
   background-color: #ea580c;
 }
 
+/* Loading Spinner */
+.loading {
+  text-align: center;
+  padding: 2rem;
+}
 
- .loading {
-      text-align: center; padding: 2rem;
-    }
-    .loading-spinner {
-      border: 4px solid #f97316;
-      border-top: 4px solid transparent;
-      border-radius: 50%;
-      width: 40px; height: 40px;
-      animation: spin 1s linear infinite;
-      margin: 0 auto;
-    }
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
+.loading-spinner {
+  border: 4px solid #f97316;
+  border-top: 4px solid transparent;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto;
+}
 
-    @media (max-width: 768px) {
-      .header { flex-direction: column; align-items: center; }
-      .info h1 { font-size: 2rem; text-align: center; }
-    }
-  </style>
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive Layout */
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .info h1 {
+    font-size: 2rem;
+    text-align: center;
+  }
+}
+</style>
+
 </head>
 
 <body>
