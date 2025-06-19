@@ -11,6 +11,8 @@ const overlay = document.createElement("div");
 overlay.className = "overlay";
 overlay.innerHTML = `
   <button class="close-btn">✖</button>
+  <button class="nav-btn left-btn">←</button>
+  <button class="nav-btn right-btn">→</button>
   <div class="calendar-grid" id="calendarGrid"></div>
   <div class="sidebar" id="sidebarList">
     <h2 id="sidebarTitle">Month Details</h2>
@@ -28,6 +30,20 @@ overlay.querySelector(".close-btn").onclick = () => {
   calendarGrid.innerHTML = "";
   sidebarEntries.innerHTML = "";
 };
+overlay.querySelector(".left-btn").onclick = () => {
+  currentOverlayMonthIndex = (currentOverlayMonthIndex - 1 + 12) % 12;
+  const month = MONTHS[currentOverlayMonthIndex];
+  const entries = monthEntriesMap[month] || [];
+  openOverlay(month, entries);
+};
+
+overlay.querySelector(".right-btn").onclick = () => {
+  currentOverlayMonthIndex = (currentOverlayMonthIndex + 1) % 12;
+  const month = MONTHS[currentOverlayMonthIndex];
+  const entries = monthEntriesMap[month] || [];
+  openOverlay(month, entries);
+};
+
 
 function renderSidebar(entries) {
   sidebarEntries.innerHTML = "";
@@ -43,6 +59,7 @@ function renderSidebar(entries) {
 
 function openOverlay(month, entries) {
   overlay.classList.add("active");
+  currentOverlayMonthIndex = MONTHS.indexOf(month);
   sidebarTitle.textContent = month;
 
   const days = {};
@@ -161,6 +178,8 @@ async function loadCalendar() {
       combined[month] = [...(combined[month] || []), ...items];
     }
 
+    monthEntriesMap = combined;
+
     const monthOrder = [
       "January", "February", "March", "April", "May", "June",
       "July", "August", "September", "October", "November", "December"
@@ -179,5 +198,12 @@ async function loadCalendar() {
     calendarEl.innerHTML = `<p style="color:tomato;">❌ Failed to load calendar data.</p>`;
   }
 }
+const MONTHS = [
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December"
+];
+
+let monthEntriesMap = {}; // Populated in loadCalendar()
+let currentOverlayMonthIndex = 0;
 
 loadCalendar();
