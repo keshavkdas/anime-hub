@@ -13,7 +13,8 @@ let currentQuery = "";
 let currentGenre = "";
 let currentType = "anime";
 
-// Handle type change (anime, manga, manhwa)
+const blockedGenres = ["Hentai", "Erotica", "Ecchi"];
+
 typeSelect.addEventListener("change", () => {
   currentType = typeSelect.value;
   searchInput.placeholder = `Search ${currentType}`;
@@ -26,7 +27,6 @@ typeSelect.addEventListener("change", () => {
   loadItems();
 });
 
-// Handle search
 searchBtn.addEventListener("click", () => {
   currentQuery = searchInput.value.trim();
   currentGenre = genreSelect.value;
@@ -36,7 +36,12 @@ searchBtn.addEventListener("click", () => {
   loadItems();
 });
 
-// Load genres from Jikan
+function isAdult(item) {
+  const allGenres = [...(item.genres || []), ...(item.themes || []), ...(item.demographics || [])]
+    .map(g => g.name);
+  return allGenres.some(g => blockedGenres.includes(g));
+}
+
 async function loadGenres() {
   genreSelect.innerHTML = `<option value="">All Genres</option>`;
   const apiType = currentType === "manhwa" ? "manga" : currentType;
@@ -47,7 +52,9 @@ async function loadGenres() {
 
     if (!json.data) throw new Error("Invalid API response");
 
-    json.data
+    const filteredGenres = json.data.filter(g => !blockedGenres.includes(g.name));
+
+    filteredGenres
       .sort((a, b) => a.name.localeCompare(b.name))
       .forEach(genre => {
         const opt = document.createElement("option");
@@ -55,12 +62,12 @@ async function loadGenres() {
         opt.textContent = genre.name;
         genreSelect.appendChild(opt);
       });
+
   } catch (err) {
     console.error("Failed to load genres:", err);
   }
 }
 
-// Load anime/manga/manhwa items
 async function loadItems() {
   if (isLoading || !hasMore) return;
   isLoading = true;
@@ -80,8 +87,10 @@ async function loadItems() {
       if (Array.isArray(searchData.data)) combined = combined.concat(searchData.data);
       if (Array.isArray(topData.data)) combined = combined.concat(topData.data);
 
-      const allowed = ["manhwa", "manhua", "light novel", "web novel"];
-      let items = combined.filter(item => allowed.includes(item.type?.toLowerCase()));
+      const allowedTypes = ["manhwa", "manhua", "light novel", "web novel"];
+      let items = combined.filter(item =>
+        allowedTypes.includes(item.type?.toLowerCase()) && !isAdult(item)
+      );
 
       if (currentGenre) {
         items = items.filter(item =>
@@ -115,7 +124,9 @@ async function loadItems() {
       const res = await fetch(url);
       const data = await res.json();
 
-      const items = Array.isArray(data.data) ? data.data : [];
+      let items = Array.isArray(data.data) ? data.data : [];
+      items = items.filter(item => !isAdult(item));
+
       document.getElementById("loading")?.remove();
 
       if (!items.length && currentPage === 1) {
@@ -170,7 +181,7 @@ function renderItems(items) {
     card.querySelector(".card-img-wrapper").addEventListener("click", () => {
       const url = currentType === "anime"
         ? `anime.html?id=${item.mal_id}`
-        : `manga-details.html?id=${item.mal_id}`;
+        : `manga-details.html?id=${item.mal_id}&type=${currentType}`;
       window.location.href = url;
     });
 
@@ -186,6 +197,7 @@ window.addEventListener("scroll", () => {
   }
 });
 
+// Initial load
 document.addEventListener("DOMContentLoaded", () => {
   currentType = typeSelect.value;
   searchInput.placeholder = `Search ${currentType}`;
