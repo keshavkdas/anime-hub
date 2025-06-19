@@ -272,14 +272,14 @@
         markFavoriteBubble(data.mal_id);
 
         // Trailer
-        if (data.trailer?.embed_url) {
+        if (data.trailer && data.trailer.embed_url) {
           const trailerBlock = document.createElement('div');
           trailerBlock.className = 'anime-trailer';
           trailerBlock.innerHTML = `
-            <h2 style="padding-left:2rem;">Trailer</h2>
-            <iframe src="${data.trailer.embed_url}" frameborder="0" allowfullscreen></iframe>
-          `;
-          container.appendChild(trailerBlock);
+          <h2 style="padding-left:2rem;">Trailer</h2>
+          <iframe src="${data.trailer.embed_url}" frameborder="0" allowfullscreen></iframe>
+        `;
+        container.appendChild(trailerBlock);
         }
 
         // Characters
