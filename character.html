@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Character Details – AnimeHub</title>
   <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@600&family=Poppins:wght@500&display=swap" rel="stylesheet">
-
   <style>
     body {
       margin: 0;
@@ -44,24 +43,20 @@
       color: #f97316;
     }
 
-    .container {
-      max-width: 960px;
-      margin: 2rem auto;
-      padding: 2rem;
-      background-color: #1f1f1f;
-      border-radius: 12px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.4);
+    main {
+      padding: 2rem 5vw;
     }
 
     .header {
       display: flex;
       flex-wrap: wrap;
       gap: 2rem;
+      margin-bottom: 2rem;
     }
 
     .img-wrap {
-      flex-shrink: 0;
       max-width: 300px;
+      flex-shrink: 0;
     }
 
     .img-wrap img {
@@ -76,15 +71,13 @@
 
     .info h1 {
       font-size: 2.4rem;
-      margin-bottom: 0.5rem;
-      font-family: 'Oswald', sans-serif;
       color: #f97316;
+      font-family: 'Oswald', sans-serif;
     }
 
     .info p {
       margin: 0.5rem 0;
       line-height: 1.6;
-      font-size: 1rem;
     }
 
     .section {
@@ -92,7 +85,7 @@
     }
 
     .section h2 {
-      font-size: 1.5rem;
+      font-size: 1.6rem;
       color: #f97316;
       margin-bottom: 1rem;
     }
@@ -128,14 +121,14 @@
 
     .va-card {
       display: inline-block;
-      background: #2a2a2a;
-      border-radius: 12px;
+      background: #1f1f1f;
+      border-radius: 10px;
       padding: 1rem;
       text-align: center;
       min-width: 140px;
-      color: white;
       flex-shrink: 0;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+      color: white;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
       transition: transform 0.3s;
     }
 
@@ -228,12 +221,12 @@
     </nav>
   </header>
 
-  <div class="container" id="characterDetails">
+  <main id="characterDetails">
     <div class="loading">
       <div class="loading-spinner"></div>
       <p>Loading character details...</p>
     </div>
-  </div>
+  </main>
 
   <script>
     async function fetchCharacterDetails() {
