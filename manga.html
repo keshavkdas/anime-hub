@@ -400,7 +400,7 @@
       card.className = "anime-card";
 
       const title = manga.title;
-      const imageUrl = manga.images?.jpg?.image_url || "";
+      const imageUrl = manga.images?.jpg?.large_image_url || "";
       const score = manga.score ?? "N/A";
       const chapters = manga.chapters;
       const isFavorited = favorites.some(fav => fav.id === String(manga.mal_id));
