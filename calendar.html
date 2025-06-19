@@ -118,6 +118,85 @@
         margin-bottom: 0.5rem;
       }
     }
+  #calendar {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+    padding: 2rem;
+    max-width: 1300px;
+    margin: auto;
+  }
+
+  .month {
+    background-color: #1f1f1f;
+    border: 1px solid #333;
+    border-radius: 10px;
+    padding: 1rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+  }
+
+  .month:hover {
+    transform: scale(1.02);
+    box-shadow: 0 6px 20px rgba(249, 115, 22, 0.3);
+  }
+
+  .month h3 {
+    margin-top: 0;
+    color: #f97316;
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    text-align: center;
+  }
+
+  .entry {
+    margin: 0.4rem 0;
+    font-size: 0.8rem;
+    color: #ddd;
+  }
+
+  .entry span.meta {
+    display: block;
+    font-size: 0.65rem;
+    color: #aaa;
+  }
+
+  .anime {
+    color: #f97316;
+    font-weight: 600;
+  }
+
+  .manga {
+    color: #34d399;
+    font-weight: 600;
+  }
+
+  .manhwa {
+    color: #60a5fa;
+    font-weight: 600;
+  }
+
+  /* Responsive */
+  @media (max-width: 1000px) {
+    #calendar {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  @media (max-width: 768px) {
+    #calendar {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 480px) {
+    #calendar {
+      grid-template-columns: 1fr;
+      padding: 1rem;
+    }
+  }
+
   </style>
 </head>
 <body>
