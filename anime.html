@@ -2,311 +2,224 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Anime Details | AnimeHub</title>
+  <title>Anime Details</title>
+  <link rel="stylesheet" href="style.css" />
   <link rel="icon" href="favicon.ico" />
-  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@600&family=Poppins:wght@500&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
-    /* Global Styles */
+    @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@600&family=Poppins:wght@500&display=swap');
+
     body {
       margin: 0;
       padding: 0;
-      background-color: #121212;
-      color: #fff;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
+      background-color: #0f172a;
+      color: #e2e8f0;
+      font-family: 'Poppins', sans-serif;
     }
 
     header {
-      background: #1f1f1f;
+      background-color: #1e293b;
       padding: 1rem 2rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 2px solid #333;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
     }
 
     header h1 {
       font-family: 'Oswald', sans-serif;
       font-size: 2rem;
-      margin: 0;
       color: #f97316;
-      letter-spacing: -0.5px;
-      font-weight: 600;
     }
 
     nav a {
-      color: #fff;
-      margin-left: 1.5rem;
-      font-family: 'Poppins', sans-serif;
-      font-size: 1rem;
+      color: white;
+      margin-left: 2rem;
       text-decoration: none;
       font-weight: 600;
-      transition: color 0.3s ease;
     }
-    nav a:hover,
-    nav a[href$=".html"][href*="index.html"] {
+
+    nav a[href="index.html"] {
       color: #f97316;
     }
 
-    /* Container */
-    .anime-details-container {
-      max-width: 1100px;
-      margin: 2rem auto;
-      padding: 2rem;
-      background: #1f1f1f;
-      border-radius: 12px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.4);
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
+    nav a:hover {
+      color: #f97316;
     }
 
-    /* Header inside details */
     .anime-detail-header {
       display: flex;
       gap: 2rem;
+      padding: 2rem;
       flex-wrap: wrap;
     }
-    .anime-detail-header img {
+
+    .anime-image-container {
+      position: relative;
       max-width: 300px;
-      border-radius: 10px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-    }
-
-    /* Text info */
-    .anime-info {
       flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-    }
-    .anime-info h1 {
-      font-size: 2.75rem;
-      margin: 0;
-      color: #f97316;
-      font-family: 'Oswald', sans-serif;
-      font-weight: 600;
-    }
-    .anime-info p {
-      margin: 0;
-      font-size: 1rem;
-      line-height: 1.6;
-      color: #ccc;
     }
 
-    /* Buttons */
-    button, .dive-button {
-      background: #f97316;
-      color: #fff;
-      border: none;
-      border-radius: 6px;
-      padding: 0.6rem 1.2rem;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: background 0.3s ease;
-    }
-    button:hover, .dive-button:hover {
-      background: #fb923c;
-    }
-
-    /* Spinner */
-    .loading-spinner {
-      margin: 2rem auto;
-      width: 40px; height: 40px;
-      border-radius: 50%;
-      border: 4px solid #f97316;
-      border-top-color: transparent;
-      animation: spin 1s linear infinite;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* Synopsis */
-    .anime-info .read-more-btn {
-      color: #f97316;
-      cursor: pointer;
-      font-weight: bold;
-    }
-    .anime-info .synopsis-text {
-      display: -webkit-box;
-      -webkit-line-clamp: 5;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-
-    /* Trailer */
-    .anime-trailer {
-      max-width: 900px;
-      margin: 2rem auto;
-    }
-    .anime-trailer iframe {
+    .anime-image-container img {
       width: 100%;
-      height: 500px;
-      border: 2px solid #f97316;
-      border-radius: 8px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-    }
-    @media (max-width: 768px) {
-      .anime-trailer iframe { height: 300px; }
-      .anime-detail-header {
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-      }
-      .anime-detail-header img {
-        max-width: 100%;
-      }
-      .anime-info h1 { font-size: 2rem; }
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.4);
     }
 
-    /* Characters */
-    .character-bubbles {
-      display: flex;
-      gap: 1rem;
-      overflow-x: auto;
-      padding: 1rem 0;
-      scrollbar-width: thin;
-      scrollbar-color: #f97316 #1f1f1f;
-    }
-    .character-bubbles::-webkit-scrollbar {
-      height: 8px;
-    }
-    .character-bubbles::-webkit-scrollbar-track {
-      background: #1f1f1f;
-    }
-    .character-bubbles::-webkit-scrollbar-thumb {
-      background: #f97316;
-      border-radius: 4px;
-    }
-    .character-bubble {
-      flex: 0 0 auto;
-      text-align: center;
-    }
-    .character-bubble img {
-      width: 80px; height: 80px;
-      border-radius: 50%;
-      border: 2px solid #f97316;
-      box-shadow: 0 0 10px rgba(249,115,22,0.4);
-      transition: transform 0.3s ease;
-    }
-    .character-bubble img:hover {
-      transform: scale(1.1);
-    }
-    .character-name {
-      margin-top: 0.5rem;
-      font-size: 0.9rem;
-      font-weight: 600;
-      color: #fff;
-    }
-
-    /* Favorite bubble */
     .favorite-bubble {
       position: absolute;
       top: 10px;
       right: 10px;
       background: rgba(0,0,0,0.6);
-      border-radius: 50%;
-      padding: 8px;
+      color: #f97316;
       font-size: 24px;
-      color: #fff;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      padding: 10px;
+      border-radius: 50%;
       cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      z-index: 10;
     }
+
     .favorite-bubble:hover {
-      transform: scale(1.1);
-      box-shadow: 0 0 10px rgba(255,0,0,0.6);
+      transform: scale(1.15);
+      box-shadow: 0 0 10px #f97316;
     }
+
     .favorite-bubble.active {
       color: #ff4d4d;
       text-shadow: 0 0 8px #ff4d4d;
     }
 
-    /* Back to Top */
+    .anime-info {
+      flex: 2;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .anime-info h1 {
+      color: #f97316;
+      font-size: 2.5rem;
+      margin: 0;
+    }
+
+    .anime-info p {
+      margin: 0;
+      line-height: 1.6;
+    }
+
+    .read-more-btn {
+      color: #f97316;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .anime-trailer {
+      width: 100%;
+      padding: 2rem;
+    }
+
+    .anime-trailer iframe {
+      width: 100%;
+      height: 500px;
+      border: 2px solid #f97316;
+      border-radius: 10px;
+    }
+
+    .character-bubbles {
+      display: flex;
+      overflow-x: auto;
+      padding: 1rem 2rem;
+      gap: 1rem;
+      scrollbar-width: thin;
+      scrollbar-color: #f97316 #1f1f1f;
+    }
+
+    .character-bubbles::-webkit-scrollbar {
+      height: 8px;
+    }
+
+    .character-bubble {
+      text-align: center;
+      flex: 0 0 auto;
+      width: 100px;
+    }
+
+    .character-bubble img {
+      width: 90px;
+      height: 90px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 3px solid #f97316;
+      background-color: #1e293b;
+      box-shadow: 0 0 6px rgba(255, 121, 18, 0.4);
+    }
+
+    .character-name {
+      color: white;
+      margin-top: 0.4rem;
+      font-size: 0.8rem;
+      line-height: 1.2;
+      word-break: break-word;
+      max-width: 90px;
+    }
+
+    .loading-spinner {
+      border: 4px solid #f97316;
+      border-top: 4px solid transparent;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 3rem auto;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
     #backToTop {
       position: fixed;
       bottom: 1.5rem;
       right: 1.5rem;
-      width: 48px; height: 48px;
-      font-size: 1.5rem;
-      background: rgba(0,0,0,0.4);
-      border: 2px solid #f97316;
+      width: 55px;
+      height: 55px;
+      font-size: 1.8rem;
       border-radius: 50%;
+      background: linear-gradient(145deg, #1e293b, #0f172a);
+      border: none;
       color: #f97316;
       cursor: pointer;
-      box-shadow: 0 4px 15px rgba(249,115,22,0.3);
-      transition: transform 0.3s ease, background 0.3s ease;
+      z-index: 999;
       display: flex;
       justify-content: center;
       align-items: center;
-      z-index: 999;
-    }
-    #backToTop:hover {
-      transform: scale(1.1);
-      background: rgba(255,121,18,0.1);
     }
 
-    /* Carousel (scene images) */
-    .scene-carousel-wrapper {
-      position: relative;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      overflow: hidden;
-      height: 520px;
+    #backToTop span {
+      animation: bounce 1.5s infinite;
     }
-    .carousel-window {
-      width: 100%;
-      overflow: hidden;
-      position: relative;
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
     }
-    .carousel-track {
-      display: flex;
-      transition: transform 0.5s ease-in-out;
+
+    @media (max-width: 768px) {
+      .anime-detail-header {
+        flex-direction: column;
+        align-items: center;
+      }
+      .anime-info {
+        text-align: center;
+        align-items: center;
+      }
+      .anime-info h1 {
+        font-size: 2rem;
+      }
+      .anime-trailer iframe {
+        height: 300px;
+      }
     }
-    .carousel-slide {
-      flex: 0 0 60%;
-      margin: 0 1%;
-      position: relative;
-      border-radius: 10px;
-      overflow: hidden;
-    }
-    .carousel-slide img {
-      width: 100%;
-      height: auto;
-      display: block;
-      border-radius: 10px;
-    }
-    .carousel-slide.center {
-      transform: scale(1.05);
-      z-index: 2;
-    }
-    .carousel-slide.blur-left::after,
-    .carousel-slide.blur-right::after {
-      content: '';
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.4);
-      backdrop-filter: blur(10px);
-      border-radius: 10px;
-      z-index: 1;
-    }
-    .prev, .next {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      background: rgba(0,0,0,0.6);
-      color: #fff;
-      border: none;
-      font-size: 2rem;
-      padding: 1rem;
-      cursor: pointer;
-      z-index: 3;
-      border-radius: 4px;
-    }
-    .prev { left: 10px; }
-    .next { right: 10px; }
   </style>
 </head>
 <body>
@@ -318,25 +231,16 @@
       <a href="calendar.html">Schedule</a>
       <a href="/manga.html">Manga</a>
       <a href="/manhwa.html">Manhwa</a>
-      <a href="favorites.html" style="color: #f97316; font-weight: 600;">❤️</a>
+      <a href="favorites.html" style="color:#f97316;">❤️</a>
     </nav>
   </header>
 
-  <main class="anime-details-container" id="animeDetails">
+  <main id="animeDetails" style="padding-bottom: 3rem;">
     <div class="loading-spinner"></div>
-    <p>Loading anime details...</p>
-    <div class="scene-block">
-      <div class="scene-carousel-wrapper">
-        <div class="carousel-window">
-          <div class="carousel-track"></div>
-        </div>
-        <button class="prev">❮</button>
-        <button class="next">❯</button>
-      </div>
-    </div>
+    <p style="text-align:center;">Loading anime details...</p>
   </main>
 
-  <button id="backToTop">⮝</button>
+  <button id="backToTop" class="back-to-top">⮝</button>
 
  <script>
 async function fetchAnimeDetails() {
