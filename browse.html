@@ -329,7 +329,7 @@ footer {
 #genre {
   background-color: #000;
   color: #fff;
-  border: 1px solid #444;
+  border: 1px solid rgba(255, 255, 255, 0.15); /* subtle white border */
   padding: 0.6rem 1rem;
   font-size: 1rem;
   border-radius: 10px;
@@ -340,6 +340,12 @@ footer {
   max-height: 200px;
   scrollbar-width: thin;
   scrollbar-color: #f97316 #2a2a2a;
+  transition: border-color 0.3s;
+}
+
+#typeSelect:focus,
+#genre:focus {
+  border-color: #f97316;
 }
 
 /* Dropdown Scrollbar: WebKit */
