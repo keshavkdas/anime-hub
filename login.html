@@ -113,21 +113,25 @@
 </div>
 
 <!-- Overlay for Google Sign-Up -->
-<div id="google-overlay">
-  <div id="google-form">
+<div id="google-overlay" style="display: none; position: fixed; top: 0; left: 0; 
+  width: 100vw; height: 100vh; background: rgba(0,0,0,0.9); 
+  z-index: 9999; justify-content: center; align-items: center; color: white;">
+
+  <div style="background: #222; padding: 20px; border-radius: 10px; max-width: 400px; width: 90%;">
     <h3>Complete Sign-Up</h3>
-    <label>Email (from Google)</label>
-    <input type="email" id="google-email" readonly />
+    <label>Email (Google)</label>
+    <input id="google-email" type="email" readonly style="width:100%; padding:10px; margin: 5px 0;" />
 
-    <label>Set Username</label>
-    <input type="text" id="google-username" placeholder="Username" />
+    <label>Username</label>
+    <input id="google-username" placeholder="Choose a username" style="width:100%; padding:10px; margin: 5px 0;" />
 
-    <label>Set Password</label>
-    <input type="password" id="google-password" placeholder="Password" />
-    <input type="password" id="google-confirm" placeholder="Confirm Password" />
+    <label>Password</label>
+    <input id="google-password" type="password" placeholder="Set a password" style="width:100%; padding:10px; margin: 5px 0;" />
     
-    <button onclick="submitGoogleSignup()">Send Verification Email & Finish</button>
-    <button onclick="closeGoogleOverlay()">Cancel</button>
+    <input id="google-confirm" type="password" placeholder="Confirm password" style="width:100%; padding:10px; margin: 5px 0;" />
+    
+    <button onclick="submitGoogleSignup()" style="width:100%; margin-top: 10px;">Submit & Verify Email</button>
+    <button onclick="closeGoogleOverlay()" style="width:100%; margin-top: 5px; background: #555;">Cancel</button>
   </div>
 </div>
 
