@@ -1,9 +1,12 @@
+// Replace with your Worker URL
 const WORKER_URL = "https://delicate-wildflower-25e5.keshavkdas23.workers.dev/";
 
-// Email Login
+// 🔒 Login handler
 window.login = async () => {
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value.trim();
+  const email = document.getElementById("login-email").value.trim();
+  const password = document.getElementById("login-password").value.trim();
+
+  if (!email || !password) return alert("Please fill in both fields.");
 
   const res = await fetch(WORKER_URL, {
     method: "POST",
@@ -20,13 +23,14 @@ window.login = async () => {
   }
 };
 
-// Email Signup
+// 🔒 Signup handler
 window.signup = async () => {
   const email = document.getElementById("signup-email").value.trim();
   const password = document.getElementById("signup-password").value.trim();
-  const confirm = document.getElementById("confirm-password").value.trim();
+  const confirm = document.getElementById("signup-confirm").value.trim();
 
-  if (password !== confirm) return alert("Passwords do not match");
+  if (!email || !password || !confirm) return alert("All fields required.");
+  if (password !== confirm) return alert("Passwords do not match.");
 
   const res = await fetch(WORKER_URL, {
     method: "POST",
@@ -43,7 +47,7 @@ window.signup = async () => {
   }
 };
 
-// Google Login
+// 🔐 Google login
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
@@ -51,7 +55,7 @@ const firebaseConfig = {
   apiKey: "AIzaSyDQ8FLDw94yeWozJUd7cdDfl4-VcsvLWWI",
   authDomain: "animehub-auth-7494b.firebaseapp.com",
   projectId: "animehub-auth-7494b",
-  appId: "1:598601889716:web:0d58b958fb2a47b824e4e1",
+  appId: "1:598601889716:web:0d58b958fb2a47b824e4e1"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -79,4 +83,12 @@ window.googleLogin = async () => {
   } catch (err) {
     alert(err.message);
   }
+};
+
+// 🧩 Toggle between forms
+window.toggleForm = () => {
+  const loginBox = document.getElementById("login-box");
+  const signupBox = document.getElementById("signup-box");
+  loginBox.classList.toggle("hidden");
+  signupBox.classList.toggle("hidden");
 };
