@@ -332,7 +332,7 @@
       const res = await fetch(`https://api.jikan.moe/v4/top/anime?page=${currentPage}`);
       const data = await res.json();
 
-      const todaySeed = parseInt(new Date().toISOString().slice(0, 10).replace(/-/g, ''));
+      const todaySeed = Date.now(); // Unique every time page loads
       const shuffledAnime = shuffleArrayWithSeed(data.data, todaySeed);
 
       shuffledAnime.forEach(anime => {
