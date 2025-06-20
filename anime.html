@@ -415,7 +415,13 @@ function loadMoreSimilarAnime() {
         shownAnimeIds.add(rec.entry.mal_id);
         const card = document.createElement("div");
         card.className = "similar-card";
-        card.onclick = () => location.href = `anime-details.html?id=${rec.entry.mal_id}`;
+        card.onclick = () => {
+          if (window.location.search.includes(`id=${rec.entry.mal_id}`)) {
+              window.location.reload(); // same ID? reload forcibly
+          } else {
+             window.location.href = `anime-details.html?id=${rec.entry.mal_id}`;
+          }
+        };
         card.innerHTML = `
           <img src="${rec.entry.images.jpg.large_image_url}" alt="${rec.entry.title}">
           <div class="similar-card-title">${rec.entry.title}</div>
