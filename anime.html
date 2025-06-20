@@ -363,7 +363,7 @@
             similarSection.className = 'similar-section';
             similarSection.id = 'similarSection';
             similarSection.innerHTML = `
-              <h2>🎬 Similar Anime</h2>
+              <h2>Similar Anime</h2>
               <div class="similar-grid" id="similarGrid"></div>
             `;
             container.appendChild(similarSection);
@@ -390,7 +390,7 @@
         card.className = "similar-card";
         card.onclick = () => location.href = `anime-details.html?id=${rec.entry.mal_id}`;
         card.innerHTML = `
-          <img src="${rec.entry.images.jpg.image_url}" alt="${rec.entry.title}">
+          <img src="${rec.entry.images.jpg.large_image_url}" alt="${rec.entry.title}">
           <div class="similar-card-title">${rec.entry.title}</div>
         `;
         grid.appendChild(card);
