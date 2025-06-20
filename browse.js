@@ -232,7 +232,6 @@ function renderItems(items) {
     let infoHTML = `
       <h3>${title}</h3>
       <p><strong>Score:</strong> ${score}</p>
-      <p><strong>Type:</strong> ${typeVal}</p>
     `;
     if (typeVal === "anime" && episodes && item.type !== "Movie") {
       infoHTML += `<p><strong>Episodes:</strong> ${episodes}</p>`;
