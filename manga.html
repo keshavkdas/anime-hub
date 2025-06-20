@@ -380,7 +380,8 @@
     const json = await res.json();
     const favorites = JSON.parse(localStorage.getItem(favKey)) || [];
 
-    json.data.forEach(manga => {
+    const shuffled = json.data.sort(() => 0.5 - Math.random());
+        shuffled.forEach(manga => {
       const genres = [...(manga.genres || []), ...(manga.themes || []), ...(manga.demographics || [])]
                       .map(g => g.name);
       const blockedGenres = ["Erotica", "Hentai", "Ecchi"];
