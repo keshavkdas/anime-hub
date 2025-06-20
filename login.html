@@ -66,11 +66,30 @@
       display: none;
     }
 
+    #verify-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: #000000dd;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+
+    #verify-overlay p {
+      font-size: 1.2em;
+      text-align: center;
+      padding: 20px;
+      background: #1b1b1b;
+      border-radius: 10px;
+    }
+
     #google-overlay {
       position: fixed;
       top: 0; left: 0;
       width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.85);
+      background: rgba(0, 0, 0, 0.9);
       display: none;
       align-items: center;
       justify-content: center;
@@ -93,6 +112,7 @@
 <body>
 
 <div class="container">
+  <!-- 🔐 Login Box -->
   <div id="login-box">
     <h2>Login</h2>
     <input type="email" id="login-email" placeholder="Email" />
@@ -102,62 +122,41 @@
     <div class="switch-link">Don't have an account? <a onclick="toggleForm()">Sign Up</a></div>
   </div>
 
+  <!-- 🆕 Signup Box -->
   <div id="signup-box" class="hidden">
     <h2>Sign Up</h2>
     <input type="email" id="signup-email" placeholder="Email" />
+    <input type="text" id="signup-username" placeholder="Username" />
     <input type="password" id="signup-password" placeholder="Password" />
     <input type="password" id="signup-confirm" placeholder="Confirm Password" />
-    <button onclick="signup()">Sign Up</button>
+    <button onclick="signup()">Submit & Verify Email</button>
     <div class="switch-link">Already have an account? <a onclick="toggleForm()">Login</a></div>
   </div>
 </div>
 
-<!-- Overlay for Google Sign-Up -->
-<div id="google-overlay" style="display: none; position: fixed; top: 0; left: 0; 
-  width: 100vw; height: 100vh; background: rgba(0,0,0,0.9); 
-  z-index: 9999; justify-content: center; align-items: center; color: white;">
-
-  <div style="background: #222; padding: 20px; border-radius: 10px; max-width: 400px; width: 90%;">
+<!-- 🟧 Google Signup Overlay -->
+<div id="google-overlay">
+  <div id="google-form">
     <h3>Complete Sign-Up</h3>
-    <label>Email (Google)</label>
-    <input id="google-email" type="email" readonly style="width:100%; padding:10px; margin: 5px 0;" />
+    <label>Email</label>
+    <input id="google-email" type="email" readonly />
 
     <label>Username</label>
-    <input id="google-username" placeholder="Choose a username" style="width:100%; padding:10px; margin: 5px 0;" />
+    <input id="google-username" placeholder="Choose a username" />
 
     <label>Password</label>
-    <input id="google-password" type="password" placeholder="Set a password" style="width:100%; padding:10px; margin: 5px 0;" />
+    <input id="google-password" type="password" placeholder="Set a password" />
     
-    <input id="google-confirm" type="password" placeholder="Confirm password" style="width:100%; padding:10px; margin: 5px 0;" />
+    <input id="google-confirm" type="password" placeholder="Confirm password" />
     
-    <button onclick="submitGoogleSignup()" style="width:100%; margin-top: 10px;">Submit & Verify Email</button>
-    <button onclick="closeGoogleOverlay()" style="width:100%; margin-top: 5px; background: #555;">Cancel</button>
+    <button onclick="submitGoogleSignup()">Submit & Verify Email</button>
+    <button onclick="closeGoogleOverlay()" style="background: #555;">Cancel</button>
   </div>
 </div>
-<div id="login-box">
-  <h2>Login</h2>
-  <input type="email" id="login-email" placeholder="Email"><br>
-  <input type="password" id="login-password" placeholder="Password"><br>
-  <button onclick="login()">Login</button><br>
-  <button onclick="googleLogin()">Login with Google</button>
-</div>
 
-<!-- Signup Box (hidden by default) -->
-<div id="signup-box" style="display: none;">
-  <h2>Register</h2>
-  <input type="email" id="signup-email" placeholder="Email"><br>
-  <input type="text" id="signup-username" placeholder="Username"><br>
-  <input type="password" id="signup-password" placeholder="Password"><br>
-  <input type="password" id="signup-confirm" placeholder="Confirm Password"><br>
-  <button onclick="signup()">Submit & Verify Email</button>
-</div>
-
-<!-- Verify Email Overlay -->
-<div id="verify-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#111e; color:white; z-index:9999; justify-content:center; align-items:center; font-size:1.2em;">
-  <div style="text-align:center;">
-    <p>📧 Check your email and click the verification link.</p>
-    <p>This page will log you in automatically once verified.</p>
-  </div>
+<!-- 📩 Verify Email Message -->
+<div id="verify-overlay">
+  <p>📧 Check your email and click the verification link.<br>This page will log you in automatically once verified.</p>
 </div>
 
 <script type="module" src="auth.js"></script>
