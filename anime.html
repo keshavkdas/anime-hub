@@ -419,7 +419,7 @@ function loadMoreSimilarAnime() {
           if (window.location.search.includes(`id=${rec.entry.mal_id}`)) {
               window.location.reload(); // same ID? reload forcibly
           } else {
-             window.location.href = `anime-details.html?id=${rec.entry.mal_id}`;
+             window.location.href = `anime.html?id=${rec.entry.mal_id}`;
           }
         };
         card.innerHTML = `
@@ -449,7 +449,7 @@ function loadMoreSimilarAnime() {
             shownAnimeIds.add(item.mal_id);
             const card = document.createElement("div");
             card.className = "similar-card";
-            card.onclick = () => location.href = `anime-details.html?id=${item.mal_id}`;
+            card.onclick = () => location.href = `anime.html?id=${item.mal_id}`;
             card.innerHTML = `
               <img src="${item.images.jpg.large_image_url}" alt="${item.title}">
               <div class="similar-card-title">${item.title}</div>
