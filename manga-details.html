@@ -4,15 +4,151 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Manga Details</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css" id="header-style" />
   <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@600&family=Poppins:wght@500&display=swap" rel="stylesheet" />
   <style>
-    /* Your CSS remains unchanged, keeping styles for .similar-section, .character-list, .anime-detail-header etc. */
     body {
       margin: 0;
       background: #121212;
       font-family: 'Poppins', sans-serif;
       color: white;
+    }
+    header {
+      background-color: #1f1f1f;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    header h1 {
+      font-family: 'Oswald', sans-serif;
+      font-size: 2rem;
+      color: #f97316;
+    }
+    nav a {
+      color: white;
+      margin-left: 2rem;
+      font-family: 'Poppins', sans-serif;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    nav a:hover {
+      color: #f97316;
+    }
+    .container {
+      padding: 2rem;
+    }
+    .anime-detail-header {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      align-items: flex-start;
+    }
+    .anime-image-container {
+      flex: 0 0 auto;
+      position: relative;
+    }
+    .anime-image-container img {
+      width: 250px;
+      border-radius: 10px;
+    }
+    .favorite-bubble {
+      width: 35px;
+      height: 35px;
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(0, 0, 0, 0.6);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      z-index: 2;
+    }
+    .favorite-bubble:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 8px rgba(255, 0, 0, 0.6);
+    }
+    .favorite-bubble.active {
+      color: #ff4d4d;
+      text-shadow: 0 0 6px #ff4d4d;
+    }
+    .anime-info {
+      flex: 1;
+      min-width: 250px;
+    }
+    .anime-info h1 {
+      color: #f97316;
+    }
+    .anime-info p {
+      margin: 0.5rem 0;
+      color: #ccc;
+      line-height: 1.6;
+    }
+    .section {
+      margin-top: 3rem;
+    }
+    .character-list {
+      display: flex;
+      overflow-x: auto;
+      gap: 1rem;
+      scroll-behavior: smooth;
+      padding: 1rem 2rem;
+    }
+    .character-list::-webkit-scrollbar {
+      height: 8px;
+    }
+    .character-list::-webkit-scrollbar-thumb {
+      background-color: #f97316;
+      border-radius: 10px;
+    }
+    .character-bubble {
+      width: 100px;
+      flex-shrink: 0;
+      text-align: center;
+      color: inherit;
+      text-decoration: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .character-bubble .img-wrapper {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      overflow: hidden;
+      box-shadow: 0 0 6px 2px #f97316;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .character-bubble:hover .img-wrapper {
+      transform: scale(1.07);
+      box-shadow: 0 0 12px 3px #f97316;
+    }
+    .character-bubble img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    .character-name {
+      margin-top: 0.5rem;
+      font-weight: bold;
+      font-size: 0.85rem;
+      color: white;
+      word-wrap: break-word;
+    }
+    .chapter-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 1rem;
+    }
+    .chapter {
+      background: #1e1e1e;
+      padding: 1rem;
+      border-radius: 8px;
+      text-align: center;
     }
     .similar-section {
       padding: 2rem 0;
@@ -71,7 +207,7 @@
 <div class="container">
   <div id="mangaDetails"></div>
   <div class="section" id="characterSection">
-    <h3>Characters</h3>
+    <h3></h3>
     <div class="character-list" id="characterList"></div>
   </div>
 
@@ -126,60 +262,45 @@ function markFav(id) {
 }
 
 async function fetchSimilar(genres, malId) {
-  if (!genres || !genres.length) {
-    console.warn('No genres available.');
-    return;
-  }
+  if (!genres || genres.length === 0) return;
 
-  const genreIds = genres.map(g => g.mal_id).filter(Boolean);
-  if (!genreIds.length) {
-    console.warn('No valid genre IDs found.');
-    return;
-  }
+  const firstGenre = genres[0];
+  if (!firstGenre || !firstGenre.mal_id) return;
 
-  console.log('Fetching similar using genres:', genreIds);
-
-  const similarSet = new Set();
-  const currentId = String(malId);
-  let page = 1;
-  const maxPages = 3;
   const results = [];
+  const currentId = String(malId);
 
-  while (results.length < 12 && page <= maxPages) {
-    try {
-      const res = await fetch(`https://api.jikan.moe/v4/manga?genres=${genreIds.join(',')}&order_by=popularity&sort=desc&page=${page}`);
-      const json = await res.json();
+  try {
+    const res = await fetch(`https://api.jikan.moe/v4/manga?genres=${firstGenre.mal_id}&order_by=popularity&sort=desc&type=manga`);
+    const json = await res.json();
+    if (!json || !Array.isArray(json.data)) return;
 
-      if (!json || !Array.isArray(json.data)) {
-        console.warn('Invalid or missing data in similar response:', json);
-        break;
+    const similarSet = new Set();
+
+    for (const item of json.data) {
+      const idStr = String(item.mal_id);
+      if (!similarSet.has(idStr) && idStr !== currentId) {
+        similarSet.add(idStr);
+        results.push(item);
+        if (results.length >= 12) break;
       }
-
-      for (const item of json.data) {
-        const idStr = String(item.mal_id);
-        if (!similarSet.has(idStr) && idStr !== currentId) {
-          similarSet.add(idStr);
-          results.push(item);
-        }
-      }
-      page++;
-    } catch (err) {
-      console.error('Error fetching similar manga:', err);
-      break;
     }
-  }
 
-  if (results.length) {
-    const container = document.getElementById("similarSection");
-    const list = document.getElementById("similarList");
+    if (results.length) {
+      const container = document.getElementById("similarSection");
+      const list = document.getElementById("similarList");
 
-    list.innerHTML = results.map(m => `
-      <a href="manga-details.html?id=${m.mal_id}" class="related">
-        <img src="${m.images.jpg.image_url}" alt="${m.title}">
-        <div>${m.title}</div>
-      </a>`).join('');
+      list.innerHTML = results.map(m => `
+        <a href="manga-details.html?id=${m.mal_id}" class="related">
+          <img src="${m.images.jpg.image_url}" alt="${m.title}">
+          <div>${m.title}</div>
+        </a>`).join('');
 
-    container.style.display = 'block';
+      container.style.display = 'block';
+    }
+
+  } catch (err) {
+    console.error('Error fetching similar manga:', err);
   }
 }
 
@@ -232,11 +353,8 @@ async function fetchMangaDetails() {
       }
     });
 
-    console.log("Genres for this manga:", data.genres);
     fetchSimilar(data.genres, data.mal_id);
-
   } catch (e) {
-    console.error(e);
     document.getElementById('mangaDetails').innerHTML = '<p>Error loading details.</p>';
   }
 }
@@ -277,5 +395,6 @@ fetchMangaDetails();
 fetchCharacters();
 fetchChapters();
 </script>
+
 </body>
 </html>
