@@ -11,7 +11,7 @@ let isLoading = false;
 let hasMore = true;
 let currentQuery = "";
 let currentGenre = "";
-let currentType = "anime";
+let currentType = "all";
 
 const blockedGenres = ["Hentai", "Erotica", "Ecchi"];
 
