@@ -211,6 +211,48 @@
         height: 300px;
       }
     }
+    .similar-section {
+  padding: 2rem;
+}
+
+.similar-section h2 {
+  color: #f97316;
+  margin-bottom: 1rem;
+  font-family: 'Oswald', sans-serif;
+}
+
+.similar-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1rem;
+}
+
+.similar-card {
+  background: #1f1f1f;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.similar-card:hover {
+  transform: scale(1.05);
+}
+
+.similar-card img {
+  width: 100%;
+  height: 240px;
+  object-fit: cover;
+}
+
+.similar-card-title {
+  padding: 0.5rem;
+  text-align: center;
+  font-size: 0.9rem;
+  color: white;
+  font-weight: bold;
+}
+
   </style>
 </head>
 <body>
@@ -232,6 +274,11 @@
   </main>
 
   <script>
+
+    let similarAnimeList = [];
+    let similarPage = 0;
+    let isLoadingMoreSimilar = false;
+
     async function fetchAnimeDetails() {
       const urlParams = new URLSearchParams(window.location.search);
       const animeId = urlParams.get('id');
@@ -312,6 +359,45 @@
           <p style="text-align:center;">Failed to load anime details. Please try again later.</p>
         `;
       }
+      // Load Similar Anime (once)
+      const recRes = await fetch(`https://api.jikan.moe/v4/anime/${data.mal_id}/recommendations`);
+      const recJson = await recRes.json();
+      similarAnimeList = recJson.data.sort((a, b) => (b.votes || 0) - (a.votes || 0)); // sort by popularity
+      similarPage = 0;
+
+      if (similarAnimeList.length > 0) {
+        const similarSection = document.createElement('section');
+        similarSection.className = 'similar-section';
+        similarSection.id = 'similarSection';
+        similarSection.innerHTML = `
+          <h2>🎬 Similar Anime</h2>
+          <div class="similar-grid" id="similarGrid"></div>
+        `;
+        container.appendChild(similarSection);
+        loadMoreSimilarAnime(); // initial load
+      }
+    }
+
+    function loadMoreSimilarAnime() {
+      if (isLoadingMoreSimilar) return;
+      isLoadingMoreSimilar = true;
+
+      const grid = document.getElementById("similarGrid");
+      const batch = similarAnimeList.slice(similarPage * 10, (similarPage + 1) * 10);
+
+      batch.forEach(rec => {
+        const card = document.createElement("div");
+        card.className = "similar-card";
+        card.onclick = () => location.href = `anime-details.html?id=${rec.entry.mal_id}`;
+        card.innerHTML = `
+          <img src="${rec.entry.images.jpg.image_url}" alt="${rec.entry.title}">
+          <div class="similar-card-title">${rec.entry.title}</div>
+        `;
+        grid.appendChild(card);
+      });
+
+      similarPage++;
+      isLoadingMoreSimilar = false;
     }
 
     function isInFavorites(id) {
@@ -344,6 +430,15 @@
       btn.classList.toggle('active', isFav);
       btn.textContent = isFav ? '💖' : '❤️';
     }
+    window.addEventListener("scroll", () => {
+      const section = document.getElementById("similarSection");
+      if (section && !isLoadingMoreSimilar) {
+        const { bottom } = section.getBoundingClientRect();
+        if (bottom < window.innerHeight + 300) {
+          loadMoreSimilarAnime();
+        }
+      }
+    });
 
     fetchAnimeDetails();
   </script>
