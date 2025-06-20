@@ -385,7 +385,8 @@
         </div>
       `;
       container.appendChild(similarSection);
-
+      document.getElementById("similarLoading").style.display = 'flex';
+      
       if (similarAnimeList.length === 0) {
         similarFallbackMode = true;
       }
@@ -430,8 +431,10 @@
       if (similarPage * 10 >= similarAnimeList.length) {
         similarFallbackMode = true;
       }
+      setTimeout(() => {
       isLoadingMoreSimilar = false;
       if (loadingEl) loadingEl.style.display = 'none';
+        }, 300); // add slight delay for smoother UX
       return;
     }
 
@@ -455,13 +458,16 @@
             }
           });
           fallbackPage++;
+          setTimeout(() => {
           isLoadingMoreSimilar = false;
-          if (loadingEl) loadingEl.style.display = 'none';
+            if (loadingEl) loadingEl.style.display = 'none';
+          }, 300);
         })
         .catch(err => {
           console.error("Fallback similar fetch failed", err);
           isLoadingMoreSimilar = false;
           if (loadingEl) loadingEl.style.display = 'none';
+          
           if (grid.innerHTML.trim() === "") {
             grid.innerHTML = "<p style='text-align:center; color: gray;'>No similar anime found.</p>";
           }
