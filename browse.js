@@ -13,7 +13,7 @@ let currentQuery = "";
 let currentGenre = "";
 let currentType = "all";
 
-const blockedGenres = ["Hentai", "Erotica", "Ecchi"];
+const blockedGenres = ["Hentai", "Erotica", "Ecchi","Harem"];
 
 typeSelect.addEventListener("change", () => {
   currentType = typeSelect.value;
@@ -24,7 +24,11 @@ typeSelect.addEventListener("change", () => {
   hasMore = true;
   resultsContainer.innerHTML = "";
   loadGenres();
-  loadItems();
+  if (currentType === "all") {
+    loadMixedContent();
+  } else {
+    loadItems();
+  }
 });
 
 searchBtn.addEventListener("click", () => {
@@ -35,7 +39,6 @@ searchBtn.addEventListener("click", () => {
   loadItems();
 });
 
-// Auto search when genre is selected
 genreSelect.addEventListener("change", () => {
   currentGenre = genreSelect.value;
   currentQuery = searchInput.value.trim();
@@ -57,12 +60,10 @@ function isAdult(item) {
 
 async function loadGenres() {
   genreSelect.innerHTML = `<option value="">All Genres</option>`;
-  const apiType = currentType === "manhwa" ? "manga" : currentType;
-
+  const apiType = currentType === "manhwa" ? "manga" : (currentType === "all" ? "anime" : currentType);
   try {
     const res = await fetch(`https://api.jikan.moe/v4/genres/${apiType}`);
     const json = await res.json();
-
     if (!json.data) throw new Error("Invalid API response");
 
     const filteredGenres = json.data.filter(g => {
@@ -85,13 +86,14 @@ async function loadGenres() {
 }
 
 async function loadMixedContent() {
-  resultsContainer.innerHTML = "<p>Loading mixed content...</p>";
+  isLoading = true;
+  resultsContainer.insertAdjacentHTML("beforeend", "<p id='loading'>Loading...</p>");
 
   try {
     const [animeRes, mangaRes, manhwaRes] = await Promise.all([
-      fetch("https://api.jikan.moe/v4/anime?limit=10"),
-      fetch("https://api.jikan.moe/v4/manga?limit=10"),
-      fetch("https://api.jikan.moe/v4/top/manga?filter=bypopularity&type=manhwa&limit=10")
+      fetch(`https://api.jikan.moe/v4/anime?page=${currentPage}&limit=10`),
+      fetch(`https://api.jikan.moe/v4/manga?page=${currentPage}&limit=10`),
+      fetch(`https://api.jikan.moe/v4/top/manga?filter=bypopularity&type=manhwa&page=${currentPage}&limit=10`)
     ]);
 
     const [animeData, mangaData, manhwaData] = await Promise.all([
@@ -101,7 +103,6 @@ async function loadMixedContent() {
     ]);
 
     let allItems = [];
-
     if (Array.isArray(animeData.data)) {
       allItems.push(...animeData.data.map(item => ({ ...item, _type: "anime" })));
     }
@@ -114,31 +115,27 @@ async function loadMixedContent() {
       allItems.push(...filtered.map(item => ({ ...item, _type: "manhwa" })));
     }
 
-    // Remove NSFW
     allItems = allItems.filter(item => !isAdult(item));
-
-    // Shuffle
     allItems.sort(() => 0.5 - Math.random());
 
-    // Render
     document.getElementById("loading")?.remove();
-    resultsContainer.innerHTML = "";
-    allItems.slice(0, 20).forEach(item => {
-      const tempType = currentType;
-      currentType = item._type;
-      renderItems([item]);
-      currentType = tempType;
-    });
+
+    renderItems(allItems);
+    currentPage++;
+    hasMore = true;
 
   } catch (err) {
     console.error("Failed to load mixed content:", err);
+    document.getElementById("loading")?.remove();
     resultsContainer.innerHTML = "<p>Error loading content.</p>";
+    hasMore = false;
+  } finally {
+    isLoading = false;
   }
 }
 
-
 async function loadItems() {
-  if (isLoading || !hasMore) return;
+  if (isLoading || !hasMore || currentType === "all") return;
   isLoading = true;
 
   resultsContainer.insertAdjacentHTML("beforeend", "<p id='loading'>Loading...</p>");
@@ -174,6 +171,7 @@ async function loadItems() {
         return true;
       });
 
+      items.sort(() => 0.5 - Math.random());
       items = items.slice(0, 12);
       document.getElementById("loading")?.remove();
 
@@ -194,6 +192,8 @@ async function loadItems() {
 
       let items = Array.isArray(data.data) ? data.data : [];
       items = items.filter(item => !isAdult(item));
+
+      items.sort(() => 0.5 - Math.random());
 
       document.getElementById("loading")?.remove();
 
@@ -234,10 +234,10 @@ function renderItems(items) {
       <p><strong>Score:</strong> ${score}</p>
       <p><strong>Type:</strong> ${typeVal}</p>
     `;
-    if (currentType === "anime" && episodes && item.type !== "Movie") {
+    if (typeVal === "anime" && episodes && item.type !== "Movie") {
       infoHTML += `<p><strong>Episodes:</strong> ${episodes}</p>`;
     }
-    if ((currentType === "manga" || currentType === "manhwa") && chapters) {
+    if ((typeVal === "manga" || typeVal === "manhwa") && chapters) {
       infoHTML += `<p><strong>Chapters:</strong> ${chapters}</p>`;
     }
 
@@ -249,9 +249,9 @@ function renderItems(items) {
     `;
 
     card.querySelector(".card-img-wrapper").addEventListener("click", () => {
-      const url = currentType === "anime"
+      const url = typeVal === "anime"
         ? `anime.html?id=${item.mal_id}`
-        : `manga-details.html?id=${item.mal_id}&type=${currentType}`;
+        : `manga-details.html?id=${item.mal_id}&type=${typeVal}`;
       window.location.href = url;
     });
 
@@ -259,15 +259,17 @@ function renderItems(items) {
   });
 }
 
-// Infinite scroll
 window.addEventListener("scroll", () => {
   const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
   if (scrollTop + clientHeight >= scrollHeight - 100) {
-    loadItems();
+    if (currentType === "all") {
+      loadMixedContent();
+    } else {
+      loadItems();
+    }
   }
 });
 
-// Initial load
 document.addEventListener("DOMContentLoaded", () => {
   currentType = typeSelect.value;
   searchInput.placeholder = `Search ${currentType}`;
@@ -278,7 +280,11 @@ document.addEventListener("DOMContentLoaded", () => {
   resultsContainer.innerHTML = "";
 
   loadGenres();
-  loadMixedContent();
+  if (currentType === "all") {
+    loadMixedContent();
+  } else {
+    loadItems();
+  }
 
   const backToTopBtn = document.getElementById('backToTop');
   window.addEventListener('scroll', () => {
