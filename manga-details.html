@@ -222,8 +222,6 @@
     <div class="related-list" id="similarList"></div>
   </div>
 </div>
-
-
 <script>
 const params = new URLSearchParams(window.location.search);
 const mangaId = params.get('id');
@@ -263,49 +261,98 @@ function markFav(id) {
   btn.textContent = act ? '💖' : '❤️';
 }
 
-async function fetchSimilar(genres, malId) {
-  if (!genres || genres.length === 0) return;
+// === SIMILAR INFINITE SCROLL LOGIC ===
+let similarPage = 1;
+let isLoadingSimilar = false;
+let currentMangaId = null;
+let similarResults = [];
+let genreIndex = 0;
+let genrePageMap = {};
+let allGenreIds = [];
+let currentType = 'manga';
 
-  const firstGenre = genres[0];
-  if (!firstGenre || !firstGenre.mal_id) return;
+function calculateRelevance(itemGenres, baseGenreIds) {
+  const itemIds = itemGenres.map(g => g.mal_id);
+  return itemIds.filter(id => baseGenreIds.includes(id)).length;
+}
 
-  const results = [];
-  const currentId = String(malId);
+function renderSimilar(data) {
+  const list = document.getElementById("similarList");
+  list.innerHTML = data.map(m => `
+    <a href="manga-details.html?id=${m.mal_id}" class="related">
+      <img src="${m.images.jpg.image_url}" alt="${m.title}">
+      <div>${m.title}</div>
+    </a>`).join('');
+}
+
+async function fetchSimilarScroll() {
+  if (isLoadingSimilar || allGenreIds.length === 0) return;
+  isLoadingSimilar = true;
+
+  const genreId = allGenreIds[genreIndex % allGenreIds.length];
+  const page = genrePageMap[genreId] || 1;
 
   try {
-    const res = await fetch(`https://api.jikan.moe/v4/manga?genres=${firstGenre.mal_id}&order_by=popularity&sort=desc&type=manga`);
+    const res = await fetch(`https://api.jikan.moe/v4/manga?genres=${genreId}&order_by=popularity&sort=desc&type=${currentType}&page=${page}`);
     const json = await res.json();
-    if (!json || !Array.isArray(json.data)) return;
 
-    const similarSet = new Set();
+    if (!json || !Array.isArray(json.data)) {
+      genrePageMap[genreId] = 1;
+      genreIndex++;
+      isLoadingSimilar = false;
+      return fetchSimilarScroll(); // move to next genre
+    }
 
-    for (const item of json.data) {
-      const idStr = String(item.mal_id);
-      if (!similarSet.has(idStr) && idStr !== currentId) {
-        similarSet.add(idStr);
-        results.push(item);
-        if (results.length >= 12) break;
+    const filtered = json.data.filter(item => item.mal_id !== currentMangaId);
+
+    for (const item of filtered) {
+      if (!similarResults.find(m => m.mal_id === item.mal_id)) {
+        const score = calculateRelevance(item.genres, allGenreIds);
+        similarResults.push({ ...item, _score: score });
       }
     }
 
-    if (results.length) {
-      const container = document.getElementById("similarSection");
-      const list = document.getElementById("similarList");
+    genrePageMap[genreId] = page + 1;
+    genreIndex++;
 
-      list.innerHTML = results.map(m => `
-        <a href="manga-details.html?id=${m.mal_id}" class="related">
-          <img src="${m.images.jpg.image_url}" alt="${m.title}">
-          <div>${m.title}</div>
-        </a>`).join('');
-
-      container.style.display = 'block';
-    }
-
+    similarResults.sort((a, b) => b._score - a._score);
+    renderSimilar(similarResults);
   } catch (err) {
     console.error('Error fetching similar manga:', err);
+  } finally {
+    isLoadingSimilar = false;
   }
 }
 
+function setupSimilarScroll() {
+  const list = document.getElementById("similarList");
+  list.addEventListener('scroll', () => {
+    if (list.scrollTop + list.clientHeight >= list.scrollHeight - 50) {
+      fetchSimilarScroll();
+    }
+  });
+}
+
+async function fetchSimilar(genres, malId, type = 'manga') {
+  if (!genres || !Array.isArray(genres) || genres.length === 0) return;
+
+  allGenreIds = genres.map(g => g.mal_id);
+  genrePageMap = {};
+  genreIndex = 0;
+  currentMangaId = malId;
+  currentType = type.toLowerCase();
+  similarResults = [];
+
+  const container = document.getElementById("similarSection");
+  const list = document.getElementById("similarList");
+  container.style.display = 'block';
+  list.innerHTML = '';
+
+  await fetchSimilarScroll(); // load first batch
+  setupSimilarScroll();
+}
+
+// === MANGA DETAILS ===
 async function fetchMangaDetails() {
   document.getElementById('mangaDetails').innerHTML = '<p>Loading...</p>';
   try {
@@ -355,7 +402,7 @@ async function fetchMangaDetails() {
       }
     });
 
-    fetchSimilar(data.genres, data.mal_id);
+    fetchSimilar(data.genres, data.mal_id, data.type);
   } catch (e) {
     document.getElementById('mangaDetails').innerHTML = '<p>Error loading details.</p>';
   }
@@ -397,6 +444,8 @@ fetchMangaDetails();
 fetchCharacters();
 fetchChapters();
 </script>
+
+
 
 </body>
 </html>
