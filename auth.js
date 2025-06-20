@@ -47,7 +47,15 @@ window.signup = async () => {
   }
 };
 
-// 🔐 Google login
+// 🧩 Toggle between forms
+window.toggleForm = () => {
+  const loginBox = document.getElementById("login-box");
+  const signupBox = document.getElementById("signup-box");
+  loginBox.classList.toggle("hidden");
+  signupBox.classList.toggle("hidden");
+};
+
+// 🔐 Google login & signup trigger
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
@@ -60,35 +68,56 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+let googleEmail = "";
 
 window.googleLogin = async () => {
   const provider = new GoogleAuthProvider();
   try {
     const result = await signInWithPopup(auth, provider);
-    const idToken = await result.user.getIdToken();
+    const token = await result.user.getIdToken();
+    googleEmail = result.user.email;
 
-    const res = await fetch(WORKER_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "google", token: idToken }),
-    });
+    document.getElementById("google-email").value = googleEmail;
+    document.getElementById("google-overlay").style.display = "flex";
+    localStorage.setItem("google_token", token); // temporarily store
 
-    const data = await res.json();
-    if (data.success) {
-      localStorage.setItem("user", JSON.stringify(data.user));
-      window.location.href = "index.html";
-    } else {
-      alert(data.error || "Google Login failed");
-    }
   } catch (err) {
-    alert(err.message);
+    alert("Google Login Failed: " + err.message);
   }
 };
 
-// 🧩 Toggle between forms
-window.toggleForm = () => {
-  const loginBox = document.getElementById("login-box");
-  const signupBox = document.getElementById("signup-box");
-  loginBox.classList.toggle("hidden");
-  signupBox.classList.toggle("hidden");
+window.closeGoogleOverlay = () => {
+  document.getElementById("google-overlay").style.display = "none";
+};
+
+window.submitGoogleSignup = async () => {
+  const username = document.getElementById("google-username").value.trim();
+  const password = document.getElementById("google-password").value.trim();
+  const confirm = document.getElementById("google-confirm").value.trim();
+  const token = localStorage.getItem("google_token");
+
+  if (!username || !password || password !== confirm) {
+    alert("Please fill all fields correctly.");
+    return;
+  }
+
+  const res = await fetch(WORKER_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      action: "google-signup",
+      email: googleEmail,
+      username,
+      password,
+      token
+    }),
+  });
+
+  const data = await res.json();
+  if (data.success) {
+    alert("Check your inbox for a verification email.");
+    window.location.href = "index.html";
+  } else {
+    alert(data.error || "Google Sign-up failed");
+  }
 };
