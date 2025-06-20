@@ -17,7 +17,7 @@ const blockedGenres = ["Hentai", "Erotica", "Ecchi","Harem"];
 
 typeSelect.addEventListener("change", () => {
   currentType = typeSelect.value;
-  searchInput.placeholder = `Search ${currentType}`;
+  searchInput.placeholder = currentType === "all" ? "Search anime/manga" : `Search ${currentType}`;
   currentQuery = "";
   currentGenre = "";
   currentPage = 1;
@@ -60,15 +60,24 @@ function isAdult(item) {
 
 async function loadGenres() {
   genreSelect.innerHTML = `<option value="">All Genres</option>`;
-  const apiType = currentType === "manhwa" ? "manga" : (currentType === "all" ? "anime" : currentType);
+
+  // ❗ Skip genre loading if currentType is "all"
+  if (currentType === "all") return;
+
+  const apiType = currentType === "manhwa" ? "manga" : currentType;
+
   try {
     const res = await fetch(`https://api.jikan.moe/v4/genres/${apiType}`);
     const json = await res.json();
     if (!json.data) throw new Error("Invalid API response");
 
+    const seen = new Set(); // ✅ to avoid duplicates
     const filteredGenres = json.data.filter(g => {
       const name = g.name?.toLowerCase();
-      return !/hentai|ecchi|erotica|love|harem|sex/.test(name);
+      const isBlocked = /hentai|ecchi|erotica|love|harem|sex/.test(name);
+      if (isBlocked || seen.has(g.mal_id)) return false;
+      seen.add(g.mal_id);
+      return true;
     });
 
     filteredGenres
@@ -84,6 +93,7 @@ async function loadGenres() {
     console.error("Failed to load genres:", err);
   }
 }
+
 
 async function loadMixedContent() {
   isLoading = true;
