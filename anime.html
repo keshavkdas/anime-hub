@@ -399,14 +399,13 @@
       }
     }
 
-const loadingEl = document.getElementById("similarLoading");
-if (loadingEl) loadingEl.style.display = 'flex';
-
 function loadMoreSimilarAnime() {
   if (isLoadingMoreSimilar) return;
   isLoadingMoreSimilar = true;
 
   const grid = document.getElementById("similarGrid");
+  const loadingEl = document.getElementById("similarLoading");
+  if (loadingEl) loadingEl.style.display = 'flex';
 
   // Phase 1: Load from recommendations
   if (!similarFallbackMode && similarPage * 10 < similarAnimeList.length) {
