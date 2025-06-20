@@ -377,6 +377,9 @@
             similarSection.innerHTML = `
               <h2>Similar Anime</h2>
               <div class="similar-grid" id="similarGrid"></div>
+              <div class="similar-loading" id="similarLoading" style="display:none;">
+                <div class="loading-spinner"></div>
+              </div>
             `;
             container.appendChild(similarSection);
             loadMoreSimilarAnime(); // initial load
@@ -389,6 +392,9 @@
         `;
       }
     }
+
+const loadingEl = document.getElementById("similarLoading");
+if (loadingEl) loadingEl.style.display = 'flex';
 
 function loadMoreSimilarAnime() {
   if (isLoadingMoreSimilar) return;
@@ -417,6 +423,7 @@ function loadMoreSimilarAnime() {
       similarFallbackMode = true;
     }
     isLoadingMoreSimilar = false;
+    if (loadingEl) loadingEl.style.display = 'none';
     return;
   }
 
@@ -441,10 +448,12 @@ function loadMoreSimilarAnime() {
         });
         fallbackPage++;
         isLoadingMoreSimilar = false;
+        if (loadingEl) loadingEl.style.display = 'none';
       })
       .catch(err => {
         console.error("Fallback similar fetch failed", err);
         isLoadingMoreSimilar = false;
+        if (loadingEl) loadingEl.style.display = 'none';
       });
   }
 }
