@@ -229,6 +229,59 @@
   transform: scale(1.03);
   box-shadow: 0 0 8px rgba(249, 115, 22, 0.3);
 }
+    .similar-section {
+  padding: 2rem;
+}
+
+.similar-section h2,
+.similar-section h3 {
+  color: #f97316;
+  margin-bottom: 1rem;
+  font-family: 'Oswald', sans-serif;
+}
+
+.similar-grid,
+.related-list#similarList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1rem;
+}
+
+.similar-card,
+.related-list#similarList a {
+  background: #1f1f1f;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  text-decoration: none;
+  color: white;
+  box-shadow: 0 0 5px rgba(249, 115, 22, 0.1);
+}
+
+.similar-card:hover,
+.related-list#similarList a:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 8px rgba(249, 115, 22, 0.3);
+}
+
+.similar-card img,
+.related-list#similarList img {
+  width: 100%;
+  height: 240px;
+  object-fit: cover;
+  border-bottom: 2px solid #f97316;
+}
+
+.similar-card-title,
+.related-list#similarList div {
+  padding: 0.5rem;
+  text-align: center;
+  font-size: 0.9rem;
+  color: white;
+  font-weight: bold;
+}
+
 
 
   </style>
@@ -257,6 +310,11 @@
   <h3>Chapters</h3>
   <div class="chapter-list" id="chapterList"></div>
 </div>
+<div class="section" id="similarSection" style="display:none;">
+  <h3>Similar ${type}</h3>
+  <div class="related-list" id="similarList"></div>
+</div>
+
 </div>
 
 <script>
@@ -376,6 +434,7 @@ async function fetchCharacters() {
 `).join('');
   document.getElementById('characterList').innerHTML = html;
 }
+  
 
 async function fetchRelated() {
   const res = await fetch(`https://api.jikan.moe/v4/manga/${mangaId}/relations`);
@@ -418,7 +477,46 @@ async function fetchChapters() {
 
   document.getElementById('chapterList').innerHTML = html;
 }
+async function fetchSimilar(genres, malId) {
+  if (!genres.length) return;
 
+  const genreIds = genres.map(g => g.mal_id);
+  const similarSet = new Set();
+  const currentId = String(malId);
+
+  let page = 1;
+  const maxPages = 3;
+  const results = [];
+
+  while (results.length < 12 && page <= maxPages) {
+    const res = await fetch(`https://api.jikan.moe/v4/manga?genres=${genreIds.join(',')}&order_by=popularity&sort=desc&page=${page}`);
+    const { data } = await res.json();
+    for (const item of data) {
+      const idStr = String(item.mal_id);
+      if (!similarSet.has(idStr) && idStr !== currentId) {
+        similarSet.add(idStr);
+        results.push(item);
+      }
+    }
+    page++;
+  }
+
+  if (results.length) {
+    const container = document.getElementById("similarSection");
+    const list = document.getElementById("similarList");
+
+    list.innerHTML = results.map(m => `
+      <a href="manga-details.html?id=${m.mal_id}" class="related">
+        <img src="${m.images.jpg.image_url}" style="width:100%; border-radius:6px;" alt="${m.title}">
+        <div style="margin-top: 0.5rem; font-weight:bold;">${m.title}</div>
+      </a>
+    `).join('');
+    
+    container.style.display = 'block';
+  }
+}
+
+fetchSimilar(data.genres, data.mal_id);
 fetchMangaDetails();
 fetchCharacters();
 fetchChapters();
