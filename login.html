@@ -134,6 +134,31 @@
     <button onclick="closeGoogleOverlay()" style="width:100%; margin-top: 5px; background: #555;">Cancel</button>
   </div>
 </div>
+<div id="login-box">
+  <h2>Login</h2>
+  <input type="email" id="login-email" placeholder="Email"><br>
+  <input type="password" id="login-password" placeholder="Password"><br>
+  <button onclick="login()">Login</button><br>
+  <button onclick="googleLogin()">Login with Google</button>
+</div>
+
+<!-- Signup Box (hidden by default) -->
+<div id="signup-box" style="display: none;">
+  <h2>Register</h2>
+  <input type="email" id="signup-email" placeholder="Email"><br>
+  <input type="text" id="signup-username" placeholder="Username"><br>
+  <input type="password" id="signup-password" placeholder="Password"><br>
+  <input type="password" id="signup-confirm" placeholder="Confirm Password"><br>
+  <button onclick="signup()">Submit & Verify Email</button>
+</div>
+
+<!-- Verify Email Overlay -->
+<div id="verify-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#111e; color:white; z-index:9999; justify-content:center; align-items:center; font-size:1.2em;">
+  <div style="text-align:center;">
+    <p>📧 Check your email and click the verification link.</p>
+    <p>This page will log you in automatically once verified.</p>
+  </div>
+</div>
 
 <script type="module" src="auth.js"></script>
 </body>
