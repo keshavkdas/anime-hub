@@ -316,10 +316,11 @@
               <p><strong>Score:</strong> ${data.score || 'N/A'}</p>
               <p><strong>Aired:</strong> ${data.aired.string}</p>
               <p><strong>Genres:</strong> ${data.genres.map(g => g.name).join(', ')}</p>
-              similarGenres = data.genres.map(g => g.mal_id);
+              
             </div>
           </div>
         `;
+        similarGenres = data.genres.map(g => g.mal_id);
 
         document.querySelector('.read-more-btn')?.addEventListener('click', e => {
           const span = e.target.previousElementSibling;
