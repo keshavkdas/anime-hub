@@ -218,7 +218,7 @@
   </div>
 
   <div class="section similar-section" id="similarSection" style="display:none;">
-    <h3>Similar ${type}</h3>
+    <h3 id="similarTitle">Similar</h3>
     <div class="related-list" id="similarList"></div>
   </div>
 </div>
@@ -345,6 +345,7 @@ async function fetchSimilar(genres, malId, type = 'manga') {
 
   const container = document.getElementById("similarSection");
   const list = document.getElementById("similarList");
+  document.getElementById('similarTitle').textContent = `Similar ${type.charAt(0).toUpperCase() + type.slice(1)}`;
   container.style.display = 'block';
   list.innerHTML = '';
 
