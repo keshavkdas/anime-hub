@@ -84,6 +84,59 @@ async function loadGenres() {
   }
 }
 
+async function loadMixedContent() {
+  resultsContainer.innerHTML = "<p>Loading mixed content...</p>";
+
+  try {
+    const [animeRes, mangaRes, manhwaRes] = await Promise.all([
+      fetch("https://api.jikan.moe/v4/anime?limit=10"),
+      fetch("https://api.jikan.moe/v4/manga?limit=10"),
+      fetch("https://api.jikan.moe/v4/top/manga?filter=bypopularity&type=manhwa&limit=10")
+    ]);
+
+    const [animeData, mangaData, manhwaData] = await Promise.all([
+      animeRes.json(),
+      mangaRes.json(),
+      manhwaRes.json()
+    ]);
+
+    let allItems = [];
+
+    if (Array.isArray(animeData.data)) {
+      allItems.push(...animeData.data.map(item => ({ ...item, _type: "anime" })));
+    }
+    if (Array.isArray(mangaData.data)) {
+      allItems.push(...mangaData.data.map(item => ({ ...item, _type: "manga" })));
+    }
+    if (Array.isArray(manhwaData.data)) {
+      const allowedTypes = ["manhwa", "manhua", "light novel", "web novel"];
+      const filtered = manhwaData.data.filter(item => allowedTypes.includes(item.type?.toLowerCase()));
+      allItems.push(...filtered.map(item => ({ ...item, _type: "manhwa" })));
+    }
+
+    // Remove NSFW
+    allItems = allItems.filter(item => !isAdult(item));
+
+    // Shuffle
+    allItems.sort(() => 0.5 - Math.random());
+
+    // Render
+    document.getElementById("loading")?.remove();
+    resultsContainer.innerHTML = "";
+    allItems.slice(0, 20).forEach(item => {
+      const tempType = currentType;
+      currentType = item._type;
+      renderItems([item]);
+      currentType = tempType;
+    });
+
+  } catch (err) {
+    console.error("Failed to load mixed content:", err);
+    resultsContainer.innerHTML = "<p>Error loading content.</p>";
+  }
+}
+
+
 async function loadItems() {
   if (isLoading || !hasMore) return;
   isLoading = true;
@@ -172,7 +225,7 @@ function renderItems(items) {
     const title = item.title || "Untitled";
     const imageUrl = item.images?.jpg?.large_image_url || "";
     const score = item.score ?? "N/A";
-    const typeVal = item.type ?? "";
+    const typeVal = item._type || currentType || item.type || "";
     const episodes = item.episodes;
     const chapters = item.chapters;
 
@@ -188,8 +241,10 @@ function renderItems(items) {
       infoHTML += `<p><strong>Chapters:</strong> ${chapters}</p>`;
     }
 
+    const tagLabel = `<div class="tag-label ${typeVal.toLowerCase()}">${typeVal}</div>`;
+
     card.innerHTML = `
-      <div class="card-img-wrapper"><img src="${imageUrl}" alt="${title}" /></div>
+      <div class="card-img-wrapper">${tagLabel}<img src="${imageUrl}" alt="${title}" /></div>
       <div class="anime-info">${infoHTML}</div>
     `;
 
@@ -223,7 +278,7 @@ document.addEventListener("DOMContentLoaded", () => {
   resultsContainer.innerHTML = "";
 
   loadGenres();
-  loadItems();
+  loadMixedContent();
 
   const backToTopBtn = document.getElementById('backToTop');
   window.addEventListener('scroll', () => {
