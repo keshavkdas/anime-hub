@@ -352,29 +352,29 @@
           `;
           container.insertAdjacentHTML('beforeend', html);
         }
+          // Load Similar Anime (once)
+          const recRes = await fetch(`https://api.jikan.moe/v4/anime/${data.mal_id}/recommendations`);
+          const recJson = await recRes.json();
+          similarAnimeList = recJson.data.sort((a, b) => (b.votes || 0) - (a.votes || 0)); // sort by popularity
+          similarPage = 0;
+
+          if (similarAnimeList.length > 0) {
+            const similarSection = document.createElement('section');
+            similarSection.className = 'similar-section';
+            similarSection.id = 'similarSection';
+            similarSection.innerHTML = `
+              <h2>🎬 Similar Anime</h2>
+              <div class="similar-grid" id="similarGrid"></div>
+            `;
+            container.appendChild(similarSection);
+            loadMoreSimilarAnime(); // initial load
+          }
 
       } catch (err) {
         console.error(err);
         container.innerHTML = `
           <p style="text-align:center;">Failed to load anime details. Please try again later.</p>
         `;
-      }
-      // Load Similar Anime (once)
-      const recRes = await fetch(`https://api.jikan.moe/v4/anime/${data.mal_id}/recommendations`);
-      const recJson = await recRes.json();
-      similarAnimeList = recJson.data.sort((a, b) => (b.votes || 0) - (a.votes || 0)); // sort by popularity
-      similarPage = 0;
-
-      if (similarAnimeList.length > 0) {
-        const similarSection = document.createElement('section');
-        similarSection.className = 'similar-section';
-        similarSection.id = 'similarSection';
-        similarSection.innerHTML = `
-          <h2>🎬 Similar Anime</h2>
-          <div class="similar-grid" id="similarGrid"></div>
-        `;
-        container.appendChild(similarSection);
-        loadMoreSimilarAnime(); // initial load
       }
     }
 
