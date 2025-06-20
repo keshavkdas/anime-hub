@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Login / Signup</title>
+  <script type="module" src="auth.js"></script>
+</head>
+<body>
+  <h2>Login</h2>
+  <input type="email" id="email" placeholder="Email"><br>
+  <input type="password" id="password" placeholder="Password"><br>
+  <button onclick="login()">Login</button>
+  <button onclick="googleLogin()">Login with Google</button>
+
+  <h2>Signup</h2>
+  <input type="email" id="signup-email" placeholder="Email"><br>
+  <input type="password" id="signup-password" placeholder="Password"><br>
+  <input type="password" id="confirm-password" placeholder="Retype Password"><br>
+  <button onclick="signup()">Signup</button>
+</body>
+</html>
