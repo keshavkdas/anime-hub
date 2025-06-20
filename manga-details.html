@@ -325,13 +325,17 @@ async function fetchSimilarScroll() {
 }
 
 function setupSimilarScroll() {
-  const list = document.getElementById("similarList");
-  list.addEventListener('scroll', () => {
-    if (list.scrollTop + list.clientHeight >= list.scrollHeight - 50) {
+  window.addEventListener('scroll', () => {
+    const container = document.getElementById("similarSection");
+    if (!container) return;
+
+    const { bottom } = container.getBoundingClientRect();
+    if (bottom < window.innerHeight + 200) {
       fetchSimilarScroll();
     }
   });
 }
+
 
 async function fetchSimilar(genres, malId, type = 'manga') {
   if (!genres || !Array.isArray(genres) || genres.length === 0) return;
