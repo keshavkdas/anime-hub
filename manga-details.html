@@ -407,7 +407,7 @@ async function fetchMangaDetails() {
     }
   });
 }
-
+fetchSimilar(data.genres, data.mal_id);
 
   } catch (e) {
     document.getElementById('mangaDetails').innerHTML = '<p>Error loading details.</p>';
@@ -516,7 +516,6 @@ async function fetchSimilar(genres, malId) {
   }
 }
 
-fetchSimilar(data.genres, data.mal_id);
 fetchMangaDetails();
 fetchCharacters();
 fetchChapters();
