@@ -51,10 +51,10 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
 import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 const firebaseConfig = {
-  apiKey: "YOUR_PUBLIC_FIREBASE_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyDQ8FLDw94yeWozJUd7cdDfl4-VcsvLWWI",
+  authDomain: "animehub-auth-7494b.firebaseapp.com",
+  projectId: "animehub-auth-7494b",
+  appId: "1:598601889716:web:0d58b958fb2a47b824e4e1"
 };
 
 const app = initializeApp(firebaseConfig);
