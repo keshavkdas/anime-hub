@@ -279,239 +279,239 @@
     <p style="text-align:center;">Loading anime details...</p>
   </main>
 
-  <script>
+<script>
+  let similarAnimeList = [];
+  let similarPage = 0;
+  let isLoadingMoreSimilar = false;
+  let similarFallbackMode = false;
+  let fallbackPage = 1;
+  let similarGenres = [];
+  let shownAnimeIds = new Set();
+  let currentAnimeId = null;
 
-    let similarAnimeList = [];
-    let similarPage = 0;
-    let isLoadingMoreSimilar = false;
-    let similarFallbackMode = false;
-    let fallbackPage = 1;
-    let similarGenres = [];
-    let shownAnimeIds = new Set();
-    let currentAnimeId = null;
+  async function fetchAnimeDetails() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const animeId = urlParams.get('id');
+    currentAnimeId = parseInt(animeId);
+    const container = document.getElementById("animeDetails");
+    container.innerHTML = `<div class="loading-spinner"></div><p>Loading details...</p>`;
 
+    try {
+      const res = await fetch(`https://api.jikan.moe/v4/anime/${animeId}/full`);
+      const { data } = await res.json();
+      const title = data.title;
+      const img = data.images.jpg.large_image_url;
 
-    async function fetchAnimeDetails() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const animeId = urlParams.get('id');
-      currentAnimeId = parseInt(animeId);
-      const container = document.getElementById("animeDetails");
-      container.innerHTML = `<div class="loading-spinner"></div><p>Loading details...</p>`;
-
-      try {
-        const res = await fetch(`https://api.jikan.moe/v4/anime/${animeId}/full`);
-        const { data } = await res.json();
-        const title = data.title;
-        const img = data.images.jpg.large_image_url;
-
-        container.innerHTML = `
-          <div class="anime-detail-header">
-            <div class="anime-image-container">
-              <img src="${img}" alt="${title}">
-              <div class="favorite-bubble" data-id="${data.mal_id}" onclick="toggleFavorite('${data.mal_id}', \`${title}\`, '${img}')">❤️</div>
-            </div>
-            <div class="anime-info">
-              <h1>${title}</h1>
-              <p><strong>Synopsis:</strong> <span class="synopsis-text">${
-                data.synopsis?.substring(0, 200) || 'No synopsis available.'
-              }${data.synopsis && data.synopsis.length > 200 ? '...' : ''}</span>
-              ${data.synopsis?.length > 200 ? '<span class="read-more-btn">Read More</span>' : ''}</p>
-              <p><strong>Type:</strong> ${data.type}</p>
-              <p><strong>Episodes:</strong> ${data.episodes}</p>
-              <p><strong>Status:</strong> ${data.status}</p>
-              <p><strong>Score:</strong> ${data.score || 'N/A'}</p>
-              <p><strong>Aired:</strong> ${data.aired.string}</p>
-              <p><strong>Genres:</strong> ${data.genres.map(g => g.name).join(', ')}</p>
-              
-            </div>
+      container.innerHTML = `
+        <div class="anime-detail-header">
+          <div class="anime-image-container">
+            <img src="${img}" alt="${title}">
+            <div class="favorite-bubble" data-id="${data.mal_id}" onclick="toggleFavorite('${data.mal_id}', \`${title}\`, '${img}')">❤️</div>
           </div>
-        `;
-        similarGenres = data.genres.map(g => g.mal_id);
+          <div class="anime-info">
+            <h1>${title}</h1>
+            <p><strong>Synopsis:</strong> <span class="synopsis-text">${
+              data.synopsis?.substring(0, 200) || 'No synopsis available.'
+            }${data.synopsis && data.synopsis.length > 200 ? '...' : ''}</span>
+            ${data.synopsis?.length > 200 ? '<span class="read-more-btn">Read More</span>' : ''}</p>
+            <p><strong>Type:</strong> ${data.type}</p>
+            <p><strong>Episodes:</strong> ${data.episodes}</p>
+            <p><strong>Status:</strong> ${data.status}</p>
+            <p><strong>Score:</strong> ${data.score || 'N/A'}</p>
+            <p><strong>Aired:</strong> ${data.aired.string}</p>
+            <p><strong>Genres:</strong> ${data.genres.map(g => g.name).join(', ')}</p>
+          </div>
+        </div>
+      `;
 
-        document.querySelector('.read-more-btn')?.addEventListener('click', e => {
-          const span = e.target.previousElementSibling;
-          span.textContent = data.synopsis;
-          e.target.remove();
-        });
+      document.querySelector('.read-more-btn')?.addEventListener('click', e => {
+        const span = e.target.previousElementSibling;
+        span.textContent = data.synopsis;
+        e.target.remove();
+      });
 
-        markFavoriteBubble(data.mal_id);
+      markFavoriteBubble(data.mal_id);
+      similarGenres = data.genres.map(g => g.mal_id);
 
-        // Trailer
-        if (data.trailer && data.trailer.embed_url) {
-          const trailerBlock = document.createElement('div');
-          trailerBlock.className = 'anime-trailer';
-          trailerBlock.innerHTML = `
+      // Trailer
+      if (data.trailer && data.trailer.embed_url) {
+        const trailerBlock = document.createElement('div');
+        trailerBlock.className = 'anime-trailer';
+        trailerBlock.innerHTML = `
           <h2 style="padding-left:2rem;"></h2>
           <iframe src="${data.trailer.embed_url}" frameborder="0" allowfullscreen></iframe>
         `;
         container.appendChild(trailerBlock);
-        }
-
-        // Characters
-        const charRes = await fetch(`https://api.jikan.moe/v4/anime/${data.mal_id}/characters`);
-        const charData = await charRes.json();
-
-        if (charData.data.length > 0) {
-          const html = `
-            <h2 style="padding-left:2rem;"></h2>
-            <div class="character-list" id="characterContainer">
-              ${charData.data.map(c => `
-                <a href="character.html?id=${c.character.mal_id}" class="character-bubble">
-                  <div class="img-wrapper">
-                    <img src="${c.character.images.jpg.image_url}" alt="${c.character.name}">
-                  </div>
-                  <div class="character-name">${c.character.name}</div>
-                </a>
-              `).join('')}
-            </div>
-          `;
-          container.insertAdjacentHTML('beforeend', html);
-        }
-          // Load Similar Anime (once)
-          const recRes = await fetch(`https://api.jikan.moe/v4/anime/${data.mal_id}/recommendations`);
-          const recJson = await recRes.json();
-          similarAnimeList = recJson.data
-            .filter(rec => rec.entry && rec.entry.mal_id !== currentAnimeId)
-            .sort((a, b) => (b.votes || 0) - (a.votes || 0));
-          similarAnimeList.forEach(rec => shownAnimeIds.add(rec.entry.mal_id));
-          similarPage = 0;
-
-          if (similarAnimeList.length > 0) {
-            const similarSection = document.createElement('section');
-            similarSection.className = 'similar-section';
-            similarSection.id = 'similarSection';
-            similarSection.innerHTML = `
-              <h2>Similar Anime</h2>
-              <div class="similar-grid" id="similarGrid"></div>
-              <div class="similar-loading" id="similarLoading" style="display:none;">
-                <div class="loading-spinner"></div>
-              </div>
-            `;
-            container.appendChild(similarSection);
-            document.getElementById("similarLoading").style.display = 'flex';
-            loadMoreSimilarAnime(); // initial load
-          }
-
-      } catch (err) {
-        console.error(err);
-        container.innerHTML = `
-          <p style="text-align:center;">Failed to load anime details. Please try again later.</p>
-        `;
       }
-    }
 
-function loadMoreSimilarAnime() {
-  if (isLoadingMoreSimilar) return;
-  isLoadingMoreSimilar = true;
+      // Characters
+      const charRes = await fetch(`https://api.jikan.moe/v4/anime/${data.mal_id}/characters`);
+      const charData = await charRes.json();
 
-  const grid = document.getElementById("similarGrid");
-  const loadingEl = document.getElementById("similarLoading");
-  if (loadingEl) loadingEl.style.display = 'flex';
-
-  // Phase 1: Load from recommendations
-  if (!similarFallbackMode && similarPage * 10 < similarAnimeList.length) {
-    const batch = similarAnimeList.slice(similarPage * 10, (similarPage + 1) * 10);
-    batch.forEach(rec => {
-      if (!shownAnimeIds.has(rec.entry.mal_id)) {
-        shownAnimeIds.add(rec.entry.mal_id);
-        const card = document.createElement("div");
-        card.className = "similar-card";
-        card.onclick = () => {
-          if (window.location.search.includes(`id=${rec.entry.mal_id}`)) {
-              window.location.reload(); // same ID? reload forcibly
-          } else {
-             window.location.href = `anime.html?id=${rec.entry.mal_id}`;
-          }
-        };
-        card.innerHTML = `
-          <img src="${rec.entry.images.jpg.large_image_url}" alt="${rec.entry.title}">
-          <div class="similar-card-title">${rec.entry.title}</div>
+      if (charData.data.length > 0) {
+        const html = `
+          <h2 style="padding-left:2rem;"></h2>
+          <div class="character-list" id="characterContainer">
+            ${charData.data.map(c => `
+              <a href="character.html?id=${c.character.mal_id}" class="character-bubble">
+                <div class="img-wrapper">
+                  <img src="${c.character.images.jpg.image_url}" alt="${c.character.name}">
+                </div>
+                <div class="character-name">${c.character.name}</div>
+              </a>
+            `).join('')}
+          </div>
         `;
-        grid.appendChild(card);
+        container.insertAdjacentHTML('beforeend', html);
       }
-    });
-    similarPage++;
-    if (similarPage * 10 >= similarAnimeList.length) {
-      similarFallbackMode = true;
+
+      // Recommendations
+      const recRes = await fetch(`https://api.jikan.moe/v4/anime/${data.mal_id}/recommendations`);
+      const recJson = await recRes.json();
+      similarAnimeList = recJson.data
+        .filter(rec => rec.entry && rec.entry.mal_id !== currentAnimeId)
+        .sort((a, b) => (b.votes || 0) - (a.votes || 0));
+      similarAnimeList.forEach(rec => shownAnimeIds.add(rec.entry.mal_id));
+      similarPage = 0;
+
+      const similarSection = document.createElement('section');
+      similarSection.className = 'similar-section';
+      similarSection.id = 'similarSection';
+      similarSection.innerHTML = `
+        <h2>Similar Anime</h2>
+        <div class="similar-grid" id="similarGrid"></div>
+        <div class="similar-loading" id="similarLoading" style="display:flex;">
+          <div class="loading-spinner"></div>
+        </div>
+      `;
+      container.appendChild(similarSection);
+
+      if (similarAnimeList.length === 0) {
+        similarFallbackMode = true;
+      }
+
+      loadMoreSimilarAnime(); // Load either recommendations or fallback
+
+    } catch (err) {
+      console.error(err);
+      container.innerHTML = `<p style="text-align:center;">Failed to load anime details. Please try again later.</p>`;
     }
-    isLoadingMoreSimilar = false;
-    if (loadingEl) loadingEl.style.display = 'none';
-    return;
   }
 
-  // Phase 2: Genre fallback
-  if (similarFallbackMode && similarGenres.length > 0) {
-    fetch(`https://api.jikan.moe/v4/anime?genres=${similarGenres.join(',')}&order_by=popularity&sort=desc&page=${fallbackPage}`)
-      .then(r => r.json())
-      .then(json => {
-        const fallbackResults = json.data || [];
-        fallbackResults.forEach(item => {
-          if (!shownAnimeIds.has(item.mal_id) && item.mal_id !== currentAnimeId) {
-            shownAnimeIds.add(item.mal_id);
-            const card = document.createElement("div");
-            card.className = "similar-card";
-            card.onclick = () => location.href = `anime.html?id=${item.mal_id}`;
-            card.innerHTML = `
-              <img src="${item.images.jpg.large_image_url}" alt="${item.title}">
-              <div class="similar-card-title">${item.title}</div>
-            `;
-            grid.appendChild(card);
+  function loadMoreSimilarAnime() {
+    if (isLoadingMoreSimilar) return;
+    isLoadingMoreSimilar = true;
+
+    const grid = document.getElementById("similarGrid");
+    const loadingEl = document.getElementById("similarLoading");
+    if (loadingEl) loadingEl.style.display = 'flex';
+
+    // Phase 1: From recommendations
+    if (!similarFallbackMode && similarPage * 10 < similarAnimeList.length) {
+      const batch = similarAnimeList.slice(similarPage * 10, (similarPage + 1) * 10);
+      batch.forEach(rec => {
+        if (!shownAnimeIds.has(rec.entry.mal_id)) {
+          shownAnimeIds.add(rec.entry.mal_id);
+          const card = document.createElement("div");
+          card.className = "similar-card";
+          card.onclick = () => {
+            const sameId = window.location.search.includes(`id=${rec.entry.mal_id}`);
+            window.location.href = `anime.html?id=${rec.entry.mal_id}`;
+            if (sameId) window.location.reload();
+          };
+          card.innerHTML = `
+            <img src="${rec.entry.images.jpg.large_image_url}" alt="${rec.entry.title}">
+            <div class="similar-card-title">${rec.entry.title}</div>
+          `;
+          grid.appendChild(card);
+        }
+      });
+      similarPage++;
+      if (similarPage * 10 >= similarAnimeList.length) {
+        similarFallbackMode = true;
+      }
+      isLoadingMoreSimilar = false;
+      if (loadingEl) loadingEl.style.display = 'none';
+      return;
+    }
+
+    // Phase 2: Genre fallback
+    if (similarFallbackMode && similarGenres.length > 0) {
+      fetch(`https://api.jikan.moe/v4/anime?genres=${similarGenres.join(',')}&order_by=popularity&sort=desc&page=${fallbackPage}`)
+        .then(r => r.json())
+        .then(json => {
+          const fallbackResults = json.data || [];
+          fallbackResults.forEach(item => {
+            if (!shownAnimeIds.has(item.mal_id) && item.mal_id !== currentAnimeId) {
+              shownAnimeIds.add(item.mal_id);
+              const card = document.createElement("div");
+              card.className = "similar-card";
+              card.onclick = () => location.href = `anime.html?id=${item.mal_id}`;
+              card.innerHTML = `
+                <img src="${item.images.jpg.large_image_url}" alt="${item.title}">
+                <div class="similar-card-title">${item.title}</div>
+              `;
+              grid.appendChild(card);
+            }
+          });
+          fallbackPage++;
+          isLoadingMoreSimilar = false;
+          if (loadingEl) loadingEl.style.display = 'none';
+        })
+        .catch(err => {
+          console.error("Fallback similar fetch failed", err);
+          isLoadingMoreSimilar = false;
+          if (loadingEl) loadingEl.style.display = 'none';
+          if (grid.innerHTML.trim() === "") {
+            grid.innerHTML = "<p style='text-align:center; color: gray;'>No similar anime found.</p>";
           }
         });
-        fallbackPage++;
-        isLoadingMoreSimilar = false;
-        if (loadingEl) loadingEl.style.display = 'none';
-      })
-      .catch(err => {
-        console.error("Fallback similar fetch failed", err);
-        isLoadingMoreSimilar = false;
-        if (loadingEl) loadingEl.style.display = 'none';
-      });
+    }
   }
-}
 
+  function isInFavorites(id) {
+    const favs = JSON.parse(localStorage.getItem('animeFavorites')) || [];
+    return favs.some(fav => String(fav.id) === String(id));
+  }
 
-    function isInFavorites(id) {
-      const favs = JSON.parse(localStorage.getItem('animeFavorites')) || [];
-      return favs.some(fav => String(fav.id) === String(id));
+  function toggleFavorite(id, title, imageUrl) {
+    const favs = JSON.parse(localStorage.getItem('animeFavorites')) || [];
+    const index = favs.findIndex(fav => String(fav.id) === String(id));
+    const btn = document.querySelector(`.favorite-bubble[data-id="${id}"]`);
+
+    if (index > -1) {
+      favs.splice(index, 1);
+      btn.textContent = '❤️';
+      btn.classList.remove('active');
+    } else {
+      favs.push({ id: String(id), title, imageUrl, type: 'anime' });
+      btn.textContent = '💖';
+      btn.classList.add('active');
     }
 
-    function toggleFavorite(id, title, imageUrl) {
-      const favs = JSON.parse(localStorage.getItem('animeFavorites')) || [];
-      const index = favs.findIndex(fav => String(fav.id) === String(id));
-      const btn = document.querySelector(`.favorite-bubble[data-id="${id}"]`);
+    localStorage.setItem('animeFavorites', JSON.stringify(favs));
+  }
 
-      if (index > -1) {
-        favs.splice(index, 1);
-        btn.textContent = '❤️';
-        btn.classList.remove('active');
-      } else {
-        favs.push({ id: String(id), title, imageUrl, type: 'anime' });
-        btn.textContent = '💖';
-        btn.classList.add('active');
+  function markFavoriteBubble(id) {
+    const btn = document.querySelector(`.favorite-bubble[data-id="${id}"]`);
+    if (!btn) return;
+    const isFav = isInFavorites(id);
+    btn.classList.toggle('active', isFav);
+    btn.textContent = isFav ? '💖' : '❤️';
+  }
+
+  window.addEventListener("scroll", () => {
+    const section = document.getElementById("similarSection");
+    if (section && !isLoadingMoreSimilar) {
+      const { bottom } = section.getBoundingClientRect();
+      if (bottom < window.innerHeight + 300) {
+        loadMoreSimilarAnime();
       }
-
-      localStorage.setItem('animeFavorites', JSON.stringify(favs));
     }
+  });
 
-    function markFavoriteBubble(id) {
-      const btn = document.querySelector(`.favorite-bubble[data-id="${id}"]`);
-      if (!btn) return;
-      const isFav = isInFavorites(id);
-      btn.classList.toggle('active', isFav);
-      btn.textContent = isFav ? '💖' : '❤️';
-    }
-    window.addEventListener("scroll", () => {
-      const section = document.getElementById("similarSection");
-      if (section && !isLoadingMoreSimilar) {
-        const { bottom } = section.getBoundingClientRect();
-        if (bottom < window.innerHeight + 300) {
-          loadMoreSimilarAnime();
-        }
-      }
-    });
+  fetchAnimeDetails();
+</script>
 
-    fetchAnimeDetails();
-  </script>
 </body>
 </html>
