@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AnimeHub Login / Signup</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      background: #121212;
+      font-family: 'Poppins', sans-serif;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .auth-container {
+      background: #1f1f1f;
+      padding: 2rem;
+      border-radius: 10px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 0 10px #f97316;
+    }
+    .auth-container h2 {
+      text-align: center;
+      color: #f97316;
+    }
+    .auth-container input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 12px;
+      background: #2b2b2b;
+      border: none;
+      border-radius: 5px;
+      color: white;
+    }
+    .auth-container button {
+      width: 100%;
+      margin-top: 15px;
+      padding: 10px;
+      background: #f97316;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .auth-toggle {
+      margin-top: 10px;
+      text-align: center;
+      color: #ccc;
+    }
+    .auth-toggle a {
+      color: #f97316;
+      cursor: pointer;
+    }
+    .google-btn {
+      background: white;
+      color: #121212;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+<div class="auth-container">
+  <h2 id="formTitle">Sign Up</h2>
+  <input type="text" id="username" placeholder="Username" />
+  <input type="email" id="email" placeholder="Email" />
+  <input type="password" id="password" placeholder="Password" />
+  <input type="password" id="confirmPassword" placeholder="Confirm Password" />
+  <button onclick="handleSignup()">Sign Up</button>
+  <button class="google-btn" onclick="handleGoogle()">Sign in with Google</button>
+  <div class="auth-toggle">Already have an account? <a onclick="toggleForm()">Log In</a></div>
+</div>
+
+<!-- Firebase SDK -->
+<script type="module">
+  // 🔥 Replace this with your own Firebase config!
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import {
+    getAuth,
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
+    signInWithPopup,
+    GoogleAuthProvider,
+    sendEmailVerification
+  } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT.firebaseapp.com",
+    projectId: "YOUR_PROJECT_ID",
+    appId: "YOUR_APP_ID"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const provider = new GoogleAuthProvider();
+
+  let isSignup = true;
+
+  window.toggleForm = () => {
+    isSignup = !isSignup;
+    document.getElementById("formTitle").textContent = isSignup ? "Sign Up" : "Log In";
+    document.querySelector("button").onclick = isSignup ? handleSignup : handleLogin;
+    document.getElementById("username").style.display = isSignup ? "block" : "none";
+    document.getElementById("confirmPassword").style.display = isSignup ? "block" : "none";
+    document.querySelector(".auth-toggle").innerHTML = isSignup
+      ? `Already have an account? <a onclick="toggleForm()">Log In</a>`
+      : `Don't have an account? <a onclick="toggleForm()">Sign Up</a>`;
+  };
+
+  window.handleSignup = async () => {
+    const email = document.getElementById("email").value;
+    const pass = document.getElementById("password").value;
+    const confirm = document.getElementById("confirmPassword").value;
+
+    if (pass !== confirm) return alert("Passwords do not match");
+
+    try {
+      const { user } = await createUserWithEmailAndPassword(auth, email, pass);
+      await sendEmailVerification(user);
+      alert("Signup successful! Check your email to verify.");
+      window.location.href = "index.html";
+    } catch (e) {
+      alert(e.message);
+    }
+  };
+
+  window.handleLogin = async () => {
+    const email = document.getElementById("email").value;
+    const pass = document.getElementById("password").value;
+
+    try {
+      const { user } = await signInWithEmailAndPassword(auth, email, pass);
+      if (!user.emailVerified) return alert("Please verify your email before logging in.");
+      alert("Login successful!");
+      window.location.href = "index.html";
+    } catch (e) {
+      alert(e.message);
+    }
+  };
+
+  window.handleGoogle = async () => {
+    try {
+      const result = await signInWithPopup(auth, provider);
+      alert("Signed in with Google!");
+      window.location.href = "index.html";
+    } catch (e) {
+      alert(e.message);
+    }
+  };
+</script>
+</body>
+</html>
