@@ -352,7 +352,7 @@
               ${charData.data.map(c => `
                 <a href="character.html?id=${c.character.mal_id}" class="character-bubble">
                   <div class="img-wrapper">
-                    <img src="${c.character.images.jpg.image_url}" alt="${c.character.name}">
+                    <img src="${c.character.images.jpg.large_image_url}" alt="${c.character.name}">
                   </div>
                   <div class="character-name">${c.character.name}</div>
                 </a>
@@ -406,7 +406,7 @@ function loadMoreSimilarAnime() {
         card.className = "similar-card";
         card.onclick = () => location.href = `anime-details.html?id=${rec.entry.mal_id}`;
         card.innerHTML = `
-          <img src="${rec.entry.images.jpg.image_url}" alt="${rec.entry.title}">
+          <img src="${rec.entry.images.jpg.large_image_url}" alt="${rec.entry.title}">
           <div class="similar-card-title">${rec.entry.title}</div>
         `;
         grid.appendChild(card);
@@ -433,7 +433,7 @@ function loadMoreSimilarAnime() {
             card.className = "similar-card";
             card.onclick = () => location.href = `anime-details.html?id=${item.mal_id}`;
             card.innerHTML = `
-              <img src="${item.images.jpg.image_url}" alt="${item.title}">
+              <img src="${item.images.jpg.large_image_url}" alt="${item.title}">
               <div class="similar-card-title">${item.title}</div>
             `;
             grid.appendChild(card);
