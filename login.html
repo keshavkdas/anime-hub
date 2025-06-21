@@ -6,7 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <style>
     body {
-      margin: 0; padding: 0;
+      margin: 0;
+      padding: 0;
       font-family: Arial, sans-serif;
       background: linear-gradient(to right, #1c1c1c, #2a2a2a);
       color: white;
@@ -48,11 +49,16 @@
       color: #ffa500;
       cursor: pointer;
     }
-    .hidden { display: none; }
+    .hidden {
+      display: none;
+    }
     #verify-overlay {
       display: none;
       position: fixed;
-      top: 0; left: 0; width: 100vw; height: 100vh;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
       background: rgba(0, 0, 0, 0.9);
       color: white;
       font-size: 18px;
@@ -60,6 +66,7 @@
       justify-content: center;
       z-index: 9999;
       text-align: center;
+      flex-direction: column;
     }
   </style>
 </head>
@@ -93,4 +100,3 @@
   <script type="module" src="auth.js"></script>
 </body>
 </html>
-
