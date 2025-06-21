@@ -7,8 +7,7 @@ import {
   signInWithPopup,
   GoogleAuthProvider,
   sendEmailVerification,
-  onAuthStateChanged,
-  signOut
+  onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 const firebaseConfig = {
@@ -75,11 +74,18 @@ window.signup = async () => {
 
   const data = await res.json();
   if (data.success) {
+    console.log("✅ Signup success. Sending verification email...");
     showOverlay();
 
     onAuthStateChanged(auth, async (user) => {
       if (user && !user.emailVerified) {
-        await sendEmailVerification(user);
+        try {
+          await sendEmailVerification(user);
+          console.log("📨 Verification email sent to:", user.email);
+        } catch (err) {
+          console.warn("❌ Failed to send verification email:", err.message);
+        }
+
         const poll = setInterval(async () => {
           await user.reload();
           if (user.emailVerified) {
@@ -96,7 +102,7 @@ window.signup = async () => {
   }
 };
 
-// Google Sign-In
+// Google Sign-In (only gets email, no Firebase account is created)
 window.googleLogin = async () => {
   const button = document.querySelector('button[onclick="googleLogin()"]');
   button.disabled = true;
@@ -115,16 +121,16 @@ window.googleLogin = async () => {
     });
 
     const data = await res.json();
-    if (data.success && data.user.emailVerified) {
+    if (data.success && data.user?.emailVerified) {
+      // Already registered user with password
       localStorage.setItem("user", JSON.stringify(data.user));
       window.location.href = "index.html";
     } else {
-      // User is not fully registered (e.g., no password record)
+      console.log("👤 Google account not registered in system yet.");
       alert("Google account not fully registered. Please complete sign-up.");
-      toggleForm();
-      if (!document.getElementById("signup-email").value) {
+      if (!document.getElementById("signup-email").value)
         document.getElementById("signup-email").value = email;
-      }
+      toggleForm();
       document.getElementById("signup-username").focus();
     }
   } catch (err) {
@@ -138,4 +144,3 @@ window.googleLogin = async () => {
     button.innerText = "Login with Google";
   }
 };
-
