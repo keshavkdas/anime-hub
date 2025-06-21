@@ -1,9 +1,9 @@
 
-// auth.js
+// Firebase & Auth Configuration
 const WORKER_URL = "https://delicate-wildflower-25e5.keshavkdas23.workers.dev/";
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDQ8FLDw94yeWozJUd7cdDfl4-VcsvLWWI",
@@ -15,19 +15,8 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-const overlay = document.getElementById("verify-overlay");
-
-let currentCaptcha = "";
-
-function generateCaptcha() {
-  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-  currentCaptcha = "";
-  for (let i = 0; i < 6; i++) {
-    currentCaptcha += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  document.getElementById("captcha-box").innerText = currentCaptcha;
-}
-generateCaptcha();
+const showOverlay = () => document.getElementById("verify-overlay").style.display = "flex";
+const hideOverlay = () => document.getElementById("verify-overlay").style.display = "none";
 
 window.toggleForm = () => {
   document.getElementById("login-box").classList.toggle("hidden");
@@ -37,12 +26,7 @@ window.toggleForm = () => {
 window.login = async () => {
   const email = document.getElementById("login-email").value.trim();
   const password = document.getElementById("login-password").value.trim();
-
-  document.getElementById("login-email-error").innerText = "";
-  document.getElementById("login-password-error").innerText = "";
-
-  if (!email.includes("@")) return document.getElementById("login-email-error").innerText = "Invalid email";
-  if (password.length < 6) return document.getElementById("login-password-error").innerText = "Password too short";
+  if (!email || !password) return alert("Please fill in all fields.");
 
   const res = await fetch(WORKER_URL, {
     method: "POST",
@@ -64,21 +48,11 @@ window.signup = async () => {
   const username = document.getElementById("signup-username").value.trim();
   const password = document.getElementById("signup-password").value.trim();
   const confirm = document.getElementById("signup-confirm").value.trim();
-  const captchaInput = document.getElementById("captcha-answer").value.trim();
 
-  document.getElementById("username-error").innerText = "";
-
-  if (!email || !username || !password || !confirm || !captchaInput) {
-    alert("All fields are required.");
-    return;
-  }
+  if (!email || !username || !password || !confirm) return alert("All fields are required.");
   if (password !== confirm) return alert("Passwords do not match.");
-  if (!/[a-z]/i.test(password) || !/\d/.test(password) || !/[!@#$%^&*]/.test(password)) {
-    return alert("Password must contain letters, numbers, and special characters.");
-  }
-  if (captchaInput.toUpperCase() !== currentCaptcha) {
-    alert("Captcha incorrect");
-    return generateCaptcha();
+  if (password.length < 6 || !/[0-9]/.test(password) || !/[!@#$%^&*]/.test(password)) {
+    return alert("Password must contain a number, a special character and be at least 6 characters long.");
   }
 
   const res = await fetch(WORKER_URL, {
@@ -89,24 +63,26 @@ window.signup = async () => {
 
   const data = await res.json();
   if (data.success) {
-    overlay.style.display = "flex";
-    const interval = setInterval(async () => {
-      const idToken = (await auth.currentUser?.getIdToken(true)) || null;
+    showOverlay();
+    const checkInterval = setInterval(async () => {
+      const idToken = auth.currentUser ? await auth.currentUser.getIdToken(true) : null;
       if (!idToken) return;
-      const check = await fetch(WORKER_URL, {
+
+      const verifyRes = await fetch(WORKER_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action: "google", token: idToken }),
       });
-      const verifyData = await check.json();
-      if (verifyData.user?.verified) {
-        clearInterval(interval);
+
+      const verifyData = await verifyRes.json();
+      if (verifyData.success && verifyData.user.emailVerified) {
+        clearInterval(checkInterval);
         localStorage.setItem("user", JSON.stringify(verifyData.user));
         window.location.href = "index.html";
       }
     }, 4000);
   } else {
-    document.getElementById("username-error").innerText = data.error || "Signup failed.";
+    alert(data.error || "Signup failed.");
   }
 };
 
@@ -123,16 +99,13 @@ window.googleLogin = async () => {
     });
 
     const data = await res.json();
-    if (data.success) {
+    if (data.success && data.user.emailVerified) {
       localStorage.setItem("user", JSON.stringify(data.user));
       window.location.href = "index.html";
-    } else if (data.needSignup) {
-      document.getElementById("signup-email").value = data.email;
-      toggleForm();
     } else {
-      alert(data.error || "Google Login failed.");
+      alert("Please verify your email or complete registration.");
     }
   } catch (err) {
-    alert("Google login error: " + err.message);
+    alert("Google login failed: " + err.message);
   }
 };
