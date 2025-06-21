@@ -102,7 +102,7 @@ window.signup = async () => {
   }
 };
 
-// Google Sign-In (only gets email, no Firebase account is created)
+// Google Sign-In (email only; no account created)
 window.googleLogin = async () => {
   const button = document.querySelector('button[onclick="googleLogin()"]');
   button.disabled = true;
@@ -122,11 +122,10 @@ window.googleLogin = async () => {
 
     const data = await res.json();
     if (data.success && data.user?.emailVerified) {
-      // Already registered user with password
       localStorage.setItem("user", JSON.stringify(data.user));
       window.location.href = "index.html";
     } else {
-      console.log("👤 Google account not registered in system yet.");
+      console.log("👤 Google account not registered. Directing to signup...");
       alert("Google account not fully registered. Please complete sign-up.");
       if (!document.getElementById("signup-email").value)
         document.getElementById("signup-email").value = email;
