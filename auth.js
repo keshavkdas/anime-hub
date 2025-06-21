@@ -10,7 +10,7 @@ function loadGSI() {
   script.async = true;
   script.onload = () => {
     window.google.accounts.id.initialize({
-      client_id: "<YOUR_GOOGLE_OAUTH_CLIENT_ID>",
+      client_id: "581458997616-8qcfq9uovc7gdspojr2s73ujr58ja2f9.apps.googleusercontent.com",
       callback: handleGoogleCredential
     });
     window.google.accounts.id.renderButton(
