@@ -3,10 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <title>AnimeHub Auth</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     body {
-      margin: 0; padding: 0;
+      margin: 0;
+      padding: 0;
       font-family: Arial, sans-serif;
       background: linear-gradient(135deg, #1c1c1c, #2a2a2a);
       color: white;
@@ -19,36 +20,68 @@
       background: #111;
       padding: 30px;
       border-radius: 10px;
-      width: 100%; max-width: 400px;
+      width: 100%;
+      max-width: 400px;
       box-shadow: 0 0 20px #000;
     }
-    h2 { margin-top: 0; }
-    input, button {
-      width: 100%; padding: 12px; margin: 8px 0;
-      font-size: 14px; border: none; border-radius: 5px;
+    h2 {
+      margin-top: 0;
+    }
+    input,
+    button {
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0;
+      font-size: 14px;
+      border: none;
+      border-radius: 5px;
     }
     button {
       background: #ff6600;
-      color: white; cursor: pointer;
+      color: white;
+      cursor: pointer;
     }
-    button:hover { background: #e65c00; }
-    .toggle { text-align: center; margin-top: 10px; color: #aaa; }
-    .toggle a { color: #ffa500; cursor: pointer; }
-    .hidden { display: none; }
-    #gsi-button { width: 100%; margin: 8px 0; }
+    button:hover {
+      background: #e65c00;
+    }
+    .toggle {
+      text-align: center;
+      margin-top: 10px;
+      color: #aaa;
+    }
+    .toggle a {
+      color: #ffa500;
+      cursor: pointer;
+    }
+    .hidden {
+      display: none;
+    }
+    #gsi-button {
+      width: 100%;
+      margin: 8px 0;
+    }
     #verify-overlay {
       display: none;
-      position: fixed; top: 0; left: 0;
-      width: 100vw; height: 100vh;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
       background: rgba(0, 0, 0, 0.9);
-      color: white; font-size: 18px;
-      display: flex; align-items: center; justify-content: center;
-      z-index: 9999; text-align: center; padding: 20px;
+      color: white;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      text-align: center;
+      padding: 20px;
     }
   </style>
 </head>
 <body>
   <div class="auth-container">
+    <!-- Login Form -->
     <div id="login-box">
       <h2>Login</h2>
       <input id="login-email" type="email" placeholder="Email" required />
@@ -60,9 +93,10 @@
       </div>
     </div>
 
+    <!-- Signup Form -->
     <div id="signup-box" class="hidden">
       <h2>Sign Up</h2>
-      <input id="signup-email" type="email" placeholder="Email" required readonly />
+      <input id="signup-email" type="email" placeholder="Email" required />
       <input id="signup-username" type="text" placeholder="Username" required />
       <input id="signup-password" type="password" placeholder="Password" required />
       <input id="signup-confirm" type="password" placeholder="Confirm Password" required />
@@ -73,9 +107,11 @@
     </div>
   </div>
 
+  <!-- Email Verification Overlay -->
   <div id="verify-overlay">
     📧 A verification email has been sent.<br /><br />
-    Please verify your email to continue. This page will reload automatically once verified.
+    Please verify your email to continue.<br />
+    This page will redirect automatically once verified.
   </div>
 
   <script type="module" src="auth.js"></script>
