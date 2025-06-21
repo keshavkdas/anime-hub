@@ -1,25 +1,5 @@
-// Replace with your Worker URL
 const WORKER_URL = "https://delicate-wildflower-25e5.keshavkdas23.workers.dev/";
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import {
-  getAuth,
-  signInWithPopup,
-  GoogleAuthProvider,
-  sendEmailVerification,
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyDQ8FLDw94yeWozJUd7cdDfl4-VcsvLWWI",
-  authDomain: "animehub-auth-7494b.firebaseapp.com",
-  projectId: "animehub-auth-7494b",
-  appId: "1:598601889716:web:0d58b958fb2a47b824e4e1",
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-
-// 📥 Login
 window.login = async () => {
   const email = document.getElementById("login-email").value.trim();
   const password = document.getElementById("login-password").value.trim();
@@ -28,7 +8,6 @@ window.login = async () => {
   try {
     const res = await fetch(WORKER_URL, {
       method: "POST",
-      mode: "cors",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ action: "login", email, password }),
     });
@@ -45,7 +24,6 @@ window.login = async () => {
   }
 };
 
-// 🆕 Signup
 window.signup = async () => {
   const email = document.getElementById("signup-email").value.trim();
   const password = document.getElementById("signup-password").value.trim();
@@ -56,18 +34,15 @@ window.signup = async () => {
   try {
     const res = await fetch(WORKER_URL, {
       method: "POST",
-      mode: "cors",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ action: "signup", email, password }),
     });
 
     const data = await res.json();
     if (data.success) {
-      // Firebase needs to send verification
-      const userCred = await auth.signInWithEmailAndPassword(email, password);
-      await sendEmailVerification(userCred.user);
-      showVerifyOverlay();
-      pollEmailVerification(userCred.user);
+      alert("Signup successful! Please verify your email.");
+      localStorage.setItem("user", JSON.stringify(data.user));
+      window.location.href = "index.html";
     } else {
       alert(data.error || "Signup failed.");
     }
@@ -76,37 +51,44 @@ window.signup = async () => {
   }
 };
 
-// 🔐 Google Login
+// 🔐 Google Login with redirect fallback to Signup Toggle
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDQ8FLDw94yeWozJUd7cdDfl4-VcsvLWWI",
+  authDomain: "animehub-auth-7494b.firebaseapp.com",
+  projectId: "animehub-auth-7494b",
+  appId: "1:598601889716:web:0d58b958fb2a47b824e4e1"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
 window.googleLogin = async () => {
   const provider = new GoogleAuthProvider();
 
   try {
     const result = await signInWithPopup(auth, provider);
     const idToken = await result.user.getIdToken();
+    const email = result.user.email;
 
     const res = await fetch(WORKER_URL, {
       method: "POST",
-      mode: "cors",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ action: "google", token: idToken }),
     });
 
     const data = await res.json();
-
     if (data.success) {
-      if (data.user.verified) {
-        localStorage.setItem("user", JSON.stringify(data.user));
-        window.location.href = "index.html";
-      } else {
-        // Not verified yet
-        await sendEmailVerification(result.user);
-        showVerifyOverlay();
-        pollEmailVerification(auth.currentUser);
-      }
+      // If verified user exists
+      localStorage.setItem("user", JSON.stringify(data.user));
+      window.location.href = "index.html";
     } else {
-      // User not found → redirect to signup
-      alert("No account found. Complete signup.");
-      window.location.href = "signup.html?email=" + encodeURIComponent(result.user.email);
+      // Show signup form with email pre-filled
+      toggleForm("signup");
+      document.getElementById("signup-email").value = email;
+      alert("Google account not registered. Please complete signup.");
     }
   } catch (err) {
     alert("Google login error: " + err.message);
@@ -114,30 +96,30 @@ window.googleLogin = async () => {
   }
 };
 
-// 🧩 Toggle between login/signup forms
-window.toggleForm = () => {
-  document.getElementById("login-box")?.classList.toggle("hidden");
-  document.getElementById("signup-box")?.classList.toggle("hidden");
+// Form toggle logic
+window.toggleForm = (target) => {
+  const loginBox = document.getElementById("login-box");
+  const signupBox = document.getElementById("signup-box");
+
+  if (target === "signup") {
+    loginBox.classList.add("hidden");
+    signupBox.classList.remove("hidden");
+  } else if (target === "login") {
+    loginBox.classList.remove("hidden");
+    signupBox.classList.add("hidden");
+  } else {
+    // Toggle if no specific target passed
+    loginBox.classList.toggle("hidden");
+    signupBox.classList.toggle("hidden");
+  }
 };
 
-// 📧 Show "verify your email" overlay
-function showVerifyOverlay() {
-  const overlay = document.getElementById("verify-overlay");
-  if (overlay) overlay.style.display = "flex";
-}
-
-// 🔁 Poll for email verification
-function pollEmailVerification(user) {
-  const interval = setInterval(async () => {
-    await user.reload();
-    if (user.emailVerified) {
-      clearInterval(interval);
-      localStorage.setItem("user", JSON.stringify({
-        email: user.email,
-        uid: user.uid,
-        verified: true,
-      }));
-      window.location.href = "index.html";
-    }
-  }, 3000);
-}
+// Auto-fill email if redirected with ?email=...
+window.addEventListener("DOMContentLoaded", () => {
+  const url = new URL(window.location.href);
+  const email = url.searchParams.get("email");
+  if (email) {
+    toggleForm("signup");
+    document.getElementById("signup-email").value = email;
+  }
+});
