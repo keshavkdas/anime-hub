@@ -98,6 +98,10 @@ window.signup = async () => {
 
 // Google Sign-In
 window.googleLogin = async () => {
+  const button = document.querySelector('button[onclick="googleLogin()"]');
+  button.disabled = true;
+  button.innerText = "Loading...";
+
   const provider = new GoogleAuthProvider();
   try {
     const result = await signInWithPopup(auth, provider);
@@ -111,16 +115,27 @@ window.googleLogin = async () => {
     });
 
     const data = await res.json();
-
     if (data.success && data.user.emailVerified) {
       localStorage.setItem("user", JSON.stringify(data.user));
       window.location.href = "index.html";
     } else {
-      alert(data.error || "Google login incomplete. Please finish signup.");
-      document.getElementById("signup-email").value = email;
+      // User is not fully registered (e.g., no password record)
+      alert("Google account not fully registered. Please complete sign-up.");
       toggleForm();
+      if (!document.getElementById("signup-email").value) {
+        document.getElementById("signup-email").value = email;
+      }
+      document.getElementById("signup-username").focus();
     }
   } catch (err) {
-    alert("Google login failed: " + err.message);
+    if (err.code === "auth/cancelled-popup-request") {
+      alert("Popup cancelled. Please try again.");
+    } else {
+      alert("Google login failed: " + err.message);
+    }
+  } finally {
+    button.disabled = false;
+    button.innerText = "Login with Google";
   }
 };
+
