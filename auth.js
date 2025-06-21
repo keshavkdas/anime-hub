@@ -1,5 +1,28 @@
+// Replace with your Worker URL
 const WORKER_URL = "https://delicate-wildflower-25e5.keshavkdas23.workers.dev/";
 
+// Firebase Setup
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithPopup,
+  GoogleAuthProvider,
+  sendEmailVerification,
+  onAuthStateChanged,
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDQ8FLDw94yeWozJUd7cdDfl4-VcsvLWWI",
+  authDomain: "animehub-auth-7494b.firebaseapp.com",
+  projectId: "animehub-auth-7494b",
+  appId: "1:598601889716:web:0d58b958fb2a47b824e4e1"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+// Login
 window.login = async () => {
   const email = document.getElementById("login-email").value.trim();
   const password = document.getElementById("login-password").value.trim();
@@ -8,12 +31,19 @@ window.login = async () => {
   try {
     const res = await fetch(WORKER_URL, {
       method: "POST",
+      mode: "cors",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ action: "login", email, password }),
     });
 
     const data = await res.json();
     if (data.success) {
+      if (!data.user.verified) {
+        showVerifyOverlay();
+        pollEmailVerification(email, password);
+        return;
+      }
+
       localStorage.setItem("user", JSON.stringify(data.user));
       window.location.href = "index.html";
     } else {
@@ -24,6 +54,7 @@ window.login = async () => {
   }
 };
 
+// Signup with Email/Password
 window.signup = async () => {
   const email = document.getElementById("signup-email").value.trim();
   const password = document.getElementById("signup-password").value.trim();
@@ -39,39 +70,25 @@ window.signup = async () => {
     });
 
     const data = await res.json();
-    if (data.success) {
-      alert("Signup successful! Please verify your email.");
-      localStorage.setItem("user", JSON.stringify(data.user));
-      window.location.href = "index.html";
-    } else {
-      alert(data.error || "Signup failed.");
-    }
+    if (!data.success) throw new Error(data.error);
+
+    // Firebase client-side to send email verification
+    await createUserWithEmailAndPassword(auth, email, password);
+    await sendEmailVerification(auth.currentUser);
+    showVerifyOverlay();
+    pollEmailVerification(email, password);
   } catch (err) {
     alert("Signup error: " + err.message);
   }
 };
 
-// 🔐 Google Login with redirect fallback to Signup Toggle
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyDQ8FLDw94yeWozJUd7cdDfl4-VcsvLWWI",
-  authDomain: "animehub-auth-7494b.firebaseapp.com",
-  projectId: "animehub-auth-7494b",
-  appId: "1:598601889716:web:0d58b958fb2a47b824e4e1"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-
+// Google Login
 window.googleLogin = async () => {
   const provider = new GoogleAuthProvider();
 
   try {
     const result = await signInWithPopup(auth, provider);
     const idToken = await result.user.getIdToken();
-    const email = result.user.email;
 
     const res = await fetch(WORKER_URL, {
       method: "POST",
@@ -81,14 +98,19 @@ window.googleLogin = async () => {
 
     const data = await res.json();
     if (data.success) {
-      // If verified user exists
+      if (!data.user.verified) {
+        await sendEmailVerification(auth.currentUser);
+        showVerifyOverlay();
+        pollEmailVerification(null, null, true);
+        return;
+      }
+
       localStorage.setItem("user", JSON.stringify(data.user));
       window.location.href = "index.html";
     } else {
-      // Show signup form with email pre-filled
-      toggleForm("signup");
-      document.getElementById("signup-email").value = email;
-      alert("Google account not registered. Please complete signup.");
+      alert("No account found. Completing signup.");
+      document.getElementById("signup-email").value = result.user.email;
+      toggleForm('signup');
     }
   } catch (err) {
     alert("Google login error: " + err.message);
@@ -96,30 +118,39 @@ window.googleLogin = async () => {
   }
 };
 
-// Form toggle logic
-window.toggleForm = (target) => {
-  const loginBox = document.getElementById("login-box");
-  const signupBox = document.getElementById("signup-box");
+// Show verify email overlay
+function showVerifyOverlay() {
+  document.getElementById("verify-overlay").style.display = "flex";
+}
 
-  if (target === "signup") {
-    loginBox.classList.add("hidden");
-    signupBox.classList.remove("hidden");
-  } else if (target === "login") {
-    loginBox.classList.remove("hidden");
-    signupBox.classList.add("hidden");
-  } else {
-    // Toggle if no specific target passed
-    loginBox.classList.toggle("hidden");
-    signupBox.classList.toggle("hidden");
-  }
+// Poll Firebase to check email verification every 3s
+function pollEmailVerification(email, password, google = false) {
+  const interval = setInterval(async () => {
+    await auth.currentUser.reload();
+    const isVerified = auth.currentUser.emailVerified;
+
+    if (isVerified) {
+      clearInterval(interval);
+      document.getElementById("verify-overlay").style.display = "none";
+
+      // Auto login after email verification (if email/pass available)
+      if (!google && email && password) {
+        login(); // Use existing login flow
+      } else {
+        // Google user verified
+        localStorage.setItem("user", JSON.stringify({
+          email: auth.currentUser.email,
+          uid: auth.currentUser.uid,
+          token: await auth.currentUser.getIdToken()
+        }));
+        window.location.href = "index.html";
+      }
+    }
+  }, 3000);
+}
+
+// Toggle between login/signup forms
+window.toggleForm = (to = 'signup') => {
+  document.getElementById("login-box").classList.toggle("hidden", to === 'signup');
+  document.getElementById("signup-box").classList.toggle("hidden", to === 'login');
 };
-
-// Auto-fill email if redirected with ?email=...
-window.addEventListener("DOMContentLoaded", () => {
-  const url = new URL(window.location.href);
-  const email = url.searchParams.get("email");
-  if (email) {
-    toggleForm("signup");
-    document.getElementById("signup-email").value = email;
-  }
-});
