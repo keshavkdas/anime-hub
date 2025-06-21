@@ -102,7 +102,7 @@ window.signup = async () => {
   }
 };
 
-// Google Sign-In (email only; no account created)
+// Google Sign-In (email only; no Firebase user created until signup)
 window.googleLogin = async () => {
   const button = document.querySelector('button[onclick="googleLogin()"]');
   button.disabled = true;
