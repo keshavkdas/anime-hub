@@ -1,5 +1,5 @@
 // Firebase & Auth Configuration
-const WORKER_URL = "https://delicate-wildflower-25e5.keshavkdas23.workers.dev/";
+const WORKER_URL = "https://anime-hub-auth.keshavkdas23.workers.dev/";
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import {
@@ -12,10 +12,10 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDQ8FLDw94yeWozJUd7cdDfl4-VcsvLWWI",
-  authDomain: "animehub-auth-7494b.firebaseapp.com",
-  projectId: "animehub-auth-7494b",
-  appId: "1:598601889716:web:0d58b958fb2a47b824e4e1"
+  apiKey: "AIzaSyBPPYO5XN3-XQXSPgILze_JcgYBZTYBdz0",
+  authDomain: "anime-hub-11eca.firebaseapp.com",
+  projectId: "anime-hub-11eca",
+  appId: "1:941643518907:web:68ae3fc01f18e00ecdaa9e"
 };
 
 const app = initializeApp(firebaseConfig);
