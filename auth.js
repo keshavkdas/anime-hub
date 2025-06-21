@@ -1,9 +1,7 @@
-// auth.js
-
 const WORKER_URL = "https://anime-hub-auth.keshavkdas23.workers.dev/";
 let googleCredResponse = null;
 
-// Load Google Identity Services button
+// Load Google Identity Services
 function loadGSI() {
   const script = document.createElement("script");
   script.src = "https://accounts.google.com/gsi/client";
@@ -25,7 +23,7 @@ function handleGoogleCredential(response) {
   googleCredResponse = response;
   const payload = JSON.parse(atob(response.credential.split(".")[1]));
   document.getElementById("signup-email").value = payload.email;
-  toggleForm(); 
+  toggleForm();
   document.getElementById("signup-username").focus();
 }
 
@@ -44,6 +42,7 @@ window.login = async () => {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ action: "login", email, password })
   });
+
   const data = await res.json();
   if (data.success) {
     localStorage.setItem("user", JSON.stringify(data.user));
@@ -64,7 +63,7 @@ window.signup = async () => {
   if (password !== confirm)
     return alert("Passwords do not match.");
   if (password.length < 6 || !/[0-9]/.test(password) || !/[!@#$%^&*]/.test(password)) {
-    return alert("Password must be 6+ chars, a number & special character.");
+    return alert("Password must be 6+ chars, include a number & a special character.");
   }
 
   const body = { action: "signup", email, username, password };
@@ -77,28 +76,38 @@ window.signup = async () => {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body)
   });
-  const data = await res.json();
 
-  if (data.success) {
-    document.getElementById("verify-overlay").style.display = "flex";
-    const poll = setInterval(async () => {
-      const verify = await fetch(WORKER_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "checkVerify", uid: data.user.uid })
-      });
-      const vd = await verify.json();
-      if (vd.verified) {
-        clearInterval(poll);
-        localStorage.setItem("user", JSON.stringify(data.user));
-        window.location.href = "index.html";
-      }
-    }, 3000);
-  } else {
+  const data = await res.json();
+  if (!data.success) {
     alert(data.error || "Signup failed.");
+    return;
   }
+
+  if (!data.verificationSent) {
+    alert("Failed to send verification email.");
+    return;
+  }
+
+  document.getElementById("verify-overlay").style.display = "flex";
+
+  const poll = setInterval(async () => {
+    const verify = await fetch(WORKER_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "checkVerify", uid: data.user.uid })
+    });
+    const vd = await verify.json();
+    if (vd.verified) {
+      clearInterval(poll);
+      document.getElementById("verify-overlay").style.display = "none";
+      localStorage.setItem("user", JSON.stringify(data.user));
+      googleCredResponse = null; // reset after successful registration
+      window.location.href = "index.html";
+    }
+  }, 3000);
 };
 
 window.onload = () => {
   loadGSI();
 };
+
