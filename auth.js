@@ -7,7 +7,10 @@ import {
   signInWithPopup,
   GoogleAuthProvider,
   sendEmailVerification,
-  onAuthStateChanged
+  onAuthStateChanged,
+  linkWithPopup,
+  sendPasswordResetEmail,
+  signOut
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 const firebaseConfig = {
@@ -98,10 +101,10 @@ window.googleLogin = async () => {
   const provider = new GoogleAuthProvider();
   try {
     const result = await signInWithPopup(auth, provider);
-    const email = result.user.email;
-    const idToken = await result.user.getIdToken();
+    const user = result.user;
+    const email = user.email;
+    const idToken = await user.getIdToken();
 
-    // Send to Worker to check if user has a password set
     const res = await fetch(WORKER_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -113,13 +116,61 @@ window.googleLogin = async () => {
     if (data.success && data.user.emailVerified) {
       localStorage.setItem("user", JSON.stringify(data.user));
       window.location.href = "index.html";
-    } else {
-      // If user exists without password or is new, ask them to sign up
-      alert("Google account not fully registered. Please complete sign-up.");
+
+    } else if (data.needsSignup) {
+      alert("Google account not registered. Please complete signup.");
       document.getElementById("signup-email").value = email;
       toggleForm();
+
+    } else {
+      alert(data.error || "Google login failed.");
     }
   } catch (err) {
-    alert("Google login failed: " + err.message);
+    if (err.code !== "auth/popup-closed-by-user") {
+      alert("Google login error: " + err.message);
+    }
+  }
+};
+
+// Google Account Linking (call only after login with password)
+window.linkGoogle = async () => {
+  const user = auth.currentUser;
+  if (!user) return alert("User not logged in");
+
+  const provider = new GoogleAuthProvider();
+  try {
+    await linkWithPopup(user, provider);
+    alert("✅ Google account successfully linked.");
+  } catch (err) {
+    if (err.code === "auth/credential-already-in-use") {
+      alert("⚠️ This Google account is already linked to another user.");
+    } else {
+      alert("Linking failed: " + err.message);
+    }
+  }
+};
+
+// Password Reset
+window.resetPassword = async () => {
+  const email = prompt("Enter your email to reset password:");
+  if (!email) return;
+
+  try {
+    await sendPasswordResetEmail(auth, email);
+    alert("Password reset email sent. Check your inbox.");
+  } catch (err) {
+    alert("Failed to send reset email: " + err.message);
+  }
+};
+
+// Logout
+window.logout = async () => {
+  try {
+    await signOut(auth);
+    localStorage.removeItem("user");
+    alert("Logged out.");
+    window.location.href = "login.html";
+  } catch (err) {
+    alert("Logout failed: " + err.message);
   }
 };
