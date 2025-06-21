@@ -3,8 +3,11 @@ const WORKER_URL = "https://delicate-wildflower-25e5.keshavkdas23.workers.dev/";
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import {
-  getAuth, signInWithPopup, GoogleAuthProvider,
-  sendEmailVerification, onAuthStateChanged
+  getAuth,
+  signInWithPopup,
+  GoogleAuthProvider,
+  sendEmailVerification,
+  onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 const firebaseConfig = {
@@ -17,17 +20,17 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-// Overlay control
+// Overlay Control
 const showOverlay = () => document.getElementById("verify-overlay").style.display = "flex";
 const hideOverlay = () => document.getElementById("verify-overlay").style.display = "none";
 
-// Form toggling
+// Toggle form view
 window.toggleForm = () => {
   document.getElementById("login-box").classList.toggle("hidden");
   document.getElementById("signup-box").classList.toggle("hidden");
 };
 
-// Login with email/password
+// Email/password login
 window.login = async () => {
   const email = document.getElementById("login-email").value.trim();
   const password = document.getElementById("login-password").value.trim();
@@ -48,7 +51,7 @@ window.login = async () => {
   }
 };
 
-// Signup
+// Email/password signup
 window.signup = async () => {
   const email = document.getElementById("signup-email").value.trim();
   const username = document.getElementById("signup-username").value.trim();
@@ -58,7 +61,7 @@ window.signup = async () => {
   if (!email || !username || !password || !confirm) return alert("All fields required.");
   if (password !== confirm) return alert("Passwords do not match.");
   if (password.length < 6 || !/[0-9]/.test(password) || !/[!@#$%^&*]/.test(password)) {
-    return alert("Password must be strong: 6+ chars, a number, and a special character.");
+    return alert("Password must be 6+ chars, include a number and a special character.");
   }
 
   const res = await fetch(WORKER_URL, {
@@ -70,6 +73,7 @@ window.signup = async () => {
   const data = await res.json();
   if (data.success) {
     showOverlay();
+
     onAuthStateChanged(auth, async (user) => {
       if (user && !user.emailVerified) {
         await sendEmailVerification(user);
@@ -97,6 +101,7 @@ window.googleLogin = async () => {
     const email = result.user.email;
     const idToken = await result.user.getIdToken();
 
+    // Send to Worker to check if user has a password set
     const res = await fetch(WORKER_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -105,19 +110,14 @@ window.googleLogin = async () => {
 
     const data = await res.json();
 
-    if (data.success && data.user?.emailVerified) {
-      // User exists in KV and is verified
+    if (data.success && data.user.emailVerified) {
       localStorage.setItem("user", JSON.stringify(data.user));
       window.location.href = "index.html";
-    } else if (data.error === "User not registered") {
-      // New Google account, redirect to signup form
-      alert("Google account found but not registered. Please complete signup.");
+    } else {
+      // If user exists without password or is new, ask them to sign up
+      alert("Google account not fully registered. Please complete sign-up.");
       document.getElementById("signup-email").value = email;
       toggleForm();
-    } else if (data.error === "Email not verified") {
-      alert("Please verify your Google email before continuing.");
-    } else {
-      alert("Google login failed: " + (data.error || "Unknown error"));
     }
   } catch (err) {
     alert("Google login failed: " + err.message);
