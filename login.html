@@ -90,11 +90,10 @@
   <div class="toggle-link">Have account? <span onclick="toggleForm()">Login</span></div>
 </div>
 
-<div id="overlay" class="hidden">
-  <div class="msg">
-    <h3>Please verify your email 📧</h3>
-    <p>We’ve sent a verification link to your email. Click it to finish signing up.</p>
-    <p>This window will close automatically once verified.</p>
+<div id="verify-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#111d; color:white; z-index:9999; justify-content:center; align-items:center; font-size:1.2em;">
+  <div style="text-align:center;">
+    <p>📨 Please check your email and click the verification link.</p>
+    <p>This page will log you in automatically after verification.</p>
   </div>
 </div>
 
