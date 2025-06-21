@@ -17,17 +17,17 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-// Overlay Control
+// Overlay control
 const showOverlay = () => document.getElementById("verify-overlay").style.display = "flex";
 const hideOverlay = () => document.getElementById("verify-overlay").style.display = "none";
 
-// Form Toggle
+// Form toggling
 window.toggleForm = () => {
   document.getElementById("login-box").classList.toggle("hidden");
   document.getElementById("signup-box").classList.toggle("hidden");
 };
 
-// Login
+// Login with email/password
 window.login = async () => {
   const email = document.getElementById("login-email").value.trim();
   const password = document.getElementById("login-password").value.trim();
@@ -104,13 +104,20 @@ window.googleLogin = async () => {
     });
 
     const data = await res.json();
-    if (data.success) {
+
+    if (data.success && data.user?.emailVerified) {
+      // User exists in KV and is verified
       localStorage.setItem("user", JSON.stringify(data.user));
       window.location.href = "index.html";
-    } else {
-      // redirect to signup flow
+    } else if (data.error === "User not registered") {
+      // New Google account, redirect to signup form
+      alert("Google account found but not registered. Please complete signup.");
       document.getElementById("signup-email").value = email;
       toggleForm();
+    } else if (data.error === "Email not verified") {
+      alert("Please verify your Google email before continuing.");
+    } else {
+      alert("Google login failed: " + (data.error || "Unknown error"));
     }
   } catch (err) {
     alert("Google login failed: " + err.message);
