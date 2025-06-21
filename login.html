@@ -2,102 +2,117 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>AnimeHub – Login / Sign Up</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>AnimeHub Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <style>
     body {
-      background: #121212;
+      background: #0e0e0e;
       color: #fff;
       font-family: 'Segoe UI', sans-serif;
       display: flex;
       align-items: center;
       justify-content: center;
-      height: 100vh;
+      min-height: 100vh;
       margin: 0;
     }
-    .box {
-      background: #1e1e1e;
+
+    .container {
+      background: #1a1a1a;
       padding: 30px;
-      border-radius: 8px;
-      width: 90%;
+      border-radius: 12px;
       max-width: 400px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.5);
-    }
-    h2 { margin-top:0; color:#f97316; }
-    input, button {
       width: 100%;
-      margin: 10px 0;
-      padding: 12px;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+    }
+
+    h2 {
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    input {
+      width: 100%;
+      margin: 8px 0;
+      padding: 10px;
       border: none;
-      border-radius: 4px;
+      border-radius: 6px;
+      background: #2c2c2c;
+      color: #fff;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      background-color: #ff6600;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background-color: #e65c00;
+    }
+
+    .switch-link {
+      margin-top: 12px;
+      text-align: center;
       font-size: 14px;
     }
-    input { background: #2b2b2b; color: #fff; }
-    button {
-      background: #ff6600;
-      color: #fff;
-      cursor: pointer;
-    }
-    button:hover { background: #e65c00; }
-    .toggle-link { text-align:center; margin-top:12px; }
-    .toggle-link span {
+
+    .switch-link a {
       color: #ffa500;
       cursor: pointer;
       text-decoration: underline;
     }
-    .hidden { display:none; }
-    #overlay {
-      position:fixed; top:0;left:0;
-      width:100%; height:100%;
-      background:rgba(0,0,0,0.9);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      z-index:1000;
+
+    .hidden {
+      display: none;
     }
-    #overlay.hidden { display:none; }
-    #overlay .msg {
-      background:#2b2b2b;
-      padding:30px; border-radius:6px;
-      text-align:center;
-      max-width: 90%;
-      color:#fff;
+
+    .note {
+      font-size: 12px;
+      color: #ccc;
+      text-align: center;
+      margin-top: 8px;
     }
-    .captcha-container { margin:10px 0; }
   </style>
 </head>
 <body>
 
-<div class="box" id="login-box">
-  <h2>Login</h2>
-  <input type="email" id="login-email" placeholder="Email" />
-  <input type="password" id="login-password" placeholder="Password" />
-  <button onclick="login()">Login</button>
-  <button onclick="googleLogin()">Login with Google</button>
-  <div class="toggle-link">No account? <span onclick="toggleForm()">Sign Up</span></div>
-</div>
+  <div class="container">
+    <!-- Login Form -->
+    <div id="login-box">
+      <h2>Login</h2>
+      <input type="email" id="login-email" placeholder="Email" />
+      <input type="password" id="login-password" placeholder="Password" />
+      <button onclick="login()">Login</button>
+      <button onclick="googleLogin()">Login with Google</button>
+      <div class="switch-link">Don't have an account? <a onclick="toggleForm('signup')">Sign Up</a></div>
+    </div>
 
-<div class="box hidden" id="signup-box">
-  <h2>Sign Up</h2>
-  <input type="email" id="signup-email" placeholder="Email" />
-  <input type="text" id="signup-username" placeholder="Username" />
-  <input type="password" id="signup-password" placeholder="Password" />
-  <input type="password" id="signup-confirm" placeholder="Confirm Password" />
-  <div class="captcha-container">
-    <div id="recaptcha" class="g-recaptcha" data-sitekey="YOUR_SITE_KEY"></div>
+    <!-- Signup Form -->
+    <div id="signup-box" class="hidden">
+      <h2>Sign Up</h2>
+      <input type="email" id="signup-email" placeholder="Email" />
+      <input type="password" id="signup-password" placeholder="Password" />
+      <input type="password" id="signup-confirm" placeholder="Confirm Password" />
+      <button onclick="signup()">Sign Up</button>
+      <div class="switch-link">Already have an account? <a onclick="toggleForm('login')">Login</a></div>
+    </div>
   </div>
-  <button onclick="signup()">Create Account</button>
-  <div class="toggle-link">Have account? <span onclick="toggleForm()">Login</span></div>
-</div>
 
-<div id="verify-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#111d; color:white; z-index:9999; justify-content:center; align-items:center; font-size:1.2em;">
+  <!-- Verify Email Overlay -->
+<div id="verify-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#111e; color:white; z-index:9999; justify-content:center; align-items:center; font-size:1.2em;">
   <div style="text-align:center;">
-    <p>📨 Please check your email and click the verification link.</p>
-    <p>This page will log you in automatically after verification.</p>
+    <p>📧 Check your email and click the verification link.</p>
+    <p>This page will log you in automatically once verified.</p>
   </div>
 </div>
 
-<script src="https://www.google.com/recaptcha/api.js" async defer></script>
-<script type="module" src="auth.js"></script>
+
+  <script type="module" src="auth.js"></script>
 </body>
 </html>
