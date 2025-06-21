@@ -71,16 +71,25 @@
   </style>
 </head>
 <body>
+  <noscript>
+    <div style="color: red; text-align: center;">This app requires JavaScript to function.</div>
+  </noscript>
+
   <div class="auth-container">
+    <!-- Login Box -->
     <div id="login-box">
       <h2>Login</h2>
       <input id="login-email" type="email" placeholder="Email" required />
       <input id="login-password" type="password" placeholder="Password" required />
       <button onclick="login()">Login</button>
       <button onclick="googleLogin()">Login with Google</button>
-      <div class="toggle">Don't have an account? <a onclick="toggleForm()">Sign Up</a></div>
+      <button onclick="resetPassword()">Forgot Password?</button>
+      <div class="toggle">
+        Don't have an account? <a onclick="toggleForm()">Sign Up</a>
+      </div>
     </div>
 
+    <!-- Signup Box -->
     <div id="signup-box" class="hidden">
       <h2>Sign Up</h2>
       <input id="signup-email" type="email" placeholder="Email" required />
@@ -88,12 +97,15 @@
       <input id="signup-password" type="password" placeholder="Password" required />
       <input id="signup-confirm" type="password" placeholder="Confirm Password" required />
       <button onclick="signup()">Create Account</button>
-      <div class="toggle">Already have an account? <a onclick="toggleForm()">Login</a></div>
+      <div class="toggle">
+        Already have an account? <a onclick="toggleForm()">Login</a>
+      </div>
     </div>
   </div>
 
+  <!-- Email Verification Overlay -->
   <div id="verify-overlay">
-    📧 A verification link has been sent to your email.<br><br>
+    📧 A verification link has been sent to your email.<br /><br />
     Please verify to continue. This page will reload automatically once verified.
   </div>
 
