@@ -29,9 +29,22 @@ function handleGoogleCredential(response) {
 
 // Toggle between login and signup
 window.toggleForm = () => {
-  document.getElementById("login-box").classList.toggle("hidden");
-  document.getElementById("signup-box").classList.toggle("hidden");
+  const loginBox = document.getElementById("login-box");
+  const signupBox = document.getElementById("signup-box");
+
+  if (loginBox.classList.contains("visible")) {
+    loginBox.classList.remove("visible");
+    loginBox.classList.add("hidden");
+    signupBox.classList.remove("hidden");
+    signupBox.classList.add("visible");
+  } else {
+    signupBox.classList.remove("visible");
+    signupBox.classList.add("hidden");
+    loginBox.classList.remove("hidden");
+    loginBox.classList.add("visible");
+  }
 };
+
 
 // Login
 window.login = async () => {
