@@ -1,7 +1,9 @@
+// auth.js
+
 const WORKER_URL = "https://anime-hub-auth.keshavkdas23.workers.dev/";
 let googleCredResponse = null;
 
-// Load Google Identity Services
+// Load Google Identity Services (GSI)
 function loadGSI() {
   const script = document.createElement("script");
   script.src = "https://accounts.google.com/gsi/client";
@@ -27,11 +29,13 @@ function handleGoogleCredential(response) {
   document.getElementById("signup-username").focus();
 }
 
+// Toggle between login and signup forms
 window.toggleForm = () => {
   document.getElementById("login-box").classList.toggle("hidden");
   document.getElementById("signup-box").classList.toggle("hidden");
 };
 
+// Login handler
 window.login = async () => {
   const email = document.getElementById("login-email").value.trim();
   const password = document.getElementById("login-password").value.trim();
@@ -52,6 +56,7 @@ window.login = async () => {
   }
 };
 
+// Signup handler
 window.signup = async () => {
   const email = document.getElementById("signup-email").value.trim();
   const username = document.getElementById("signup-username").value.trim();
@@ -83,31 +88,48 @@ window.signup = async () => {
     return;
   }
 
-  if (!data.verificationSent) {
-    alert("Failed to send verification email.");
-    return;
-  }
+  // Now use Firebase Auth (client) to send verification email
+  try {
+    const { getAuth, signInWithEmailAndPassword, sendEmailVerification } = await import(
+      "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js"
+    );
 
-  document.getElementById("verify-overlay").style.display = "flex";
+    const { initializeApp } = await import(
+      "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"
+    );
 
-  const poll = setInterval(async () => {
-    const verify = await fetch(WORKER_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "checkVerify", uid: data.user.uid })
+    const firebaseApp = initializeApp({
+      apiKey: "AIzaSyBPPYO5XN3-XQXSPgILze_JcgYBZTYBdz0",
+      authDomain: "anime-hub-11eca.firebaseapp.com",
+      projectId: "anime-hub-11eca",
     });
-    const vd = await verify.json();
-    if (vd.verified) {
-      clearInterval(poll);
-      document.getElementById("verify-overlay").style.display = "none";
-      localStorage.setItem("user", JSON.stringify(data.user));
-      googleCredResponse = null; // reset after successful registration
-      window.location.href = "index.html";
-    }
-  }, 3000);
+
+    const auth = getAuth(firebaseApp);
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    await sendEmailVerification(userCredential.user);
+    console.log("📨 Verification email sent.");
+
+    document.getElementById("verify-overlay").style.display = "flex";
+
+    const poll = setInterval(async () => {
+      await userCredential.user.reload();
+      if (userCredential.user.emailVerified) {
+        clearInterval(poll);
+        document.getElementById("verify-overlay").style.display = "none";
+        localStorage.setItem("user", JSON.stringify(data.user));
+        googleCredResponse = null;
+        window.location.href = "index.html";
+      }
+    }, 3000);
+
+  } catch (err) {
+    console.warn("❌ Failed to send verification email:", err.message);
+    alert("Failed to send verification email.");
+  }
 };
 
+// On load
 window.onload = () => {
+  document.getElementById("verify-overlay").style.display = "none";
   loadGSI();
 };
-
