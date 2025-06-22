@@ -237,49 +237,60 @@
   </div>
 
   <script>
-    // Password logic
-    const passwordField = document.getElementById("signup-password");
-    const confirmField = document.getElementById("signup-confirm");
-    const hint = document.getElementById("password-hint");
-    const strength = document.getElementById("password-strength");
-    const confirmFeedback = document.getElementById("confirm-feedback");
+  const passwordField = document.getElementById("signup-password");
+  const confirmField = document.getElementById("signup-confirm");
+  const emailField = document.getElementById("signup-email");
+  const usernameField = document.getElementById("signup-username");
 
-    passwordField.addEventListener("focus", () => {
-      hint.style.display = "block";
+  const hint = document.getElementById("password-hint");
+  const strength = document.getElementById("password-strength");
+  const confirmFeedback = document.getElementById("confirm-feedback");
+
+  // Show password hint on focus
+  passwordField.addEventListener("focus", () => {
+    hint.style.display = "block";
+  });
+
+  // Hide password hint if user clicks elsewhere
+  [confirmField, emailField, usernameField].forEach(el => {
+    el.addEventListener("focus", () => {
+      hint.style.display = "none";
     });
+  });
 
-    passwordField.addEventListener("input", () => {
-      const val = passwordField.value;
-      let score = 0;
-      if (val.length >= 6) score++;
-      if (/\d/.test(val)) score++;
-      if (/[!@#$%^&*]/.test(val)) score++;
+  // Password strength logic
+  passwordField.addEventListener("input", () => {
+    const val = passwordField.value;
+    let score = 0;
+    if (val.length >= 6) score++;
+    if (/\d/.test(val)) score++;
+    if (/[!@#$%^&*]/.test(val)) score++;
 
-      const levels = ["Weak", "Moderate", "Strong"];
-      strength.textContent = score ? `Strength: ${levels[score - 1]}` : "";
-      strength.style.color = ["#ff6b6b", "#ffa500", "#ff6600"][score - 1] || "#ccc";
+    const levels = ["Weak", "Moderate", "Strong"];
+    strength.textContent = score ? `Strength: ${levels[score - 1]}` : "";
+    strength.style.color = ["#ff6b6b", "#ffa500", "#ff6600"][score - 1] || "#ccc";
+  });
+
+  // Password match check
+  confirmField.addEventListener("input", () => {
+    confirmFeedback.style.display = passwordField.value === confirmField.value ? "none" : "block";
+  });
+
+  // Show/Hide password toggles
+  function setupToggle(inputId, toggleId) {
+    const input = document.getElementById(inputId);
+    const toggle = document.getElementById(toggleId);
+    toggle.addEventListener("click", () => {
+      const isHidden = input.type === "password";
+      input.type = isHidden ? "text" : "password";
+      toggle.textContent = isHidden ? "🙈" : "👁️";
     });
+  }
 
-    confirmField.addEventListener("input", () => {
-      confirmFeedback.style.display = passwordField.value === confirmField.value ? "none" : "block";
-    });
-
-    // Show/Hide password toggles
-    function setupToggle(inputId, toggleId) {
-      const input = document.getElementById(inputId);
-      const toggle = document.getElementById(toggleId);
-      toggle.addEventListener("click", () => {
-        const isHidden = input.type === "password";
-        input.type = isHidden ? "text" : "password";
-        toggle.textContent = isHidden ? "🙈" : "👁️";
-      });
-    }
-
-    setupToggle("login-password", "toggle-login-pass");
-    setupToggle("signup-password", "toggle-signup-pass");
-    setupToggle("signup-confirm", "toggle-signup-confirm");
-  </script>
-
-  <script type="module" src="auth.js"></script>
+  setupToggle("login-password", "toggle-login-pass");
+  setupToggle("signup-password", "toggle-signup-pass");
+  setupToggle("signup-confirm", "toggle-signup-confirm");
+</script>
+<script type="module" src="auth.js"></script>
 </body>
 </html>
