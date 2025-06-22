@@ -23,13 +23,38 @@
     }
 
     .auth-container {
-      background: #161b22;
-      padding: 40px;
-      border-radius: 12px;
+      perspective: 1000px;
       width: 100%;
       max-width: 420px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
       position: relative;
+      height: 520px;
+    }
+
+    .flip-box {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.6s ease;
+    }
+
+    .flipped {
+      transform: rotateY(180deg);
+    }
+
+    .auth-face {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      padding: 40px;
+      background: #161b22;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    }
+
+    #signup-box {
+      transform: rotateY(180deg);
     }
 
     h2 {
@@ -99,23 +124,6 @@
       color: #ffa500;
       cursor: pointer;
       text-decoration: none;
-    }
-
-    .hidden {
-      opacity: 0;
-      pointer-events: none;
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      transition: opacity 0.4s ease;
-    }
-
-    .visible {
-      opacity: 1;
-      pointer-events: all;
-      position: relative;
-      transition: opacity 0.4s ease;
     }
 
     #gsi-button {
@@ -193,49 +201,53 @@
 </head>
 <body>
   <div class="auth-container">
-    <!-- Login -->
-    <div id="login-box" class="visible">
-      <h2>Welcome Back</h2>
-      <input id="login-email" type="email" placeholder="Email" required />
-      <div class="input-group">
-        <input id="login-password" type="password" placeholder="Password" required />
-        <span class="toggle-eye" id="toggle-login-pass">👁️</span>
-      </div>
-      <button onclick="login()">Login</button>
-      <div id="gsi-button"></div>
-      <div class="toggle">
-        New here? <a onclick="toggleForm()">Sign up</a>
-      </div>
-    </div>
+    <div id="flip-card" class="flip-box">
 
-    <!-- Signup -->
-    <div id="signup-box" class="hidden">
-      <h2>Create Your Account</h2>
-      <input id="signup-email" type="email" placeholder="Email" required readonly />
-      <input id="signup-username" type="text" placeholder="Username" required />
-      <div class="input-group">
-        <input id="signup-password" type="password" placeholder="Password" required />
-        <span class="toggle-eye" id="toggle-signup-pass">👁️</span>
+      <!-- Login -->
+      <div id="login-box" class="auth-face">
+        <h2>Welcome Back</h2>
+        <input id="login-email" type="email" placeholder="Email" required />
+        <div class="input-group">
+          <input id="login-password" type="password" placeholder="Password" required />
+          <span class="toggle-eye" id="toggle-login-pass">👁️</span>
+        </div>
+        <button onclick="login()">Login</button>
+        <div id="gsi-button"></div>
+        <div class="toggle">
+          New here? <a onclick="toggleForm()">Sign up</a>
+        </div>
       </div>
-      <div id="password-hint">
-        <strong>Password must:</strong><br />
-        • Be at least 6 characters<br />
-        • Contain a number<br />
-        • Include a special character<br />
-        • Have an uppercase letter
+
+      <!-- Signup -->
+      <div id="signup-box" class="auth-face">
+        <h2>Create Your Account</h2>
+        <input id="signup-email" type="email" placeholder="Email" required readonly />
+        <input id="signup-username" type="text" placeholder="Username" required />
+        <div class="input-group">
+          <input id="signup-password" type="password" placeholder="Password" required />
+          <span class="toggle-eye" id="toggle-signup-pass">👁️</span>
+        </div>
+        <div id="password-hint">
+          <strong>Password must:</strong><br />
+          • Be at least 6 characters<br />
+          • Contain a number<br />
+          • Include a special character<br />
+          • Have an uppercase letter
+        </div>
+        <div id="password-strength-bar">
+          <div id="password-strength-bar-inner"></div>
+        </div>
+        <div class="input-group">
+          <input id="signup-confirm" type="password" placeholder="Confirm Password" required />
+          <span class="toggle-eye" id="toggle-signup-confirm">👁️</span>
+        </div>
+        <div id="confirm-feedback">Passwords do not match</div>
+        <button onclick="signup()">Create Account</button>
+        <div class="toggle">
+          Already have an account? <a onclick="toggleForm()">Login</a>
+        </div>
       </div>
-      <div id="password-strength-bar">
-        <div id="password-strength-bar-inner"></div>
-      </div>
-      <div class="input-group">
-        <input id="signup-confirm" type="password" placeholder="Confirm Password" required />
-        <span class="toggle-eye" id="toggle-signup-confirm">👁️</span>
-      </div>
-      <div id="confirm-feedback">Passwords do not match</div>
-      <button onclick="signup()">Create Account</button>
-      <div class="toggle">
-        Already have an account? <a onclick="toggleForm()">Login</a>
-      </div>
+
     </div>
   </div>
 
@@ -249,6 +261,10 @@
   </div>
 
   <script>
+    function toggleForm() {
+      document.getElementById("flip-card").classList.toggle("flipped");
+    }
+
     const passwordField = document.getElementById("signup-password");
     const confirmField = document.getElementById("signup-confirm");
     const emailField = document.getElementById("signup-email");
@@ -299,6 +315,7 @@
     setupToggle("signup-password", "toggle-signup-pass");
     setupToggle("signup-confirm", "toggle-signup-confirm");
   </script>
+
   <script type="module" src="auth.js"></script>
 </body>
 </html>
