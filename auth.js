@@ -24,7 +24,8 @@ async function handleGoogleCredential(response) {
   const payload = JSON.parse(atob(response.credential.split(".")[1]));
   const email = payload.email;
 
-  // Check with backend if user exists in Firebase & KV
+  console.log("Google email:", email);
+
   const res = await fetch(WORKER_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -32,13 +33,12 @@ async function handleGoogleCredential(response) {
   });
 
   const data = await res.json();
+  console.log("checkUser response:", data);
 
   if (data.exists) {
-    // ✅ User exists → redirect to index.html
     localStorage.setItem("user", JSON.stringify({ uid: data.uid, email }));
     window.location.href = "index.html";
   } else {
-    // ❌ User not found → show signup form
     document.getElementById("signup-email").value = email;
     toggleForm();
     document.getElementById("signup-username").focus();
