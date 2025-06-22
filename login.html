@@ -10,9 +10,9 @@
       box-sizing: border-box;
     }
 
-    body {
+    html, body {
       margin: 0;
-      padding: 0;
+      height: 100%;
       font-family: 'Inter', sans-serif;
       background: linear-gradient(135deg, #0f0f0f, #1f1f1f);
       color: #f0f0f0;
@@ -22,36 +22,22 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
+      min-height: 100vh;
+      padding: 0;
     }
 
     .auth-container {
-      perspective: 1200px;
-    }
-
-    .flip-box {
-      width: 360px;
-      height: auto;
-      transition: transform 0.8s;
-      transform-style: preserve-3d;
-      position: relative;
-    }
-
-    .auth-box {
       background: #161b22;
       padding: 40px;
       border-radius: 12px;
       width: 100%;
-      backface-visibility: hidden;
+      max-width: 420px;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-      position: absolute;
-      top: 0;
-      left: 0;
+      position: relative;
     }
 
-    .auth-box h2 {
-      margin-top: 0;
-      margin-bottom: 20px;
+    h2 {
+      margin: 0 0 20px;
       font-weight: 600;
       color: #ffffff;
       text-align: center;
@@ -64,7 +50,7 @@
     input {
       width: 100%;
       padding: 14px;
-      margin: 10px 0;
+      margin: 6px 0;
       background: #0d1117;
       border: 1px solid #30363d;
       border-radius: 6px;
@@ -90,7 +76,7 @@
     button {
       width: 100%;
       padding: 14px;
-      margin-top: 12px;
+      margin-top: 10px;
       font-size: 15px;
       font-weight: 600;
       background: #ff6600;
@@ -118,12 +104,23 @@
       text-decoration: none;
     }
 
-    .back {
-      transform: rotateY(180deg);
+    .hidden {
+      opacity: 0;
+      pointer-events: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      transition: transform 0.5s ease, opacity 0.5s ease;
+      transform: rotateY(-90deg);
     }
 
-    .flip-box.flipped {
-      transform: rotateY(180deg);
+    .visible {
+      opacity: 1;
+      pointer-events: all;
+      position: relative;
+      transition: transform 0.5s ease, opacity 0.5s ease;
+      transform: rotateY(0deg);
     }
 
     #gsi-button {
@@ -191,7 +188,7 @@
     }
 
     @media (max-width: 500px) {
-      .auth-box {
+      .auth-container {
         padding: 24px;
         border-radius: 0;
         box-shadow: none;
@@ -202,50 +199,48 @@
 <body>
   <div class="auth-wrapper">
     <div class="auth-container">
-      <div class="flip-box" id="flip-card">
-        <!-- Login -->
-        <div class="auth-box front">
-          <h2>Welcome Back</h2>
-          <input id="login-email" type="email" placeholder="Email" required />
-          <div class="input-group">
-            <input id="login-password" type="password" placeholder="Password" required />
-            <span class="toggle-eye" id="toggle-login-pass">👁️</span>
-          </div>
-          <button onclick="login()">Login</button>
-          <div id="gsi-button"></div>
-          <div class="toggle">
-            New here? <a onclick="toggleForm()">Sign up</a>
-          </div>
+      <!-- Login -->
+      <div id="login-box" class="visible">
+        <h2>Welcome Back</h2>
+        <input id="login-email" type="email" placeholder="Email" required />
+        <div class="input-group">
+          <input id="login-password" type="password" placeholder="Password" required />
+          <span class="toggle-eye" id="toggle-login-pass">👁️</span>
         </div>
+        <button onclick="login()">Login</button>
+        <div id="gsi-button"></div>
+        <div class="toggle">
+          New here? <a onclick="toggleForm()">Sign up</a>
+        </div>
+      </div>
 
-        <!-- Signup -->
-        <div class="auth-box back">
-          <h2>Create Your Account</h2>
-          <input id="signup-email" type="email" placeholder="Email" required readonly />
-          <input id="signup-username" type="text" placeholder="Username" required />
-          <div class="input-group">
-            <input id="signup-password" type="password" placeholder="Password" required />
-            <span class="toggle-eye" id="toggle-signup-pass">👁️</span>
-          </div>
-          <div id="password-hint">
-            <strong>Password must:</strong><br />
-            • Be at least 6 characters<br />
-            • Contain a number<br />
-            • Include a special character<br />
-            • Have an uppercase letter
-          </div>
-          <div id="password-strength-bar">
-            <div id="password-strength-bar-inner"></div>
-          </div>
-          <div class="input-group">
-            <input id="signup-confirm" type="password" placeholder="Confirm Password" required />
-            <span class="toggle-eye" id="toggle-signup-confirm">👁️</span>
-          </div>
-          <div id="confirm-feedback">Passwords do not match</div>
-          <button onclick="signup()">Create Account</button>
-          <div class="toggle">
-            Already have an account? <a onclick="toggleForm()">Login</a>
-          </div>
+      <!-- Signup -->
+      <div id="signup-box" class="hidden">
+        <h2>Create Your Account</h2>
+        <input id="signup-email" type="email" placeholder="Email" required readonly />
+        <input id="signup-username" type="text" placeholder="Username" required />
+        <div class="input-group">
+          <input id="signup-password" type="password" placeholder="Password" required />
+          <span class="toggle-eye" id="toggle-signup-pass">👁️</span>
+        </div>
+        <div id="password-hint">
+          <strong>Password must:</strong><br />
+          • Be at least 6 characters<br />
+          • Contain a number<br />
+          • Include a special character<br />
+          • Have an uppercase letter
+        </div>
+        <div id="password-strength-bar">
+          <div id="password-strength-bar-inner"></div>
+        </div>
+        <div class="input-group">
+          <input id="signup-confirm" type="password" placeholder="Confirm Password" required />
+          <span class="toggle-eye" id="toggle-signup-confirm">👁️</span>
+        </div>
+        <div id="confirm-feedback">Passwords do not match</div>
+        <button onclick="signup()">Create Account</button>
+        <div class="toggle">
+          Already have an account? <a onclick="toggleForm()">Login</a>
         </div>
       </div>
     </div>
@@ -260,7 +255,6 @@
     </div>
   </div>
 
-  <script type="module" src="auth.js"></script>
   <script>
     const passwordField = document.getElementById("signup-password");
     const confirmField = document.getElementById("signup-confirm");
@@ -270,13 +264,11 @@
     const bar = document.getElementById("password-strength-bar-inner");
     const confirmFeedback = document.getElementById("confirm-feedback");
 
-    // Show/hide password hint
     passwordField.addEventListener("focus", () => hint.style.display = "block");
     [confirmField, emailField, usernameField].forEach(el =>
       el.addEventListener("focus", () => (hint.style.display = "none"))
     );
 
-    // Password strength logic (0–4)
     passwordField.addEventListener("input", () => {
       const val = passwordField.value;
       let score = 0;
@@ -291,13 +283,11 @@
       bar.style.background = colors[score - 1] || "transparent";
     });
 
-    // Password match check
     confirmField.addEventListener("input", () => {
       confirmFeedback.style.display =
         passwordField.value === confirmField.value ? "none" : "block";
     });
 
-    // Show/Hide password
     function setupToggle(inputId, toggleId) {
       const input = document.getElementById(inputId);
       const toggle = document.getElementById(toggleId);
@@ -311,12 +301,7 @@
     setupToggle("login-password", "toggle-login-pass");
     setupToggle("signup-password", "toggle-signup-pass");
     setupToggle("signup-confirm", "toggle-signup-confirm");
-
-    // Flip between login/signup
-    window.toggleForm = () => {
-      const card = document.getElementById("flip-card");
-      card.classList.toggle("flipped");
-    };
   </script>
+  <script type="module" src="auth.js"></script>
 </body>
 </html>
