@@ -230,8 +230,10 @@
           • Include a special character<br />
           • Have an uppercase letter
         </div>
-        <div id="password-strength-bar">
-          <div id="password-strength-bar-inner"></div>
+        <div id="password-strength-container" style="display: none;">
+          <div id="password-strength-bar">
+            <div id="password-strength-bar-inner"></div>
+          </div>
         </div>
         <div class="input-group">
           <input id="signup-confirm" type="password" placeholder="Confirm Password" required />
@@ -264,9 +266,15 @@
     const bar = document.getElementById("password-strength-bar-inner");
     const confirmFeedback = document.getElementById("confirm-feedback");
 
-    passwordField.addEventListener("focus", () => hint.style.display = "block");
+    passwordField.addEventListener("focus", () => {
+      hint.style.display = "block";
+      barContainer.style.display = "block";
+    });
     [confirmField, emailField, usernameField].forEach(el =>
-      el.addEventListener("focus", () => (hint.style.display = "none"))
+        el.addEventListener("focus", () => {
+        hint.style.display = "none";
+        barContainer.style.display = "none";
+      })
     );
 
     passwordField.addEventListener("input", () => {
