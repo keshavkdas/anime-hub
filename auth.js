@@ -87,41 +87,33 @@ window.signup = async () => {
   }
 
   // Firebase: send verification email manually
-  try {
-    const { getAuth, signInWithEmailAndPassword, sendEmailVerification } = await import(
-      "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js"
-    );
-
-    const { initializeApp } = await import(
-      "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"
-    );
-
-    const firebaseApp = initializeApp({
-      apiKey: "AIzaSyBPPYO5XN3-XQXSPgILze_JcgYBZTYBdz0",
-      authDomain: "anime-hub-11eca.firebaseapp.com",
-      projectId: "anime-hub-11eca",
-    });
-
-    const auth = getAuth(firebaseApp);
-    const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    await sendEmailVerification(userCredential.user);
-    console.log("📨 Verification email sent.");
-    document.getElementById("verify-overlay").style.display = "flex";
-
-    const poll = setInterval(async () => {
-      await userCredential.user.reload();
-      if (userCredential.user.emailVerified) {
-        clearInterval(poll);
-        document.getElementById("verify-overlay").style.display = "none";
-        localStorage.setItem("user", JSON.stringify(data.user));
-        googleCredResponse = null;
-        window.location.href = "index.html";
-      }
-    }, 3000);
-  } catch (err) {
-    console.warn("❌ Failed to send verification email:", err.message);
+  if (!data.verificationSent) {
     alert("Failed to send verification email.");
+    return;
   }
+
+  document.getElementById("verify-overlay").style.display = "flex";
+  const idToken = data.idToken;
+
+  const poll = setInterval(async () => {
+    const verify = await fetch(WORKER_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        action: "checkVerify",
+        uid: data.user.uid,
+        idToken
+      })
+    });
+    const vd = await verify.json();
+    if (vd.verified) {
+      clearInterval(poll);
+      document.getElementById("verify-overlay").style.display = "none";
+      localStorage.setItem("user", JSON.stringify(data.user));
+      googleCredResponse = null;
+      window.location.href = "index.html";
+    }
+  }, 3000);
 };
 
 // On load
