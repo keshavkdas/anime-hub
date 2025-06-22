@@ -41,6 +41,10 @@
       text-align: center;
     }
 
+    .input-group {
+      position: relative;
+    }
+
     input {
       width: 100%;
       padding: 14px;
@@ -53,8 +57,18 @@
     }
 
     input:focus {
-      border-color: #58a6ff;
+      border-color: #ff6600;
       outline: none;
+    }
+
+    .toggle-eye {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      color: #aaa;
+      font-size: 18px;
     }
 
     button {
@@ -63,7 +77,7 @@
       margin-top: 12px;
       font-size: 15px;
       font-weight: 600;
-      background: #238636;
+      background: #ff6600;
       color: white;
       border: none;
       border-radius: 6px;
@@ -72,7 +86,7 @@
     }
 
     button:hover {
-      background: #2ea043;
+      background: #e65c00;
     }
 
     .toggle {
@@ -83,7 +97,7 @@
     }
 
     .toggle a {
-      color: #58a6ff;
+      color: #ffa500;
       cursor: pointer;
       text-decoration: none;
     }
@@ -139,6 +153,26 @@
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
     }
 
+    #password-hint {
+      font-size: 13px;
+      color: #999;
+      line-height: 1.4;
+      display: none;
+      margin-top: -6px;
+    }
+
+    #password-strength {
+      font-size: 13px;
+      margin-top: 6px;
+    }
+
+    #confirm-feedback {
+      font-size: 13px;
+      color: #ff6b6b;
+      margin-top: 6px;
+      display: none;
+    }
+
     @media (max-width: 500px) {
       .auth-container {
         padding: 24px;
@@ -154,7 +188,10 @@
     <div id="login-box" class="visible">
       <h2>Welcome Back</h2>
       <input id="login-email" type="email" placeholder="Email" required />
-      <input id="login-password" type="password" placeholder="Password" required />
+      <div class="input-group">
+        <input id="login-password" type="password" placeholder="Password" required />
+        <span class="toggle-eye" id="toggle-login-pass">👁️</span>
+      </div>
       <button onclick="login()">Login</button>
       <div id="gsi-button"></div>
       <div class="toggle">
@@ -167,18 +204,22 @@
       <h2>Create Your Account</h2>
       <input id="signup-email" type="email" placeholder="Email" required readonly />
       <input id="signup-username" type="text" placeholder="Username" required />
-      <input id="signup-password" type="password" placeholder="Password" required />
-      <div id="password-hint" style="font-size:13px;color:#999;line-height:1.4;display:none;">
-      <strong>Password must:</strong><br />
+      <div class="input-group">
+        <input id="signup-password" type="password" placeholder="Password" required />
+        <span class="toggle-eye" id="toggle-signup-pass">👁️</span>
+      </div>
+      <div id="password-hint">
+        <strong>Password must:</strong><br />
         • Be at least 6 characters<br />
         • Contain a number<br />
         • Include a special character
       </div>
-      <div id="password-strength" style="margin-top:6px;font-size:13px;color:#ccc;"></div>
-      <input id="signup-confirm" type="password" placeholder="Confirm Password" required />
-      <div id="signup-confirm" style="font-size:13px;color:#ff6b6b;margin-top:6px;display:none;">
-            Passwords do not match
+      <div id="password-strength"></div>
+      <div class="input-group">
+        <input id="signup-confirm" type="password" placeholder="Confirm Password" required />
+        <span class="toggle-eye" id="toggle-signup-confirm">👁️</span>
       </div>
+      <div id="confirm-feedback">Passwords do not match</div>
       <button onclick="signup()">Create Account</button>
       <div class="toggle">
         Already have an account? <a onclick="toggleForm()">Login</a>
@@ -196,30 +237,49 @@
   </div>
 
   <script>
-  const passwordField = document.getElementById("signup-password");
-  const confirmField = document.getElementById("signup-confirm");
-  const hint = document.getElementById("password-hint");
-  const strength = document.getElementById("password-strength");
-  const confirmFeedback = document.getElementById("confirm-feedback");
+    // Password logic
+    const passwordField = document.getElementById("signup-password");
+    const confirmField = document.getElementById("signup-confirm");
+    const hint = document.getElementById("password-hint");
+    const strength = document.getElementById("password-strength");
+    const confirmFeedback = document.getElementById("confirm-feedback");
 
-  passwordField.addEventListener("focus", () => hint.style.display = "block");
+    passwordField.addEventListener("focus", () => {
+      hint.style.display = "block";
+    });
 
-  passwordField.addEventListener("input", () => {
-    const val = passwordField.value;
-    let score = 0;
-    if (val.length >= 6) score++;
-    if (/\d/.test(val)) score++;
-    if (/[!@#$%^&*]/.test(val)) score++;
+    passwordField.addEventListener("input", () => {
+      const val = passwordField.value;
+      let score = 0;
+      if (val.length >= 6) score++;
+      if (/\d/.test(val)) score++;
+      if (/[!@#$%^&*]/.test(val)) score++;
 
-    const levels = ["Weak", "Moderate", "Strong"];
-    strength.textContent = score ? `Strength: ${levels[score - 1]}` : "";
-    strength.style.color = ["#ff6b6b", "#f0ad4e", "#28a745"][score - 1] || "#ccc";
-  });
+      const levels = ["Weak", "Moderate", "Strong"];
+      strength.textContent = score ? `Strength: ${levels[score - 1]}` : "";
+      strength.style.color = ["#ff6b6b", "#ffa500", "#ff6600"][score - 1] || "#ccc";
+    });
 
-  confirmField.addEventListener("input", () => {
-    confirmFeedback.style.display = passwordField.value === confirmField.value ? "none" : "block";
-  });
-</script>
-<script type="module" src="auth.js"></script>
+    confirmField.addEventListener("input", () => {
+      confirmFeedback.style.display = passwordField.value === confirmField.value ? "none" : "block";
+    });
+
+    // Show/Hide password toggles
+    function setupToggle(inputId, toggleId) {
+      const input = document.getElementById(inputId);
+      const toggle = document.getElementById(toggleId);
+      toggle.addEventListener("click", () => {
+        const isHidden = input.type === "password";
+        input.type = isHidden ? "text" : "password";
+        toggle.textContent = isHidden ? "🙈" : "👁️";
+      });
+    }
+
+    setupToggle("login-password", "toggle-login-pass");
+    setupToggle("signup-password", "toggle-signup-pass");
+    setupToggle("signup-confirm", "toggle-signup-confirm");
+  </script>
+
+  <script type="module" src="auth.js"></script>
 </body>
 </html>
