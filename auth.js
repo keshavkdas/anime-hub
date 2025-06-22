@@ -1,7 +1,6 @@
 const WORKER_URL = "https://anime-hub-auth.keshavkdas23.workers.dev/";
 let googleCredResponse = null;
 
-// Load Google Identity Services (GSI)
 function loadGSI() {
   const script = document.createElement("script");
   script.src = "https://accounts.google.com/gsi/client";
@@ -45,13 +44,12 @@ async function handleGoogleCredential(response) {
   }
 }
 
-// Toggle between login and signup
-// Flip between login and signup using 3D rotation
+// ✅ Only ONE window.onload — all setup goes here
 window.onload = () => {
   document.getElementById("verify-overlay").style.display = "none";
   loadGSI();
 
-  // Toggle between login and signup
+  // Flip between login and signup
   window.toggleForm = () => {
     const loginBox = document.getElementById("login-box");
     const signupBox = document.getElementById("signup-box");
@@ -74,7 +72,6 @@ window.onload = () => {
     }
   };
 };
-
 
 // Login
 window.login = async () => {
@@ -157,10 +154,4 @@ window.signup = async () => {
       window.location.href = "index.html";
     }
   }, 3000);
-};
-
-// On load
-window.onload = () => {
-  document.getElementById("verify-overlay").style.display = "none";
-  loadGSI();
 };
