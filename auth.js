@@ -88,6 +88,38 @@ window.signup = async () => {
     return;
   }
 
+  // ✅ Get idToken to poll for verification
+  const idToken = data.idToken;
+  if (!idToken) {
+    alert("Failed to send verification email.");
+    return;
+  }
+
+  // Show overlay & start polling for verification
+  document.getElementById("verify-overlay").style.display = "flex";
+
+  const poll = setInterval(async () => {
+    const verify = await fetch(WORKER_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        action: "checkVerify",
+        uid: data.user.uid,
+        idToken
+      })
+    });
+    const vd = await verify.json();
+    if (vd.verified) {
+      clearInterval(poll);
+      document.getElementById("verify-overlay").style.display = "none";
+      localStorage.setItem("user", JSON.stringify(data.user));
+      googleCredResponse = null;
+      window.location.href = "index.html";
+    }
+  }, 3000);
+};
+
+
   // Now use Firebase Auth (client) to send verification email
   try {
     const { getAuth, signInWithEmailAndPassword, sendEmailVerification } = await import(
