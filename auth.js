@@ -47,9 +47,34 @@ async function handleGoogleCredential(response) {
 
 // Toggle between login and signup
 // Flip between login and signup using 3D rotation
-window.toggleForm = () => {
-  document.getElementById("flip-card").classList.toggle("flipped");
+window.onload = () => {
+  document.getElementById("verify-overlay").style.display = "none";
+  loadGSI();
+
+  // Toggle between login and signup
+  window.toggleForm = () => {
+    const loginBox = document.getElementById("login-box");
+    const signupBox = document.getElementById("signup-box");
+
+    if (!loginBox || !signupBox) {
+      console.error("login-box or signup-box not found in DOM.");
+      return;
+    }
+
+    if (loginBox.classList.contains("visible")) {
+      loginBox.classList.remove("visible");
+      loginBox.classList.add("hidden");
+      signupBox.classList.remove("hidden");
+      signupBox.classList.add("visible");
+    } else {
+      signupBox.classList.remove("visible");
+      signupBox.classList.add("hidden");
+      loginBox.classList.remove("hidden");
+      loginBox.classList.add("visible");
+    }
+  };
 };
+
 
 // Login
 window.login = async () => {
