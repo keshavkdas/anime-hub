@@ -194,6 +194,19 @@
         box-shadow: none;
       }
     }
+    #gsi-wrapper {
+      display: flex;
+      justify-content: center;
+      margin: 10px 0;
+    }
+
+    #gsi-button > div {
+      width: 100% !important;
+      max-width: 280px;
+      border-radius: 6px !important;
+      overflow: hidden;
+    }
+
   </style>
 </head>
 <body>
@@ -208,7 +221,7 @@
           <span class="toggle-eye" id="toggle-login-pass">👁️</span>
         </div>
         <button onclick="login()">Login</button>
-        <div id="gsi-button"></div>
+        <div id="gsi-wrapper"><div id="gsi-button"></div></div>
         <div class="toggle">
           New here? <a id="show-signup">Sign up</a>
         </div>
