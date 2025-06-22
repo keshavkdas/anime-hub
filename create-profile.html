@@ -1,175 +1,163 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Create Profile – AnimeHub</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-<style>
-  * {box-sizing: border-box;}
-  html, body {
-    margin: 0; padding: 0;
-    font-family: 'Inter', sans-serif;
-    background: linear-gradient(135deg, #0f0f0f, #1f1f1f);
-    color: #f0f0f0;
-    height: 100vh;
-    display: flex; align-items: center; justify-content: center;
-  }
-
-  .container {
-    background: #161b22; padding: 20px 30px;
-    border-radius: 10px;
-    width: 100%; max-width: 480px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-    text-align: center;
-  }
-
-  h1 {margin-bottom: 16px; color: #ffa500;}
-  p {margin-bottom: 24px;}
-
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-gap: 10px;
-    margin-bottom: 20px;
-  }
-
-  .bubble, .bubble.plus {
-    width: 80px; height: 80px;
-    background: #111;
-    border: 2px solid #333;
-    border-radius: 50%;
-    display: flex;
-    align-items: center; justify-content: center;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-    transition: border-color .2s;
-  }
-  .bubble img {
-    width:100%; height:100%; object-fit:cover;
-  }
-  .bubble.selected { border-color: #ffa500; }
-
-  .bubble.plus {
-    font-size: 36px; color: #ffa500;
-  }
-
-  form {
-    text-align: left;
-  }
-  .form-group {
-    margin-bottom: 16px;
-  }
-  label {
-    display: block; margin-bottom: 6px;
-  }
-  input[type="text"], input[type="date"] {
-    width: 100%; padding: 10px;
-    border: 1px solid #333; border-radius: 6px;
-    background: #0d1117; color: #f0f0f0;
-  }
-  button.submit {
-    background: #ffa500; color: #111;
-    width: 100%; padding: 12px;
-    border: none; border-radius: 6px;
-    font-size: 16px; cursor: pointer;
-    margin-top: 12px;
-  }
-  button.submit:hover { background: #e68a00; }
-</style>
+  <meta charset="UTF-8">
+  <title>Create Profile – AnimeHub</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0; padding: 0;
+      height: 100%;
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #0f0f0f, #1f1f1f);
+      color: #f0f0f0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .container {
+      background: #161b22;
+      padding: 24px;
+      border-radius: 10px;
+      width: 100%;
+      max-width: 500px; /* Increased width */
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    }
+    h1 { margin-bottom: 16px; color: #ffa500; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+    .bubble, .bubble.plus {
+      width: 90px; height: 90px; /* Slightly bigger */
+      background: #111;
+      border: 2px solid #333;
+      border-radius: 50%;
+      display: flex;
+      align-items: center; justify-content: center;
+      cursor: pointer;
+      overflow: hidden;
+      transition: border-color .2s;
+    }
+    .bubble img {
+      width: 100%; height: 100%; object-fit: cover;
+    }
+    .bubble.selected { border-color: #ffa500; }
+    .bubble.plus {
+      font-size: 40px;
+      color: #ffa500;
+    }
+    form { max-width: 100%; }
+    .form-group {
+      margin-bottom: 18px;
+    }
+    label {
+      display: block; margin-bottom: 6px;
+    }
+    input[type="text"], input[type="date"] {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #333;
+      border-radius: 6px;
+      background: #0d1117;
+      color: #f0f0f0;
+      font-size: 15px;
+    }
+    button.submit {
+      background: #ffa500;
+      color: #111;
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background .2s ease;
+    }
+    button.submit:hover {
+      background: #e68a00;
+    }
+  </style>
 </head>
 <body>
 
 <div class="container">
   <h1>Select Your Character</h1>
   <div class="grid" id="avatar-grid">
-    <!-- bubbles inserted here -->
+    <!-- JS inserts bubbles -->
   </div>
 
   <form id="profile-form">
-    <div class="form-group">
-      <label for="first-name">First Name</label>
-      <input type="text" id="first-name" required>
-    </div>
-    <div class="form-group">
-      <label for="last-name">Last Name</label>
-      <input type="text" id="last-name" required>
-    </div>
-    <div class="form-group">
-      <label for="dob">Date of Birth</label>
-      <input type="date" id="dob" required>
-    </div>
+    <div class="form-group"><label>First Name</label><input type="text" id="first-name" required></div>
+    <div class="form-group"><label>Last Name</label><input type="text" id="last-name" required></div>
+    <div class="form-group"><label>Date of Birth</label><input type="date" id="dob" required></div>
     <button type="submit" class="submit">Complete Profile</button>
   </form>
 </div>
 
 <script>
-// Using Jikan REST API for top anime characters
-const grid = document.getElementById('avatar-grid');
-let selectedId = null;
+  const grid = document.getElementById('avatar-grid');
+  let pageOffset = 0;
+  let selectedId = null;
 
-async function loadCharacters(offset=0) {
-  try {
-    const res = await fetch(`https://api.jikan.moe/v4/characters?limit=9&offset=${offset}`);
-    const json = await res.json();
-    return json.data || [];
-  } catch {
-    return [];
+  async function loadCharacters(offset=0) {
+    try {
+      const res = await fetch(`https://api.jikan.moe/v4/characters?limit=9&offset=${offset}`);
+      const json = await res.json();
+      return json.data || [];
+    } catch(e) {
+      console.error(e);
+      return [];
+    }
   }
-}
 
-function renderGrid(chars) {
-  grid.innerHTML = '';
-  chars.forEach(c => {
-    const bubble = document.createElement('div');
-    bubble.className = 'bubble';
-    const img = document.createElement('img');
-    img.src = c.images.jpg.image_url;
-    img.title = c.name;
-    bubble.appendChild(img);
-    bubble.onclick = () => {
-      document.querySelectorAll('.bubble').forEach(b => b.classList.remove('selected'));
-      bubble.classList.add('selected');
-      selectedId = c.mal_id;
+  function renderGrid(chars) {
+    grid.innerHTML = '';
+    chars.forEach(c => {
+      const bub = document.createElement('div');
+      bub.className = 'bubble';
+      const img = document.createElement('img');
+      img.src = c.images.jpg.image_url;
+      img.title = c.name;
+      bub.appendChild(img);
+
+      bub.addEventListener('click', () => {
+        grid.querySelectorAll('.bubble').forEach(b => b.classList.remove('selected'));
+        bub.classList.add('selected');
+        selectedId = c.mal_id;
+      });
+      grid.appendChild(bub);
+    });
+
+    const plus = document.createElement('div');
+    plus.className = 'bubble plus';
+    plus.innerText = '+';
+    plus.addEventListener('click', () => {
+      pageOffset += 9;
+      loadCharacters(pageOffset).then(chars => {
+        if (chars.length) renderGrid(chars);
+      });
+    });
+    grid.appendChild(plus);
+  }
+
+  loadCharacters().then(renderGrid);
+
+  document.getElementById('profile-form').addEventListener('submit', e => {
+    e.preventDefault();
+    if (!selectedId) return alert('Please select a character!');
+    
+    const profile = {
+      avatar: selectedId,
+      firstName: e.target['first-name'].value.trim(),
+      lastName: e.target['last-name'].value.trim(),
+      dob: e.target.dob.value
     };
-    grid.appendChild(bubble);
+    localStorage.setItem('profile', JSON.stringify(profile));
+    window.location.href = 'index.html';
   });
-  // + bubble to load more
-  const plus = document.createElement('div');
-  plus.className = 'bubble plus';
-  plus.innerText = '+';
-  plus.onclick = () => nextPage();
-  grid.appendChild(plus);
-}
-
-let pageOffset = 0;
-async function nextPage() {
-  pageOffset += 9;
-  const chars = await loadCharacters(pageOffset);
-  if (chars.length) renderGrid(chars);
-}
-
-// init
-loadCharacters().then(renderGrid);
-
-// form submission
-document.getElementById('profile-form').addEventListener('submit', e => {
-  e.preventDefault();
-  if (!selectedId) {
-    return alert('Please select a character!');
-  }
-  // collect form
-  const profile = {
-    avatar: selectedId,
-    firstName: e.target['first-name'].value.trim(),
-    lastName: e.target['last-name'].value.trim(),
-    dob: e.target.dob.value
-  };
-  localStorage.setItem('profile', JSON.stringify(profile));
-  window.location.href = 'index.html';
-});
 </script>
-
 </body>
 </html>
