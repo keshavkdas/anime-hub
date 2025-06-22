@@ -1,88 +1,175 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Create Profile – AnimeHub</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <style>
-    body,html{margin:0;padding:0;font-family:Inter,sans-serif;background:#111;color:#eee;}
-    .container{max-width:480px;margin:2rem auto;padding:20px;background:#161b22;border-radius:10px;box-shadow:0 4px 20px rgba(0,0,0,0.5);}
-    h1{text-align:center;color:#ffa500;}
-    .section{margin-bottom:20px;}
-    label{display:block;margin-bottom:6px;font-weight:600;}
-    input{width:100%;padding:10px;margin-bottom:10px;border-radius:6px;border:1px solid #30363d;background:#0d1117;color:#eee;}
-    .avatars{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
-    .avatar{width:80px;height:80px;border:2px solid #333;border-radius:50%;overflow:hidden;cursor:pointer;transition:transform .2s;}
-    .avatar.selected{border-color:#ffa500;transform:scale(1.1);}
-    .avatar img{width:100%;height:100%;object-fit:cover;}
-    .avatar.plus{display:flex;align-items:center;justify-content:center;font-size:2rem;color:#ffa500;background:#000;}
-    .btn{width:100%;padding:12px;background:#ffa500;color:#111;border:none;border-radius:6px;font-size:16px;cursor:pointer;transition:background .2s;}
-    .btn:hover{background:#e69500;}
-  </style>
+<meta charset="UTF-8">
+<title>Create Profile – AnimeHub</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  * {box-sizing: border-box;}
+  html, body {
+    margin: 0; padding: 0;
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, #0f0f0f, #1f1f1f);
+    color: #f0f0f0;
+    height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .container {
+    background: #161b22; padding: 20px 30px;
+    border-radius: 10px;
+    width: 100%; max-width: 480px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    text-align: center;
+  }
+
+  h1 {margin-bottom: 16px; color: #ffa500;}
+  p {margin-bottom: 24px;}
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .bubble, .bubble.plus {
+    width: 80px; height: 80px;
+    background: #111;
+    border: 2px solid #333;
+    border-radius: 50%;
+    display: flex;
+    align-items: center; justify-content: center;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: border-color .2s;
+  }
+  .bubble img {
+    width:100%; height:100%; object-fit:cover;
+  }
+  .bubble.selected { border-color: #ffa500; }
+
+  .bubble.plus {
+    font-size: 36px; color: #ffa500;
+  }
+
+  form {
+    text-align: left;
+  }
+  .form-group {
+    margin-bottom: 16px;
+  }
+  label {
+    display: block; margin-bottom: 6px;
+  }
+  input[type="text"], input[type="date"] {
+    width: 100%; padding: 10px;
+    border: 1px solid #333; border-radius: 6px;
+    background: #0d1117; color: #f0f0f0;
+  }
+  button.submit {
+    background: #ffa500; color: #111;
+    width: 100%; padding: 12px;
+    border: none; border-radius: 6px;
+    font-size: 16px; cursor: pointer;
+    margin-top: 12px;
+  }
+  button.submit:hover { background: #e68a00; }
+</style>
 </head>
 <body>
-  <div class="container">
-    <h1>Create Profile</h1>
-    <div class="section">
-      <label for="fname">First Name</label>
-      <input id="fname" type="text">
-      <label for="lname">Last Name</label>
-      <input id="lname" type="text">
-      <label for="dob">Date of Birth</label>
-      <input id="dob" type="date">
-    </div>
-    <div class="section">
-      <label>Select Avatar</label>
-      <div class="avatars" id="avatars">
-        <!-- Example avatars -->
-        <div class="avatar"><img src="https://via.placeholder.com/80?text=Goku"></div>
-        <div class="avatar"><img src="https://via.placeholder.com/80?text=Saitama"></div>
-        <div class="avatar"><img src="https://via.placeholder.com/80?text=Gojo"></div>
-        <div class="avatar"><img src="https://via.placeholder.com/80?text=Naruto"></div>
-        <div class="avatar"><img src="https://via.placeholder.com/80?text=Luffy"></div>
-        <div class="avatar"><img src="https://via.placeholder.com/80?text=Ichigo"></div>
-        <div class="avatar"><img src="https://via.placeholder.com/80?text=Tanjiro"></div>
-        <div class="avatar"><img src="https://via.placeholder.com/80?text=Levi"></div>
-        <div class="avatar"><img src="https://via.placeholder.com/80?text=Eren"></div>
-        <div class="avatar plus" id="loadMore">+</div>
-      </div>
-    </div>
-    <div class="section">
-      <button class="btn" onclick="submitProfile()">Submit Profile</button>
-    </div>
+
+<div class="container">
+  <h1>Select Your Character</h1>
+  <div class="grid" id="avatar-grid">
+    <!-- bubbles inserted here -->
   </div>
 
-  <script>
-    const avatars = document.querySelectorAll('.avatar');
-    let selected = null;
-    avatars.forEach(el => {
-      if(el.id === 'loadMore') return;
-      el.addEventListener('click', () => {
-        if(selected) selected.classList.remove('selected');
-        el.classList.add('selected');
-        selected = el;
-      });
-    });
+  <form id="profile-form">
+    <div class="form-group">
+      <label for="first-name">First Name</label>
+      <input type="text" id="first-name" required>
+    </div>
+    <div class="form-group">
+      <label for="last-name">Last Name</label>
+      <input type="text" id="last-name" required>
+    </div>
+    <div class="form-group">
+      <label for="dob">Date of Birth</label>
+      <input type="date" id="dob" required>
+    </div>
+    <button type="submit" class="submit">Complete Profile</button>
+  </form>
+</div>
 
-    document.getElementById('loadMore').addEventListener('click', () => {
-      alert('Load more avatars...');
-      // You can dynamically append more avatar elements here...
-    });
+<script>
+// Using Jikan REST API for top anime characters
+const grid = document.getElementById('avatar-grid');
+let selectedId = null;
 
-    function submitProfile(){
-      const fname = document.getElementById('fname').value;
-      const lname = document.getElementById('lname').value;
-      const dob = document.getElementById('dob').value;
-      const avatar = selected?.querySelector('img').src;
-      if(!fname || !lname || !dob || !avatar){
-        alert('Please complete all fields and select an avatar.');
-        return;
-      }
-      // Submit profile data (e.g., via fetch to your backend), then redirect:
-      console.log({ fname, lname, dob, avatar });
-      alert('Profile created! Redirecting to dashboard...');
-      window.location.href = 'index.html';
-    }
-  </script>
+async function loadCharacters(offset=0) {
+  try {
+    const res = await fetch(`https://api.jikan.moe/v4/characters?limit=9&offset=${offset}`);
+    const json = await res.json();
+    return json.data || [];
+  } catch {
+    return [];
+  }
+}
+
+function renderGrid(chars) {
+  grid.innerHTML = '';
+  chars.forEach(c => {
+    const bubble = document.createElement('div');
+    bubble.className = 'bubble';
+    const img = document.createElement('img');
+    img.src = c.images.jpg.image_url;
+    img.title = c.name;
+    bubble.appendChild(img);
+    bubble.onclick = () => {
+      document.querySelectorAll('.bubble').forEach(b => b.classList.remove('selected'));
+      bubble.classList.add('selected');
+      selectedId = c.mal_id;
+    };
+    grid.appendChild(bubble);
+  });
+  // + bubble to load more
+  const plus = document.createElement('div');
+  plus.className = 'bubble plus';
+  plus.innerText = '+';
+  plus.onclick = () => nextPage();
+  grid.appendChild(plus);
+}
+
+let pageOffset = 0;
+async function nextPage() {
+  pageOffset += 9;
+  const chars = await loadCharacters(pageOffset);
+  if (chars.length) renderGrid(chars);
+}
+
+// init
+loadCharacters().then(renderGrid);
+
+// form submission
+document.getElementById('profile-form').addEventListener('submit', e => {
+  e.preventDefault();
+  if (!selectedId) {
+    return alert('Please select a character!');
+  }
+  // collect form
+  const profile = {
+    avatar: selectedId,
+    firstName: e.target['first-name'].value.trim(),
+    lastName: e.target['last-name'].value.trim(),
+    dob: e.target.dob.value
+  };
+  localStorage.setItem('profile', JSON.stringify(profile));
+  window.location.href = 'index.html';
+});
+</script>
+
 </body>
 </html>
