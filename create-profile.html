@@ -20,18 +20,23 @@
       padding: 24px;
       border-radius: 10px;
       width: 100%;
-      max-width: 500px; /* Increased width */
+      max-width: 500px;
       box-shadow: 0 4px 20px rgba(0,0,0,0.5);
     }
-    h1 { margin-bottom: 16px; color: #ffa500; }
+    h1 {
+      margin: 0 0 16px;
+      color: #ffa500;
+      text-align: center;
+      font-size: 1.5rem;
+    }
     .grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
+      gap: 12px;
       margin-bottom: 24px;
     }
     .bubble, .bubble.plus {
-      width: 90px; height: 90px; /* Slightly bigger */
+      width: 70px; height: 70px;
       background: #111;
       border: 2px solid #333;
       border-radius: 50%;
@@ -44,9 +49,11 @@
     .bubble img {
       width: 100%; height: 100%; object-fit: cover;
     }
-    .bubble.selected { border-color: #ffa500; }
+    .bubble.selected {
+      border-color: #ffa500;
+    }
     .bubble.plus {
-      font-size: 40px;
+      font-size: 30px;
       color: #ffa500;
     }
     form { max-width: 100%; }
@@ -55,6 +62,7 @@
     }
     label {
       display: block; margin-bottom: 6px;
+      font-size: 0.9rem;
     }
     input[type="text"], input[type="date"] {
       width: 100%;
@@ -63,7 +71,7 @@
       border-radius: 6px;
       background: #0d1117;
       color: #f0f0f0;
-      font-size: 15px;
+      font-size: 0.95rem;
     }
     button.submit {
       background: #ffa500;
@@ -72,7 +80,7 @@
       padding: 14px;
       border: none;
       border-radius: 6px;
-      font-size: 16px;
+      font-size: 1rem;
       cursor: pointer;
       transition: background .2s ease;
     }
@@ -85,9 +93,7 @@
 
 <div class="container">
   <h1>Select Your Character</h1>
-  <div class="grid" id="avatar-grid">
-    <!-- JS inserts bubbles -->
-  </div>
+  <div class="grid" id="avatar-grid"></div>
 
   <form id="profile-form">
     <div class="form-group"><label>First Name</label><input type="text" id="first-name" required></div>
@@ -99,65 +105,55 @@
 
 <script>
   const grid = document.getElementById('avatar-grid');
-  let pageOffset = 0;
-  let selectedId = null;
+  let offset = 0, selected = null;
 
-  async function loadCharacters(offset=0) {
-    try {
-      const res = await fetch(`https://api.jikan.moe/v4/characters?limit=9&offset=${offset}`);
-      const json = await res.json();
-      return json.data || [];
-    } catch(e) {
-      console.error(e);
-      return [];
-    }
+  async function fetchChars(off=0) {
+    const res = await fetch(`https://api.jikan.moe/v4/characters?order_by=popularity&sort=desc&limit=9&offset=${off}`);
+    const json = await res.json();
+    return json.data.filter(c => !c.nickname?.toLowerCase().includes('animal'));
   }
 
-  function renderGrid(chars) {
+  function display(chars) {
     grid.innerHTML = '';
     chars.forEach(c => {
-      const bub = document.createElement('div');
-      bub.className = 'bubble';
+      const b = document.createElement('div');
+      b.className = 'bubble';
       const img = document.createElement('img');
       img.src = c.images.jpg.image_url;
       img.title = c.name;
-      bub.appendChild(img);
-
-      bub.addEventListener('click', () => {
-        grid.querySelectorAll('.bubble').forEach(b => b.classList.remove('selected'));
-        bub.classList.add('selected');
-        selectedId = c.mal_id;
-      });
-      grid.appendChild(bub);
+      b.appendChild(img);
+      b.onclick = () => {
+        grid.querySelectorAll('.bubble').forEach(x => x.classList.remove('selected'));
+        b.classList.add('selected');
+        selected = c.mal_id;
+      };
+      grid.appendChild(b);
     });
-
     const plus = document.createElement('div');
     plus.className = 'bubble plus';
     plus.innerText = '+';
-    plus.addEventListener('click', () => {
-      pageOffset += 9;
-      loadCharacters(pageOffset).then(chars => {
-        if (chars.length) renderGrid(chars);
-      });
-    });
+    plus.onclick = () => {
+      offset += 9;
+      fetchChars(offset).then(display);
+    };
     grid.appendChild(plus);
   }
 
-  loadCharacters().then(renderGrid);
+  fetchChars().then(display);
 
-  document.getElementById('profile-form').addEventListener('submit', e => {
+  document.getElementById('profile-form').onsubmit = e => {
     e.preventDefault();
-    if (!selectedId) return alert('Please select a character!');
-    
-    const profile = {
-      avatar: selectedId,
+    if (!selected) return alert('Please select a character');
+    const p = {
+      avatar: selected,
       firstName: e.target['first-name'].value.trim(),
       lastName: e.target['last-name'].value.trim(),
       dob: e.target.dob.value
     };
-    localStorage.setItem('profile', JSON.stringify(profile));
+    localStorage.setItem('profile', JSON.stringify(p));
     window.location.href = 'index.html';
-  });
+  };
 </script>
+
 </body>
 </html>
