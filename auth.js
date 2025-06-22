@@ -19,12 +19,30 @@ function loadGSI() {
   document.head.appendChild(script);
 }
 
-function handleGoogleCredential(response) {
+async function handleGoogleCredential(response) {
   googleCredResponse = response;
   const payload = JSON.parse(atob(response.credential.split(".")[1]));
-  document.getElementById("signup-email").value = payload.email;
-  toggleForm();
-  document.getElementById("signup-username").focus();
+  const email = payload.email;
+
+  // Check with backend if user exists in Firebase & KV
+  const res = await fetch(WORKER_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ action: "checkUser", email })
+  });
+
+  const data = await res.json();
+
+  if (data.exists) {
+    // ✅ User exists → redirect to index.html
+    localStorage.setItem("user", JSON.stringify({ uid: data.uid, email }));
+    window.location.href = "index.html";
+  } else {
+    // ❌ User not found → show signup form
+    document.getElementById("signup-email").value = email;
+    toggleForm();
+    document.getElementById("signup-username").focus();
+  }
 }
 
 // Toggle between login and signup
