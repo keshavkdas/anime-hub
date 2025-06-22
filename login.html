@@ -210,7 +210,7 @@
         <button onclick="login()">Login</button>
         <div id="gsi-button"></div>
         <div class="toggle">
-          New here? <a onclick="toggleForm()">Sign up</a>
+          New here? <a id="show-signup">Sign up</a>
         </div>
       </div>
 
@@ -240,7 +240,7 @@
         <div id="confirm-feedback">Passwords do not match</div>
         <button onclick="signup()">Create Account</button>
         <div class="toggle">
-          Already have an account? <a onclick="toggleForm()">Login</a>
+          Already have an account? <a id="show-login">Login</a>
         </div>
       </div>
     </div>
@@ -301,6 +301,9 @@
     setupToggle("login-password", "toggle-login-pass");
     setupToggle("signup-password", "toggle-signup-pass");
     setupToggle("signup-confirm", "toggle-signup-confirm");
+    document.getElementById("show-signup").onclick = () => toggleForm();
+    document.getElementById("show-login").onclick = () => toggleForm();
+
   </script>
   <script type="module" src="auth.js"></script>
 </body>
