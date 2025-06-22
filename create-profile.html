@@ -4,7 +4,10 @@
   <meta charset="UTF-8" />
   <title>Create Profile – AnimeHub</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap"
+    rel="stylesheet"
+  />
   <style>
     * { box-sizing: border-box; }
     body {
@@ -14,29 +17,22 @@
       color: #f0f0f0;
       padding: 40px 20px;
     }
-
     .container {
       max-width: 500px;
-      margin: 0 auto;
+      margin: auto;
       background: #161b22;
       padding: 30px;
       border-radius: 12px;
       box-shadow: 0 4px 20px rgba(0,0,0,0.5);
     }
-
     h2 {
       text-align: center;
       color: #ffa500;
       margin-bottom: 20px;
     }
+    label { display: block; margin: 12px 0 6px; font-weight: 600; }
 
-    label {
-      display: block;
-      margin: 12px 0 6px;
-      font-weight: 600;
-    }
-
-    input, select {
+    input {
       width: 100%;
       padding: 12px;
       border-radius: 6px;
@@ -45,8 +41,7 @@
       color: #fff;
       font-size: 15px;
     }
-
-    input:focus, select:focus {
+    input:focus {
       border-color: #ff6600;
       outline: none;
     }
@@ -56,16 +51,18 @@
       justify-content: center;
       flex-wrap: wrap;
       gap: 10px;
-      margin-top: 10px;
     }
 
-    .avatar {
+    .avatar, .avatar-plus {
       width: 64px;
       height: 64px;
       border-radius: 50%;
-      overflow: hidden;
-      border: 2px solid transparent;
+      background: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       cursor: pointer;
+      border: 2px solid transparent;
       transition: transform 0.2s ease, border 0.2s ease;
     }
 
@@ -81,6 +78,12 @@
       border-radius: 50%;
     }
 
+    .avatar-plus {
+      font-size: 24px;
+      color: #ffa500;
+      font-weight: bold;
+    }
+
     button {
       margin-top: 24px;
       width: 100%;
@@ -93,21 +96,26 @@
       font-weight: 600;
       cursor: pointer;
     }
-
-    button:hover {
-      background: #e65c00;
-    }
+    button:hover { background: #e65c00; }
   </style>
 </head>
 <body>
   <div class="container">
     <h2>Create Your Profile</h2>
+
     <label>Select Avatar</label>
     <div class="avatars" id="avatar-list">
-      <div class="avatar" data-avatar="avatar1.png"><img src="avatars/avatar1.png" /></div>
-      <div class="avatar" data-avatar="avatar2.png"><img src="avatars/avatar2.png" /></div>
-      <div class="avatar" data-avatar="avatar3.png"><img src="avatars/avatar3.png" /></div>
-      <div class="avatar" data-avatar="avatar4.png"><img src="avatars/avatar4.png" /></div>
+      <!-- 9 Jinkan-style character avatars -->
+      <div class="avatar" data-avatar="jinkan1.png"><img src="avatars/jinkan1.png" /></div>
+      <div class="avatar" data-avatar="jinkan2.png"><img src="avatars/jinkan2.png" /></div>
+      <div class="avatar" data-avatar="jinkan3.png"><img src="avatars/jinkan3.png" /></div>
+      <div class="avatar" data-avatar="jinkan4.png"><img src="avatars/jinkan4.png" /></div>
+      <div class="avatar" data-avatar="jinkan5.png"><img src="avatars/jinkan5.png" /></div>
+      <div class="avatar" data-avatar="jinkan6.png"><img src="avatars/jinkan6.png" /></div>
+      <div class="avatar" data-avatar="jinkan7.png"><img src="avatars/jinkan7.png" /></div>
+      <div class="avatar" data-avatar="jinkan8.png"><img src="avatars/jinkan8.png" /></div>
+      <div class="avatar" data-avatar="jinkan9.png"><img src="avatars/jinkan9.png" /></div>
+      <div class="avatar-plus" id="load-more">＋</div>
     </div>
 
     <label>Username</label>
@@ -128,6 +136,7 @@
   <script>
     let selected = null;
     const avatars = document.querySelectorAll('.avatar');
+    const plus = document.getElementById('load-more');
 
     avatars.forEach(a => {
       a.addEventListener('click', () => {
@@ -135,6 +144,12 @@
         a.classList.add('selected');
         selected = a.dataset.avatar;
       });
+    });
+
+    plus.addEventListener('click', () => {
+      // Example: load more avatars
+      alert('Load more avatars...');
+      // Here you can append more .avatar <div>s dynamically.
     });
 
     function submitProfile() {
@@ -147,8 +162,7 @@
       };
 
       if (!profile.avatar || !profile.username || !profile.firstName || !profile.lastName || !profile.dob) {
-        alert("Please complete all fields and select an avatar.");
-        return;
+        return alert("Complete all fields & select an avatar.");
       }
 
       localStorage.setItem("profile", JSON.stringify(profile));
