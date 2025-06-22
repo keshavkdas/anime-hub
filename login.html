@@ -168,7 +168,17 @@
       <input id="signup-email" type="email" placeholder="Email" required readonly />
       <input id="signup-username" type="text" placeholder="Username" required />
       <input id="signup-password" type="password" placeholder="Password" required />
+      <div id="password-hint" style="font-size:13px;color:#999;line-height:1.4;display:none;">
+      <strong>Password must:</strong><br />
+        • Be at least 6 characters<br />
+        • Contain a number<br />
+        • Include a special character
+      </div>
+      <div id="password-strength" style="margin-top:6px;font-size:13px;color:#ccc;"></div>
       <input id="signup-confirm" type="password" placeholder="Confirm Password" required />
+      <div id="signup-confirm" style="font-size:13px;color:#ff6b6b;margin-top:6px;display:none;">
+            Passwords do not match
+      </div>
       <button onclick="signup()">Create Account</button>
       <div class="toggle">
         Already have an account? <a onclick="toggleForm()">Login</a>
@@ -185,6 +195,31 @@
     </div>
   </div>
 
-  <script type="module" src="auth.js"></script>
+  <script>
+  const passwordField = document.getElementById("signup-password");
+  const confirmField = document.getElementById("signup-confirm");
+  const hint = document.getElementById("password-hint");
+  const strength = document.getElementById("password-strength");
+  const confirmFeedback = document.getElementById("confirm-feedback");
+
+  passwordField.addEventListener("focus", () => hint.style.display = "block");
+
+  passwordField.addEventListener("input", () => {
+    const val = passwordField.value;
+    let score = 0;
+    if (val.length >= 6) score++;
+    if (/\d/.test(val)) score++;
+    if (/[!@#$%^&*]/.test(val)) score++;
+
+    const levels = ["Weak", "Moderate", "Strong"];
+    strength.textContent = score ? `Strength: ${levels[score - 1]}` : "";
+    strength.style.color = ["#ff6b6b", "#f0ad4e", "#28a745"][score - 1] || "#ccc";
+  });
+
+  confirmField.addEventListener("input", () => {
+    confirmFeedback.style.display = passwordField.value === confirmField.value ? "none" : "block";
+  });
+</script>
+<script type="module" src="auth.js"></script>
 </body>
 </html>
