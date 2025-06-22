@@ -1,172 +1,87 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Create Profile – AnimeHub</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap"
-    rel="stylesheet"
-  />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: 'Inter', sans-serif;
-      background: linear-gradient(135deg, #0f0f0f, #1f1f1f);
-      color: #f0f0f0;
-      padding: 40px 20px;
-    }
-    .container {
-      max-width: 500px;
-      margin: auto;
-      background: #161b22;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-    }
-    h2 {
-      text-align: center;
-      color: #ffa500;
-      margin-bottom: 20px;
-    }
-    label { display: block; margin: 12px 0 6px; font-weight: 600; }
-
-    input {
-      width: 100%;
-      padding: 12px;
-      border-radius: 6px;
-      border: 1px solid #30363d;
-      background: #0d1117;
-      color: #fff;
-      font-size: 15px;
-    }
-    input:focus {
-      border-color: #ff6600;
-      outline: none;
-    }
-
-    .avatars {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-
-    .avatar, .avatar-plus {
-      width: 64px;
-      height: 64px;
-      border-radius: 50%;
-      background: #000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      border: 2px solid transparent;
-      transition: transform 0.2s ease, border 0.2s ease;
-    }
-
-    .avatar.selected {
-      border: 2px solid #ff6600;
-      transform: scale(1.1);
-    }
-
-    .avatar img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      border-radius: 50%;
-    }
-
-    .avatar-plus {
-      font-size: 24px;
-      color: #ffa500;
-      font-weight: bold;
-    }
-
-    button {
-      margin-top: 24px;
-      width: 100%;
-      padding: 14px;
-      background: #ff6600;
-      border: none;
-      border-radius: 6px;
-      color: white;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-    button:hover { background: #e65c00; }
+    body,html{margin:0;padding:0;font-family:Inter,sans-serif;background:#111;color:#eee;}
+    .container{max-width:480px;margin:2rem auto;padding:20px;background:#161b22;border-radius:10px;box-shadow:0 4px 20px rgba(0,0,0,0.5);}
+    h1{text-align:center;color:#ffa500;}
+    .section{margin-bottom:20px;}
+    label{display:block;margin-bottom:6px;font-weight:600;}
+    input{width:100%;padding:10px;margin-bottom:10px;border-radius:6px;border:1px solid #30363d;background:#0d1117;color:#eee;}
+    .avatars{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+    .avatar{width:80px;height:80px;border:2px solid #333;border-radius:50%;overflow:hidden;cursor:pointer;transition:transform .2s;}
+    .avatar.selected{border-color:#ffa500;transform:scale(1.1);}
+    .avatar img{width:100%;height:100%;object-fit:cover;}
+    .avatar.plus{display:flex;align-items:center;justify-content:center;font-size:2rem;color:#ffa500;background:#000;}
+    .btn{width:100%;padding:12px;background:#ffa500;color:#111;border:none;border-radius:6px;font-size:16px;cursor:pointer;transition:background .2s;}
+    .btn:hover{background:#e69500;}
   </style>
 </head>
 <body>
   <div class="container">
-    <h2>Create Your Profile</h2>
-
-    <label>Select Avatar</label>
-    <div class="avatars" id="avatar-list">
-      <!-- 9 Jinkan-style character avatars -->
-      <div class="avatar" data-avatar="jinkan1.png"><img src="avatars/jinkan1.png" /></div>
-      <div class="avatar" data-avatar="jinkan2.png"><img src="avatars/jinkan2.png" /></div>
-      <div class="avatar" data-avatar="jinkan3.png"><img src="avatars/jinkan3.png" /></div>
-      <div class="avatar" data-avatar="jinkan4.png"><img src="avatars/jinkan4.png" /></div>
-      <div class="avatar" data-avatar="jinkan5.png"><img src="avatars/jinkan5.png" /></div>
-      <div class="avatar" data-avatar="jinkan6.png"><img src="avatars/jinkan6.png" /></div>
-      <div class="avatar" data-avatar="jinkan7.png"><img src="avatars/jinkan7.png" /></div>
-      <div class="avatar" data-avatar="jinkan8.png"><img src="avatars/jinkan8.png" /></div>
-      <div class="avatar" data-avatar="jinkan9.png"><img src="avatars/jinkan9.png" /></div>
-      <div class="avatar-plus" id="load-more">＋</div>
+    <h1>Create Profile</h1>
+    <div class="section">
+      <label for="fname">First Name</label>
+      <input id="fname" type="text">
+      <label for="lname">Last Name</label>
+      <input id="lname" type="text">
+      <label for="dob">Date of Birth</label>
+      <input id="dob" type="date">
     </div>
-
-    <label>Username</label>
-    <input id="username" type="text" placeholder="Your username" required />
-
-    <label>First Name</label>
-    <input id="first-name" type="text" placeholder="First name" required />
-
-    <label>Last Name</label>
-    <input id="last-name" type="text" placeholder="Last name" required />
-
-    <label>Date of Birth</label>
-    <input id="dob" type="date" required />
-
-    <button onclick="submitProfile()">Create Profile</button>
+    <div class="section">
+      <label>Select Avatar</label>
+      <div class="avatars" id="avatars">
+        <!-- Example avatars -->
+        <div class="avatar"><img src="https://via.placeholder.com/80?text=Goku"></div>
+        <div class="avatar"><img src="https://via.placeholder.com/80?text=Saitama"></div>
+        <div class="avatar"><img src="https://via.placeholder.com/80?text=Gojo"></div>
+        <div class="avatar"><img src="https://via.placeholder.com/80?text=Naruto"></div>
+        <div class="avatar"><img src="https://via.placeholder.com/80?text=Luffy"></div>
+        <div class="avatar"><img src="https://via.placeholder.com/80?text=Ichigo"></div>
+        <div class="avatar"><img src="https://via.placeholder.com/80?text=Tanjiro"></div>
+        <div class="avatar"><img src="https://via.placeholder.com/80?text=Levi"></div>
+        <div class="avatar"><img src="https://via.placeholder.com/80?text=Eren"></div>
+        <div class="avatar plus" id="loadMore">+</div>
+      </div>
+    </div>
+    <div class="section">
+      <button class="btn" onclick="submitProfile()">Submit Profile</button>
+    </div>
   </div>
 
   <script>
-    let selected = null;
     const avatars = document.querySelectorAll('.avatar');
-    const plus = document.getElementById('load-more');
-
-    avatars.forEach(a => {
-      a.addEventListener('click', () => {
-        avatars.forEach(av => av.classList.remove('selected'));
-        a.classList.add('selected');
-        selected = a.dataset.avatar;
+    let selected = null;
+    avatars.forEach(el => {
+      if(el.id === 'loadMore') return;
+      el.addEventListener('click', () => {
+        if(selected) selected.classList.remove('selected');
+        el.classList.add('selected');
+        selected = el;
       });
     });
 
-    plus.addEventListener('click', () => {
-      // Example: load more avatars
+    document.getElementById('loadMore').addEventListener('click', () => {
       alert('Load more avatars...');
-      // Here you can append more .avatar <div>s dynamically.
+      // You can dynamically append more avatar elements here...
     });
 
-    function submitProfile() {
-      const profile = {
-        avatar: selected,
-        username: document.getElementById('username').value.trim(),
-        firstName: document.getElementById('first-name').value.trim(),
-        lastName: document.getElementById('last-name').value.trim(),
-        dob: document.getElementById('dob').value
-      };
-
-      if (!profile.avatar || !profile.username || !profile.firstName || !profile.lastName || !profile.dob) {
-        return alert("Complete all fields & select an avatar.");
+    function submitProfile(){
+      const fname = document.getElementById('fname').value;
+      const lname = document.getElementById('lname').value;
+      const dob = document.getElementById('dob').value;
+      const avatar = selected?.querySelector('img').src;
+      if(!fname || !lname || !dob || !avatar){
+        alert('Please complete all fields and select an avatar.');
+        return;
       }
-
-      localStorage.setItem("profile", JSON.stringify(profile));
-      window.location.href = "index.html";
+      // Submit profile data (e.g., via fetch to your backend), then redirect:
+      console.log({ fname, lname, dob, avatar });
+      alert('Profile created! Redirecting to dashboard...');
+      window.location.href = 'index.html';
     }
   </script>
 </body>
