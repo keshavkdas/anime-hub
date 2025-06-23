@@ -23,7 +23,7 @@
       background: #161b22;
       padding: 40px;
       border-radius: 12px;
-      max-width: 700px;
+      max-width: 600px;
       width: 100%;
       box-shadow: 0 4px 20px rgba(0,0,0,0.5);
     }
@@ -32,6 +32,13 @@
       margin-top: 0;
       color: #fff;
       text-align: center;
+    }
+
+    label {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      display: block;
     }
 
     form {
@@ -45,8 +52,13 @@
       background: #0d1117;
       border: 1px solid #30363d;
       border-radius: 6px;
-      color: #c9d1d9;
+      color: #ffa500;
       font-size: 15px;
+    }
+
+    input::placeholder {
+      color: #ffa500;
+      opacity: 0.8;
     }
 
     input:focus {
@@ -57,22 +69,22 @@
     .grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 14px;
+      gap: 10px;
       margin-top: 10px;
     }
 
     .bubble {
-      width: 100%;
-      aspect-ratio: 1 / 1;
+      width: 70px;
+      height: 70px;
       border-radius: 50%;
       background: #0d1117;
-      border: 3px solid transparent;
+      border: 2px solid transparent;
       overflow: hidden;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: border-color 0.3s ease;
+      transition: border-color 0.3s ease, border-width 0.3s ease;
     }
 
     .bubble img {
@@ -82,11 +94,11 @@
     }
 
     .bubble.selected {
-      border-color: #ff6600;
+      border: 4px solid #ff6600;
     }
 
     .bubble.plus {
-      font-size: 32px;
+      font-size: 28px;
       font-weight: bold;
       color: #ff6600;
       background: #000;
@@ -110,10 +122,10 @@
 
     @media (max-width: 600px) {
       .profile-container {
-        padding: 20px;
+        padding: 24px;
       }
       .grid {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(3, 1fr);
       }
     }
   </style>
@@ -122,14 +134,16 @@
   <div class="profile-container">
     <h2>Create Your Profile</h2>
     <form id="profile-form">
-      <input type="text" id="username" placeholder="Username" required />
-      <input type="text" id="first-name" placeholder="First Name" required />
-      <input type="text" id="last-name" placeholder="Last Name" required />
-      <input type="date" id="dob" required />
       <div>
         <label>Select your avatar:</label>
         <div class="grid" id="avatar-grid"></div>
       </div>
+
+      <input type="text" id="username" placeholder="Username" required />
+      <input type="text" id="first-name" placeholder="First Name" required />
+      <input type="text" id="last-name" placeholder="Last Name" required />
+      <input type="date" id="dob" required />
+
       <button type="submit">Save Profile</button>
     </form>
   </div>
@@ -141,10 +155,11 @@
       let selectedAvatar = null;
 
       async function fetchCharacters() {
-        const res = await fetch(`https://api.jikan.moe/v4/characters?limit=9&offset=${offset}&order_by=favorites&sort=desc`);
+        const res = await fetch(`https://api.jikan.moe/v4/characters?limit=3&offset=${offset}&order_by=favorites&sort=desc`);
         const json = await res.json();
         return (json.data || []).filter(c =>
-          c.name && c.images?.jpg?.image_url && !c.name.toLowerCase().includes("dog") && !c.name.toLowerCase().includes("cat") && !c.name.toLowerCase().includes("bear")
+          c.name && c.images?.jpg?.image_url &&
+          !/dog|cat|bear|pig|sheep|panda|duck/i.test(c.name)
         );
       }
 
@@ -170,7 +185,7 @@
         plus.textContent = "+";
         plus.onclick = () => {
           plus.remove();
-          offset += 9;
+          offset += 3;
           fetchCharacters().then(renderCharacters);
         };
         grid.appendChild(plus);
@@ -193,7 +208,6 @@
           return;
         }
 
-        // Save to localStorage for now; backend integration can be added later
         localStorage.setItem("profile", JSON.stringify(user));
         window.location.href = "index.html";
       };
