@@ -217,7 +217,7 @@
 
     async function initTray() {
       avatars = await fetchCharacters(1);
-      renderTray(avatars.slice(0, 5));
+      renderTray(avatars.slice(0, 4));
     }
 
     function renderTray(list) {
@@ -261,7 +261,7 @@
         if (selectedAvatar === char.src) div.classList.add("selected");
         div.onclick = () => {
           selectedAvatar = char.src;
-          renderTray(avatars.slice(0, 4));
+          renderTray(avatars.slice(0, 5));
           toggleOverlay();
         };
         document.getElementById("overlay-avatars").appendChild(div);
