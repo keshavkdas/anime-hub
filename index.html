@@ -271,30 +271,15 @@
     </nav>
   </header>
 
-  <section class="hero">
-    
-  <div id="user-avatar" style="position: absolute; top: 20px; right: 20px;">
-  <img id="avatar-img" src="" alt="Avatar" style="width: 60px; height: 60px; border-radius: 50%; border: 2px solid #f97316; cursor: pointer;">
-  
-  <div id="avatar-menu" style="
-    display: none;
-    position: absolute;
-    top: 70px;
-    right: 0;
-    background-color: #161b22;
-    border: 1px solid #f97316;
-    border-radius: 10px;
-    padding: 10px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-    z-index: 1000;
-    transform-origin: top right;
-    animation: growIn 0.2s ease-out;
-  ">
-    <div style="padding: 6px 12px; cursor: pointer;" onclick="openProfile()">👤 Profile</div>
-    <div style="padding: 6px 12px; cursor: pointer;" onclick="openSettings()">⚙️ Settings</div>
-    <div style="padding: 6px 12px; cursor: pointer;" onclick="logout()">🚪 Log Out</div>
+  <section class="hero">  
+  <div class="absolute top-6 right-6 z-10" id="user-avatar">
+    <img id="avatar-img" src="" alt="Avatar" class="w-[60px] h-[60px] rounded-full border-2 border-orange-500 cursor-pointer" />
+    <div id="avatar-menu" class="mt-2 bg-[#161b22] border border-orange-500 rounded-lg text-sm shadow-xl hidden absolute right-0 p-2">
+      <div class="py-1 px-4 hover:bg-orange-500/20 cursor-pointer" onclick="openProfile()">👤 Profile</div>
+      <div class="py-1 px-4 hover:bg-orange-500/20 cursor-pointer" onclick="openSettings()">⚙️ Settings</div>
+      <div class="py-1 px-4 hover:bg-orange-500/20 cursor-pointer" onclick="logout()">🚪 Log Out</div>
+    </div>
   </div>
-</div>
 
     <h2>Welcome to AnimeHub</h2>
     <p>Your one-stop destination for the latest anime shows, movies, and more.</p>
