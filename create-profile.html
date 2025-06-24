@@ -97,14 +97,15 @@
     }
 
     #avatar-overlay {
-      display: none;
       position: fixed;
       inset: 0;
       background: rgba(0,0,0,0.9);
       z-index: 999;
+      display: flex;
       justify-content: center;
       align-items: center;
       flex-direction: column;
+      overflow: hidden;
     }
 
     #avatar-overlay.active {
@@ -112,11 +113,9 @@
     }
 
     #overlay-box {
-      position: relative;
       background: #161b22;
-      max-width: 500px;
-      width: 90%;
       max-height: 90vh;
+      width: 90%;
       padding: 20px;
       border-radius: 10px;
       overflow-y: auto;
