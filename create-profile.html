@@ -188,6 +188,28 @@
     body.no-scroll {
       overflow: hidden;
     }
+    input[type="date"] {
+  background-color: #0d1117;
+  color: #ff6600;
+  border: 1px solid #30363d;
+  border-radius: 6px;
+  padding: 12px;
+  font-size: 15px;
+  width: 90%;
+  cursor: pointer;
+}
+
+/* Style the calendar icon */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1) hue-rotate(180deg);
+  cursor: pointer;
+}
+
+/* Remove spin buttons in Firefox */
+input[type="date"]::-moz-focus-inner {
+  border: 0;
+}
+
   </style>
 </head>
 <body>
@@ -202,7 +224,7 @@
     <label>Last Name</label>
     <input type="text" id="last-name" placeholder="Enter your last name" required />
     <label>Date of Birth</label>
-    <input type="date" id="dob" required />
+    <input type="date" id="dob" required onkeydown="return false;" onclick="this.showPicker()" />
     <button onclick="submitProfile()">Submit Profile</button>
   </div>
 
