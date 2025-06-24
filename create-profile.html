@@ -263,7 +263,7 @@
           renderTray(avatars.slice(0, 5));
           toggleOverlay();
         };
-        document.getElementById(".avatar-scroll-container").appendChild(div);
+        document.getElementById("overlay-avatars").appendChild(div);
       });
       isLoading = false;
     }
@@ -291,7 +291,7 @@
     });
 
     // Infinite scroll
-    document.getElementById("overlay-box").addEventListener("scroll", (e) => {
+    document.querySelector(".avatar-scroll-container").addEventListener("scroll", (e) => {
       const el = e.target;
       if (el.scrollTop + el.clientHeight >= el.scrollHeight - 50) {
         loadMoreCharacters();
