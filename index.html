@@ -244,7 +244,16 @@
   background: rgba(255, 121, 18, 0.1);
   transform: scale(1.1);
 }
-
+@keyframes growIn {
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
   </style>
 </head>
 
@@ -262,7 +271,31 @@
     </nav>
   </header>
 
-  <section class="hero">
+  <section class="hero relative">
+    
+  <div id="user-avatar" style="position: absolute; top: 20px; right: 20px;">
+  <img id="avatar-img" src="" alt="Avatar" style="width: 60px; height: 60px; border-radius: 50%; border: 2px solid #f97316; cursor: pointer;">
+  
+  <div id="avatar-menu" style="
+    display: none;
+    position: absolute;
+    top: 70px;
+    right: 0;
+    background-color: #161b22;
+    border: 1px solid #f97316;
+    border-radius: 10px;
+    padding: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    z-index: 1000;
+    transform-origin: top right;
+    animation: growIn 0.2s ease-out;
+  ">
+    <div style="padding: 6px 12px; cursor: pointer;" onclick="openProfile()">👤 Profile</div>
+    <div style="padding: 6px 12px; cursor: pointer;" onclick="openSettings()">⚙️ Settings</div>
+    <div style="padding: 6px 12px; cursor: pointer;" onclick="logout()">🚪 Log Out</div>
+  </div>
+</div>
+
     <h2>Welcome to AnimeHub</h2>
     <p>Your one-stop destination for the latest anime shows, movies, and more.</p>
     <a href="login.html">Login/Signup</a>
@@ -311,7 +344,45 @@
   ">
   Added to favorites!
 </div>
+  
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const profile = JSON.parse(localStorage.getItem("profile"));
+  const avatar = document.getElementById("user-avatar");
+  const img = document.getElementById("avatar-img");
+  const menu = document.getElementById("avatar-menu");
 
+  if (profile && profile.avatar) {
+    img.src = profile.avatar;
+    avatar.style.display = "block";
+  }
+
+  img.addEventListener("click", () => {
+    menu.style.display = (menu.style.display === "block") ? "none" : "block";
+  });
+
+  // Close menu on outside click
+  document.addEventListener("click", (e) => {
+    if (!avatar.contains(e.target)) {
+      menu.style.display = "none";
+    }
+  });
+});
+
+// Dummy functions (replace with real routes/pages later)
+function openProfile() {
+  alert("Profile clicked");
+}
+function openSettings() {
+  alert("Settings clicked");
+}
+function logout() {
+  localStorage.removeItem("profile");
+  location.reload(); // or redirect to login page
+}
+</script>
+
+  
 <script>
   let currentPage = 1;
   let isLoading = false;
