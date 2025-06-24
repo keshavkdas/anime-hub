@@ -35,17 +35,13 @@
     }
 
     input {
-      width: 100%;
+      width: 80%;
       padding: 12px;
       border: 1px solid #30363d;
       border-radius: 6px;
       background-color: #0d1117;
       color: #fff;
       font-size: 15px;
-    }
-
-    input::placeholder {
-      color: #ff6600;
     }
 
     .avatar-tray {
@@ -134,7 +130,8 @@
     }
 
     .overlay-avatars {
-      display: grid;
+      display: flex;
+      flex-wrap: nowrap;
       grid-template-columns: repeat(5, 1fr);
       gap: 8px;
     }
