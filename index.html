@@ -405,36 +405,34 @@
 </div>
   
   <script>
-    const profile = JSON.parse(localStorage.getItem("profile"));
-    const avatar = document.getElementById("avatar-img");
-    const dropdown = document.getElementById("profile-dropdown");
-    const bubble = document.getElementById("profile-bubble");
+  function toggleDropdown() {
+    const menu = document.getElementById("dropdownMenu");
+    menu.style.display = (menu.style.display === "flex") ? "none" : "flex";
+  }
 
-    // Set avatar
-    if (profile && profile.avatar) {
-      avatar.src = profile.avatar;
-    } else {
-      avatar.src = "https://via.placeholder.com/60?text=?";
+  function goToProfile() {
+    window.location.href = "profile.html";
+  }
+
+  function goToSettings() {
+    window.location.href = "settings.html";
+  }
+
+  function logout() {
+    localStorage.removeItem("profile");
+    window.location.href = "login.html";
+  }
+
+  // Optional: close dropdown on outside click
+  document.addEventListener("click", function (e) {
+    const bubble = document.querySelector(".profile-bubble");
+    const menu = document.getElementById("dropdownMenu");
+    if (!bubble.contains(e.target) && !menu.contains(e.target)) {
+      menu.style.display = "none";
     }
+  });
+</script>
 
-    // Toggle dropdown
-    bubble.addEventListener("click", () => {
-      dropdown.style.display = dropdown.style.display === "flex" ? "none" : "flex";
-    });
-
-    // Logout
-    function logout() {
-      localStorage.removeItem("profile");
-      window.location.href = "login.html";
-    }
-
-    // Close dropdown when clicking outside
-    window.addEventListener("click", e => {
-      if (!bubble.contains(e.target) && !dropdown.contains(e.target)) {
-        dropdown.style.display = "none";
-      }
-    });
-  </script>
   
 <script>
   let currentPage = 1;
