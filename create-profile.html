@@ -259,7 +259,8 @@
     async function loadMoreCharacters() {
       if (isLoading) return;
       isLoading = true;
-      const more = await fetchCharacters(page++);
+      const newChars = await fetchCharacters(page++);
+      avatars.push(...newChars); 
       const container = document.getElementById("overlay-avatars");
       more.forEach(char => {
         const div = document.createElement("div");
