@@ -121,7 +121,6 @@
       padding: 20px;
       border-radius: 10px;
       box-shadow: 0 0 15px rgba(255, 102, 0, 0.4);
-      overflow: hidden;
       display: flex;
       flex-direction: column;
     }
@@ -152,9 +151,10 @@
     }
 
     .avatar-scroll-container {
-      max-height;
-      overflow-y: scroll;
+      max-height: 400px;
       overflow-x: hidden;
+      flex: 1;
+      overflow-y: auto;
     }
 
     .overlay-avatars {
