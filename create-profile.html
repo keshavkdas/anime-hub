@@ -46,7 +46,7 @@
 
     .avatar-tray {
       display: flex;
-      gap: 10px;
+      gap: 8px;
       flex-wrap: nowrap;
       margin: 15px 0;
       overflow-x: auto;
@@ -216,7 +216,7 @@
 
     async function initTray() {
       avatars = await fetchCharacters(1);
-      renderTray(avatars.slice(0, 3));
+      renderTray(avatars.slice(0, 4));
     }
 
     function renderTray(list) {
