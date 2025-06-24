@@ -344,16 +344,16 @@
   </header>
 
   <section class="hero">  
-    <div class="profile-bubble" id="profile-bubble">
-      <img id="avatar-img" src="" alt="avatar" />
-    </div>
-
-    <!-- Dropdown -->
-    <div class="dropdown" id="profile-dropdown">
-      <a href="#">Profile</a>
-      <a href="#">Settings</a>
-      <a href="#" onclick="logout()">Logout</a>
-    </div>
+   <div class="profile-section">
+  <div class="profile-bubble" onclick="toggleDropdown()">
+    <img src="..." alt="Avatar" />
+  </div>
+  <div class="dropdown" id="dropdown">
+    <button onclick="goToProfile()">👤 Profile</button>
+    <button onclick="goToSettings()">⚙️ Settings</button>
+    <button onclick="logout()">🚪 Log Out</button>
+  </div>
+</div>
   </div>
     <h2>Welcome to AnimeHub</h2>
     <p>Your one-stop destination for the latest anime shows, movies, and more.</p>
@@ -406,7 +406,7 @@
   
   <script>
   function toggleDropdown() {
-    const menu = document.getElementById("dropdownMenu");
+    const menu = document.getElementById("dropdown");
     menu.style.display = (menu.style.display === "flex") ? "none" : "flex";
   }
 
@@ -426,7 +426,7 @@
   // Optional: close dropdown on outside click
   document.addEventListener("click", function (e) {
     const bubble = document.querySelector(".profile-bubble");
-    const menu = document.getElementById("dropdownMenu");
+    const menu = document.getElementById("dropdown");
     if (!bubble.contains(e.target) && !menu.contains(e.target)) {
       menu.style.display = "none";
     }
