@@ -264,7 +264,7 @@
         if (selectedAvatar === char.src) div.classList.add("selected");
         div.onclick = () => {
           selectedAvatar = char.src;
-          renderTray(avatars.slice(0, 5));
+          renderTray(avatars.slice(0, 4));
           toggleOverlay();
         };
         document.getElementById("overlay-avatars").appendChild(div);
