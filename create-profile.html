@@ -102,7 +102,6 @@
       inset: 0;
       background: rgba(0,0,0,0.9);
       z-index: 999;
-      display: none;
       justify-content: center;
       align-items: center;
       flex-direction: column;
@@ -113,6 +112,7 @@
     }
 
     #overlay-box {
+      position: relative;
       background: #161b22;
       max-width: 500px;
       width: 90%;
@@ -146,22 +146,19 @@
       cursor: pointer;
       z-index: 10;
     }
-    @media (max-width: 500px) {
-      .overlay-avatars {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
+
     .avatar-scroll-container {
-      max-height: 400px; /* or any preferred height */
+      max-height: 400px;
       overflow-y: auto;
       overflow-x: hidden;
     }
 
     .overlay-avatars {
       display: grid;
-      grid-template-columns: repeat(5, 1fr); 
+      grid-template-columns: repeat(5, 1fr);
       gap: 8px;
     }
+
     .avatar-scroll-container::-webkit-scrollbar {
       width: 8px;
       background: black;
@@ -170,6 +167,12 @@
     .avatar-scroll-container::-webkit-scrollbar-thumb {
       background-color: #ff6600;
       border-radius: 4px;
+    }
+
+    @media (max-width: 500px) {
+      .overlay-avatars {
+        grid-template-columns: repeat(2, 1fr);
+      }
     }
   </style>
 </head>
@@ -216,7 +219,7 @@
 
     async function initTray() {
       avatars = await fetchCharacters(1);
-      renderTray(avatars.slice(0, 4));
+      renderTray(avatars.slice(0, 4)); // Show 4 initial avatars
     }
 
     function renderTray(list) {
@@ -253,6 +256,7 @@
       if (isLoading) return;
       isLoading = true;
       const more = await fetchCharacters(page++);
+      const container = document.getElementById("overlay-avatars");
       more.forEach(char => {
         const div = document.createElement("div");
         div.className = "avatar-bubble";
@@ -260,10 +264,10 @@
         if (selectedAvatar === char.src) div.classList.add("selected");
         div.onclick = () => {
           selectedAvatar = char.src;
-          renderTray(avatars.slice(0, 5));
+          renderTray(avatars.slice(0, 4));
           toggleOverlay();
         };
-        document.getElementById("overlay-avatars").appendChild(div);
+        container.appendChild(div);
       });
       isLoading = false;
     }
@@ -290,7 +294,7 @@
       });
     });
 
-    // Infinite scroll
+    // Infinite scroll on avatar list
     document.querySelector(".avatar-scroll-container").addEventListener("scroll", (e) => {
       const el = e.target;
       if (el.scrollTop + el.clientHeight >= el.scrollHeight - 50) {
