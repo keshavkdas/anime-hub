@@ -244,6 +244,22 @@
   background: rgba(255, 121, 18, 0.1);
   transform: scale(1.1);
 }
+    
+    #avatar-menu {
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    #avatar-menu.show {
+      display: block;
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    #avatar-menu.hide {
+      opacity: 0;
+      transform: scale(0.95);
+      display: none;
+    }
 @keyframes growIn {
   0% {
     transform: scale(0.8);
@@ -272,14 +288,16 @@
   </header>
 
   <section class="hero">  
-  <div class="absolute top-6 right-6 z-10" id="user-avatar">
-    <img id="avatar-img" src="" alt="Avatar" class="w-[60px] h-[60px] rounded-full border-2 border-orange-500 cursor-pointer" />
-    <div id="avatar-menu" class="mt-2 bg-[#161b22] border border-orange-500 rounded-lg text-sm shadow-xl hidden absolute right-0 p-2">
-      <div class="py-1 px-4 hover:bg-orange-500/20 cursor-pointer" onclick="openProfile()">👤 Profile</div>
-      <div class="py-1 px-4 hover:bg-orange-500/20 cursor-pointer" onclick="openSettings()">⚙️ Settings</div>
-      <div class="py-1 px-4 hover:bg-orange-500/20 cursor-pointer" onclick="logout()">🚪 Log Out</div>
+    <div class="absolute top-6 right-6 z-20" id="user-avatar">
+      <img id="avatar-img" src="" alt="Avatar"
+        class="w-[60px] h-[60px] rounded-full border-2 border-orange-500 cursor-pointer" />
+      <div id="avatar-menu"
+        class="mt-2 bg-[#161b22] border border-orange-500 rounded-lg text-sm shadow-xl hidden absolute right-0 p-2 w-40 text-left z-30">
+        <div class="py-1 px-4 hover:bg-orange-500/20 cursor-pointer" onclick="openProfile()">👤 Profile</div>
+        <div class="py-1 px-4 hover:bg-orange-500/20 cursor-pointer" onclick="openSettings()">⚙️ Settings</div>
+        <div class="py-1 px-4 hover:bg-orange-500/20 cursor-pointer" onclick="logout()">🚪 Log Out</div>
+      </div>
     </div>
-  </div>
 
     <h2>Welcome to AnimeHub</h2>
     <p>Your one-stop destination for the latest anime shows, movies, and more.</p>
@@ -331,42 +349,43 @@
 </div>
   
 <script>
-document.addEventListener("DOMContentLoaded", () => {
-  const profile = JSON.parse(localStorage.getItem("profile"));
-  const avatar = document.getElementById("user-avatar");
-  const img = document.getElementById("avatar-img");
-  const menu = document.getElementById("avatar-menu");
+    // Load profile from localStorage
+    const avatar = document.getElementById("avatar-img");
+    const menu = document.getElementById("avatar-menu");
 
-  if (profile && profile.avatar) {
-    img.src = profile.avatar;
-    avatar.style.display = "block";
-  }
-
-  img.addEventListener("click", () => {
-    menu.style.display = (menu.style.display === "block") ? "none" : "block";
-  });
-
-  // Close menu on outside click
-  document.addEventListener("click", (e) => {
-    if (!avatar.contains(e.target)) {
-      menu.style.display = "none";
+    const profile = JSON.parse(localStorage.getItem("profile"));
+    if (profile && profile.avatar) {
+      avatar.src = profile.avatar;
+    } else {
+      // fallback avatar
+      avatar.src = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
     }
-  });
-});
 
-// Dummy functions (replace with real routes/pages later)
-function openProfile() {
-  alert("Profile clicked");
-}
-function openSettings() {
-  alert("Settings clicked");
-}
-function logout() {
-  localStorage.removeItem("profile");
-  location.reload(); // or redirect to login page
-}
-</script>
+    // Toggle dropdown
+    avatar.onclick = () => {
+      menu.classList.toggle("hidden");
+    };
 
+    // Optional menu actions
+    function openProfile() {
+      alert("Go to profile");
+    }
+
+    function openSettings() {
+      alert("Go to settings");
+    }
+
+    function logout() {
+      localStorage.removeItem("profile");
+      window.location.href = "login.html";
+    }
+
+    // Close dropdown on outside click
+    document.addEventListener("click", (e) => {
+      const inside = e.target.closest("#user-avatar");
+      if (!inside) menu.classList.add("hidden");
+    });
+  </script>
   
 <script>
   let currentPage = 1;
