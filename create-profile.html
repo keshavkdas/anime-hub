@@ -41,7 +41,7 @@
       border: 1px solid #30363d;
       border-radius: 6px;
       background-color: #0d1117;
-      color: #fff;
+      color: #ff6600;
       font-size: 15px;
     }
 
@@ -218,11 +218,11 @@ input[type="date"]::-moz-focus-inner {
     <label>Select Your Avatar</label>
     <div class="avatar-tray" id="avatar-tray"></div>
     <label>Username</label>
-    <input type="text" id="username" placeholder="Enter your username" required />
+    <input type="text" id="username"required />
     <label>First Name</label>
-    <input type="text" id="first-name" placeholder="Enter your first name" required />
+    <input type="text" id="first-name"required />
     <label>Last Name</label>
-    <input type="text" id="last-name" placeholder="Enter your last name" required />
+    <input type="text" id="last-name"required />
     <label>Date of Birth</label>
     <input type="date" id="dob" required onkeydown="return false;" onclick="this.showPicker()" />
     <button onclick="submitProfile()">Submit Profile</button>
