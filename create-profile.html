@@ -2,217 +2,276 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Create Profile - AnimeHub</title>
+  <title>Create Profile – AnimeHub</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
   <style>
-    * { box-sizing: border-box; }
     body {
       margin: 0;
-      font-family: 'Inter', sans-serif;
-      background: linear-gradient(135deg, #0f0f0f, #1f1f1f);
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #0f0f0f, #1f1f1f);
       color: #f0f0f0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      padding: 20px;
     }
 
-    .profile-container {
-      background: #161b22;
-      padding: 32px;
-      border-radius: 12px;
-      max-width: 460px;
-      width: 100%;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    .container {
+      max-width: 520px;
+      margin: 50px auto;
+      background-color: #161b22;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
     }
 
     h2 {
-      margin-top: 0;
-      color: #fff;
       text-align: center;
+      margin-bottom: 25px;
+      color: #ff6600;
     }
 
     label {
-      font-size: 15px;
-      font-weight: 600;
-      margin-bottom: 6px;
       display: block;
+      margin-top: 16px;
+      margin-bottom: 6px;
+      font-weight: 500;
     }
 
-    form {
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
-    }
-
-    input, select {
-      padding: 14px;
-      background: #0d1117;
+    input {
+      width: 100%;
+      padding: 12px;
       border: 1px solid #30363d;
       border-radius: 6px;
-      color: #ffa500;
+      background-color: #0d1117;
+      color: #fff;
       font-size: 15px;
     }
 
     input::placeholder {
-      color: #ffa500;
-      opacity: 0.8;
+      color: #ff6600;
     }
 
-    input:focus {
-      border-color: #ff6600;
-      outline: none;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
+    .avatar-tray {
+      display: flex;
       gap: 10px;
-      margin-top: 10px;
+      flex-wrap: wrap;
+      margin: 15px 0;
     }
 
-    .bubble {
+    .avatar-bubble {
       width: 60px;
       height: 60px;
       border-radius: 50%;
-      background: #0d1117;
-      border: 2px solid transparent;
       overflow: hidden;
+      border: 2px solid transparent;
       cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: border-color 0.3s ease, border-width 0.3s ease;
+      transition: border 0.3s;
+      flex-shrink: 0;
     }
 
-    .bubble img {
+    .avatar-bubble.selected {
+      border: 3px solid #ff6600;
+    }
+
+    .avatar-bubble img {
       width: 100%;
       height: 100%;
       object-fit: cover;
     }
 
-    .bubble.selected {
-      border: 4px solid #ff6600;
-    }
-
-    .bubble.plus {
-      font-size: 28px;
-      font-weight: bold;
+    .avatar-bubble.plus {
+      background-color: black;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 30px;
       color: #ff6600;
-      background: #000;
     }
 
     button {
-      padding: 14px;
-      background: #ff6600;
-      color: white;
-      font-size: 16px;
-      font-weight: bold;
+      width: 100%;
+      padding: 12px;
+      margin-top: 20px;
+      background-color: #ff6600;
       border: none;
       border-radius: 6px;
+      color: white;
+      font-size: 16px;
       cursor: pointer;
-      transition: background 0.2s ease;
     }
 
-    button:hover {
-      background: #e65c00;
+    #avatar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.9);
+      z-index: 999;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+
+    #overlay-box {
+      background: #161b22;
+      max-width: 700px;
+      width: 90%;
+      max-height: 90vh;
+      padding: 20px;
+      border-radius: 10px;
+      overflow-y: auto;
+      box-shadow: 0 0 15px rgba(255, 102, 0, 0.4);
+    }
+
+    #overlay-box input {
+      margin-bottom: 15px;
+      width: 100%;
+    }
+
+    .overlay-avatars {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
+
+    #close-overlay {
+      background: transparent;
+      border: none;
+      font-size: 18px;
+      color: #ff6600;
+      float: right;
+      cursor: pointer;
     }
 
     @media (max-width: 500px) {
-      .profile-container {
-        padding: 24px;
-      }
-
-      .grid {
-        grid-template-columns: repeat(3, 1fr);
+      .overlay-avatars {
+        grid-template-columns: repeat(2, 1fr);
       }
     }
   </style>
 </head>
 <body>
-  <div class="profile-container">
+  <div class="container">
     <h2>Create Your Profile</h2>
-    <form id="profile-form">
-      <div>
-        <label>Select your avatar:</label>
-        <div class="grid" id="avatar-grid"></div>
+
+    <label>Select Your Avatar</label>
+    <div class="avatar-tray" id="avatar-tray">
+      <!-- Initial 3 avatars -->
+    </div>
+
+    <label>Username</label>
+    <input type="text" id="username" placeholder="Enter your username" required />
+
+    <label>First Name</label>
+    <input type="text" id="first-name" placeholder="Enter your first name" required />
+
+    <label>Last Name</label>
+    <input type="text" id="last-name" placeholder="Enter your last name" required />
+
+    <label>Date of Birth</label>
+    <input type="date" id="dob" required />
+
+    <button onclick="submitProfile()">Submit Profile</button>
+  </div>
+
+  <!-- Overlay -->
+  <div id="avatar-overlay" class="flex-center">
+    <div id="overlay-box">
+      <button id="close-overlay" onclick="toggleOverlay()">✖</button>
+      <input type="text" id="search-bar" placeholder="Search for character...">
+      <div class="overlay-avatars" id="overlay-avatars">
+        <!-- Dynamic avatars -->
       </div>
-
-      <input type="text" id="username" placeholder="Username" required />
-      <input type="text" id="first-name" placeholder="First Name" required />
-      <input type="text" id="last-name" placeholder="Last Name" required />
-      <input type="date" id="dob" required />
-
-      <button type="submit">Save Profile</button>
-    </form>
+    </div>
   </div>
 
   <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const grid = document.getElementById("avatar-grid");
-      let offset = 0;
-      let selectedAvatar = null;
+    const avatars = [
+      // Trending characters (use real URLs in production)
+      { name: "Gojo", src: "https://cdn.jinkan.moe/character/321.jpg" },
+      { name: "Goku", src: "https://cdn.jinkan.moe/character/1.jpg" },
+      { name: "Luffy", src: "https://cdn.jinkan.moe/character/40.jpg" },
+      { name: "Saitama", src: "https://cdn.jinkan.moe/character/110541.jpg" },
+      { name: "Levi", src: "https://cdn.jinkan.moe/character/45627.jpg" },
+      { name: "Naruto", src: "https://cdn.jinkan.moe/character/17.jpg" },
+      { name: "Tanjiro", src: "https://cdn.jinkan.moe/character/142661.jpg" },
+      { name: "Deku", src: "https://cdn.jinkan.moe/character/115307.jpg" },
+      { name: "Asta", src: "https://cdn.jinkan.moe/character/137717.jpg" }
+    ];
 
-      async function fetchCharacters() {
-        const res = await fetch(`https://api.jikan.moe/v4/characters?limit=4&offset=${offset}&order_by=favorites&sort=desc`);
-        const json = await res.json();
-        return (json.data || []).filter(c =>
-          c.name && c.images?.jpg?.image_url &&
-          !/dog|cat|bear|pig|sheep|panda|duck|horse|rabbit/i.test(c.name)
-        );
-      }
+    let selectedAvatar = null;
 
-      function renderCharacters(characters) {
-        characters.forEach(c => {
-          const bubble = document.createElement("div");
-          bubble.className = "bubble";
-          bubble.innerHTML = `<img src="${c.images.jpg.image_url}" title="${c.name}">`;
-          bubble.onclick = () => {
-            document.querySelectorAll(".bubble").forEach(b => b.classList.remove("selected"));
-            bubble.classList.add("selected");
-            selectedAvatar = {
-              id: c.mal_id,
-              name: c.name,
-              image: c.images.jpg.image_url
-            };
+    function renderTray() {
+      const tray = document.getElementById("avatar-tray");
+      tray.innerHTML = "";
+
+      avatars.slice(0, 3).forEach((char, i) => {
+        const div = document.createElement("div");
+        div.className = "avatar-bubble";
+        div.innerHTML = `<img src="${char.src}" alt="${char.name}" title="${char.name}" />`;
+        if (selectedAvatar === char.src) div.classList.add("selected");
+        div.onclick = () => {
+          selectedAvatar = char.src;
+          renderTray();
+        };
+        tray.appendChild(div);
+      });
+
+      const plus = document.createElement("div");
+      plus.className = "avatar-bubble plus";
+      plus.innerText = "+";
+      plus.onclick = toggleOverlay;
+      tray.appendChild(plus);
+    }
+
+    function toggleOverlay() {
+      document.getElementById("avatar-overlay").style.display =
+        document.getElementById("avatar-overlay").style.display === "flex" ? "none" : "flex";
+      renderOverlayAvatars();
+    }
+
+    function renderOverlayAvatars(filter = "") {
+      const container = document.getElementById("overlay-avatars");
+      container.innerHTML = "";
+      avatars
+        .filter(c => c.name.toLowerCase().includes(filter.toLowerCase()))
+        .forEach(char => {
+          const div = document.createElement("div");
+          div.className = "avatar-bubble";
+          div.innerHTML = `<img src="${char.src}" alt="${char.name}" title="${char.name}" />`;
+          if (selectedAvatar === char.src) div.classList.add("selected");
+          div.onclick = () => {
+            selectedAvatar = char.src;
+            renderTray();
+            toggleOverlay();
           };
-          grid.appendChild(bubble);
+          container.appendChild(div);
         });
+    }
 
-        const plus = document.createElement("div");
-        plus.className = "bubble plus";
-        plus.textContent = "+";
-        plus.onclick = () => {
-          plus.remove();
-          offset += 4;
-          fetchCharacters().then(renderCharacters);
-        };
-        grid.appendChild(plus);
+    function submitProfile() {
+      const username = document.getElementById("username").value.trim();
+      const first = document.getElementById("first-name").value.trim();
+      const last = document.getElementById("last-name").value.trim();
+      const dob = document.getElementById("dob").value;
+      if (!selectedAvatar || !username || !first || !last || !dob) {
+        alert("Please complete all fields and select an avatar.");
+        return;
       }
 
-      fetchCharacters().then(renderCharacters);
-
-      document.getElementById("profile-form").onsubmit = e => {
-        e.preventDefault();
-        const user = {
-          username: document.getElementById("username").value.trim(),
-          firstName: document.getElementById("first-name").value.trim(),
-          lastName: document.getElementById("last-name").value.trim(),
-          dob: document.getElementById("dob").value,
-          avatar: selectedAvatar
-        };
-
-        if (!user.avatar) {
-          alert("Please select an avatar.");
-          return;
-        }
-
-        localStorage.setItem("profile", JSON.stringify(user));
-        window.location.href = "index.html";
+      const profile = {
+        avatar: selectedAvatar,
+        username,
+        first,
+        last,
+        dob
       };
-    });
+
+      localStorage.setItem("profile", JSON.stringify(profile));
+      window.location.href = "index.html";
+    }
+
+    document.getElementById("search-bar").addEventListener("input", e =>
+      renderOverlayAvatars(e.target.value)
+    );
+
+    renderTray();
   </script>
 </body>
 </html>
