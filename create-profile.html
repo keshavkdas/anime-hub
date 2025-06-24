@@ -231,30 +231,31 @@
 
     async function initTray() {
       avatars = await fetchCharacters(1);
-      renderTray(avatars.slice(0, 4));
+      renderTray(avatars.slice(0, 4)); // Use first 4 for tray display
     }
 
+    function renderTray(list) {
+      const tray = document.getElementById("avatar-tray");
+      tray.innerHTML = "";
 
-   function renderTray(list) {
-  const tray = document.getElementById("avatar-tray");
-  tray.innerHTML = "";
+      list.forEach(char => {
+        const div = document.createElement("div");
+        div.className = "avatar-bubble";
+        div.innerHTML = `<img src="${char.src}" alt="${char.name}" title="${char.name}">`;
+        if (selectedAvatar === char.src) div.classList.add("selected");
+        div.onclick = () => {
+          selectedAvatar = char.src;
+          renderTray(avatars.slice(0, 4)); // ← ✅ FIXED: use avatars for update
+        };
+        tray.appendChild(div);
+      });
 
-  list.forEach(char => {
-    const div = document.createElement("div");
-    div.className = "avatar-bubble";
-    div.innerHTML = `<img src="${char.src}" alt="${char.name}" title="${char.name}">`;
-    if (selectedAvatar === char.src) div.classList.add("selected");
-    div.onclick = () => { selectedAvatar = char.src; renderTray(avatars.slice(0, 4)); };
-    tray.appendChild(div);
-  });
-
-  const plus = document.createElement("div");
-  plus.className = "avatar-bubble plus";
-  plus.innerText = "+";
-  plus.onclick = toggleOverlay;
-  tray.appendChild(plus);
-}
-
+      const plus = document.createElement("div");
+      plus.className = "avatar-bubble plus";
+      plus.innerText = "+";
+      plus.onclick = toggleOverlay;
+      tray.appendChild(plus);
+    }
 
     function toggleOverlay() {
       const ov = document.getElementById("avatar-overlay");
@@ -262,10 +263,9 @@
       if (ov.classList.contains("active")) {
         page = 1;
         document.getElementById("overlay-avatars").innerHTML = "";
-        loadMoreCharacters(); 
+        loadMoreCharacters();
       }
     }
-
 
     function showLoading(show = true) {
       document.getElementById("loading-spinner").style.display = show ? "block" : "none";
