@@ -244,32 +244,81 @@
   background: rgba(255, 121, 18, 0.1);
   transform: scale(1.1);
 }
-    
-    #avatar-menu {
-      transition: opacity 0.3s ease, transform 0.3s ease;
+    .banner {
+      position: relative;
+      background: url('https://images.unsplash.com/photo-1614852200161-cd8c474ea90b?auto=format&fit=crop&w=1500&q=80') center/cover no-repeat;
+      height: 250px;
+      display: flex;
+      align-items: flex-end;
+      padding: 20px;
+      box-shadow: inset 0 -40px 40px rgba(0,0,0,0.8);
     }
 
-    #avatar-menu.show {
-      display: block;
-      opacity: 1;
-      transform: scale(1);
+    .banner h1 {
+      margin: 0;
+      font-size: 36px;
+      color: white;
+      z-index: 1;
     }
 
-    #avatar-menu.hide {
-      opacity: 0;
-      transform: scale(0.95);
+    .profile-bubble {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 2px solid #ff6600;
+      cursor: pointer;
+      z-index: 2;
+      background-color: #0d1117;
+    }
+
+    .profile-bubble img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .dropdown {
+      position: absolute;
+      top: 90px;
+      right: 20px;
+      background: #161b22;
+      border: 1px solid #ff6600;
+      border-radius: 8px;
+      overflow: hidden;
       display: none;
+      flex-direction: column;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+      z-index: 3;
     }
-@keyframes growIn {
-  0% {
-    transform: scale(0.8);
-    opacity: 0;
-  }
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
+
+    .dropdown a {
+      padding: 10px 16px;
+      color: #ff6600;
+      text-decoration: none;
+      background: #0f0f0f;
+      transition: background 0.2s;
+    }
+
+    .dropdown a:hover {
+      background: #ff6600;
+      color: white;
+    }
+
+    main {
+      padding: 20px;
+    }
+
+    .username-label {
+      margin-top: 12px;
+      text-align: center;
+      font-weight: 600;
+      color: #ff6600;
+    }
+    
   </style>
 </head>
 
@@ -288,17 +337,17 @@
   </header>
 
   <section class="hero">  
-    <div class="absolute top-6 right-6 z-20" id="user-avatar">
-      <img id="avatar-img" src="" alt="Avatar"
-        class="w-[60px] h-[60px] rounded-full border-2 border-orange-500 cursor-pointer" />
-      <div id="avatar-menu"
-        class="mt-2 bg-[#161b22] border border-orange-500 rounded-lg text-sm shadow-xl hidden absolute right-0 p-2 w-40 text-left z-30">
-        <div class="py-1 px-4 hover:bg-orange-500/20 cursor-pointer" onclick="openProfile()">👤 Profile</div>
-        <div class="py-1 px-4 hover:bg-orange-500/20 cursor-pointer" onclick="openSettings()">⚙️ Settings</div>
-        <div class="py-1 px-4 hover:bg-orange-500/20 cursor-pointer" onclick="logout()">🚪 Log Out</div>
-      </div>
+    <div class="profile-bubble" id="profile-bubble">
+      <img id="avatar-img" src="" alt="avatar" />
     </div>
 
+    <!-- Dropdown -->
+    <div class="dropdown" id="profile-dropdown">
+      <a href="#">Profile</a>
+      <a href="#">Settings</a>
+      <a href="#" onclick="logout()">Logout</a>
+    </div>
+  </div>
     <h2>Welcome to AnimeHub</h2>
     <p>Your one-stop destination for the latest anime shows, movies, and more.</p>
     <a href="login.html">Login/Signup</a>
@@ -348,42 +397,35 @@
   Added to favorites!
 </div>
   
-<script>
-    // Load profile from localStorage
-    const avatar = document.getElementById("avatar-img");
-    const menu = document.getElementById("avatar-menu");
-
+  <script>
     const profile = JSON.parse(localStorage.getItem("profile"));
+    const avatar = document.getElementById("avatar-img");
+    const dropdown = document.getElementById("profile-dropdown");
+    const bubble = document.getElementById("profile-bubble");
+
+    // Set avatar
     if (profile && profile.avatar) {
       avatar.src = profile.avatar;
     } else {
-      // fallback avatar
-      avatar.src = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
+      avatar.src = "https://via.placeholder.com/60?text=?";
     }
 
     // Toggle dropdown
-    avatar.onclick = () => {
-      menu.classList.toggle("hidden");
-    };
+    bubble.addEventListener("click", () => {
+      dropdown.style.display = dropdown.style.display === "flex" ? "none" : "flex";
+    });
 
-    // Optional menu actions
-    function openProfile() {
-      alert("Go to profile");
-    }
-
-    function openSettings() {
-      alert("Go to settings");
-    }
-
+    // Logout
     function logout() {
       localStorage.removeItem("profile");
       window.location.href = "login.html";
     }
 
-    // Close dropdown on outside click
-    document.addEventListener("click", (e) => {
-      const inside = e.target.closest("#user-avatar");
-      if (!inside) menu.classList.add("hidden");
+    // Close dropdown when clicking outside
+    window.addEventListener("click", e => {
+      if (!bubble.contains(e.target) && !dropdown.contains(e.target)) {
+        dropdown.style.display = "none";
+      }
     });
   </script>
   
