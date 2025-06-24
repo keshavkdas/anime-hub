@@ -272,30 +272,35 @@
     }
 
     async function loadMoreCharacters() {
-      if (isLoading) return;
-      isLoading = true;
-      showLoading(true);
+  if (isLoading) return;
+  isLoading = true;
+  showLoading(true);
 
-      const newChars = await fetchCharacters(page++);
-      avatars.push(...newChars);
+  try {
+    const newChars = await fetchCharacters(page++);
+    avatars.push(...newChars);
 
-      const container = document.getElementById("overlay-avatars");
-      newChars.forEach(char => {
-        const div = document.createElement("div");
-        div.className = "avatar-bubble";
-        div.innerHTML = `<img src="${char.src}" alt="${char.name}" title="${char.name}">`;
-        if (selectedAvatar === char.src) div.classList.add("selected");
-        div.onclick = () => {
-          selectedAvatar = char.src;
-          renderTray(avatars.slice(0, 4));
-          toggleOverlay();
-        };
-        container.appendChild(div);
-      });
+    const container = document.getElementById("overlay-avatars");
+    newChars.forEach(char => {
+      const div = document.createElement("div");
+      div.className = "avatar-bubble";
+      div.innerHTML = `<img src="${char.src}" alt="${char.name}" title="${char.name}">`;
+      if (selectedAvatar === char.src) div.classList.add("selected");
+      div.onclick = () => {
+        selectedAvatar = char.src;
+        renderTray(avatars.slice(0, 4));
+        toggleOverlay();
+      };
+      container.appendChild(div);
+    });
+  } catch (err) {
+    console.error("Failed to load characters:", err);
+  }
 
-      showLoading(false);
-      isLoading = false;
-    }
+  showLoading(false);
+  isLoading = false;
+}
+
 
     function submitProfile() {
       const u = document.getElementById("username").value.trim();
