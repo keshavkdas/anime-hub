@@ -129,22 +129,23 @@
       width: 100%;
     }
 
-    .overlay-avatars {
-      display: flex;
-      flex-wrap: nowrap;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 8px;
-    }
-
     #close-overlay {
-      background: transparent;
-      border: none;
-      font-size: 18px;
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: #0d1117;
       color: #ff6600;
-      float: right;
+      border: 1px solid #ff6600;
+      font-size: 18px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
       cursor: pointer;
+      z-index: 10;
     }
-
     @media (max-width: 500px) {
       .overlay-avatars {
         grid-template-columns: repeat(2, 1fr);
@@ -158,8 +159,8 @@
 
     .overlay-avatars {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
-      gap: 10px;
+      grid-template-columns: repeat(5, 1fr); 
+      gap: 8px;
     }
     .avatar-scroll-container::-webkit-scrollbar {
       width: 8px;
