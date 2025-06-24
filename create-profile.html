@@ -151,27 +151,25 @@
       }
     }
     .avatar-scroll-container {
-  overflow-x: auto;
-  overflow-y: hidden;
-  white-space: nowrap;
-}
+      max-height: 400px; /* or any preferred height */
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
 
-.overlay-avatars {
-  display: flex;
-  gap: 10px;
-}
+    .overlay-avatars {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+      gap: 10px;
+    }
+    .avatar-scroll-container::-webkit-scrollbar {
+      width: 8px;
+      background: black;
+    }
 
-/* Custom horizontal scrollbar */
-.avatar-scroll-container::-webkit-scrollbar {
-  height: 8px;
-  background: black;
-}
-
-.avatar-scroll-container::-webkit-scrollbar-thumb {
-  background-color: #ff6600;
-  border-radius: 4px;
-}
-
+    .avatar-scroll-container::-webkit-scrollbar-thumb {
+      background-color: #ff6600;
+      border-radius: 4px;
+    }
   </style>
 </head>
 <body>
