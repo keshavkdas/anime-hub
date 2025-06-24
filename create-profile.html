@@ -185,6 +185,9 @@
         grid-template-columns: repeat(2, 1fr);
       }
     }
+    body.no-scroll {
+      overflow: hidden;
+    }
   </style>
 </head>
 <body>
@@ -258,14 +261,22 @@
     }
 
     function toggleOverlay() {
-      const ov = document.getElementById("avatar-overlay");
-      ov.classList.toggle("active");
-      if (ov.classList.contains("active")) {
-        page = 1;
-        document.getElementById("overlay-avatars").innerHTML = "";
-        loadMoreCharacters();
-      }
-    }
+  const ov = document.getElementById("avatar-overlay");
+  const body = document.body;
+
+  ov.classList.toggle("active");
+
+  if (ov.classList.contains("active")) {
+    body.classList.add("no-scroll"); // Disable background scroll
+    page = 1;
+    avatars = [];
+    document.getElementById("overlay-avatars").innerHTML = "";
+    loadMoreCharacters();
+  } else {
+    body.classList.remove("no-scroll"); // Re-enable scroll when overlay closed
+  }
+}
+
 
     function showLoading(show = true) {
       document.getElementById("loading-spinner").style.display = show ? "block" : "none";
