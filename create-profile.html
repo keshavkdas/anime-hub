@@ -21,9 +21,9 @@
 
     .profile-container {
       background: #161b22;
-      padding: 40px;
+      padding: 32px;
       border-radius: 12px;
-      max-width: 600px;
+      max-width: 460px;
       width: 100%;
       box-shadow: 0 4px 20px rgba(0,0,0,0.5);
     }
@@ -68,14 +68,14 @@
 
     .grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(4, 1fr);
       gap: 10px;
       margin-top: 10px;
     }
 
     .bubble {
-      width: 70px;
-      height: 70px;
+      width: 60px;
+      height: 60px;
       border-radius: 50%;
       background: #0d1117;
       border: 2px solid transparent;
@@ -120,10 +120,11 @@
       background: #e65c00;
     }
 
-    @media (max-width: 600px) {
+    @media (max-width: 500px) {
       .profile-container {
         padding: 24px;
       }
+
       .grid {
         grid-template-columns: repeat(3, 1fr);
       }
@@ -155,11 +156,11 @@
       let selectedAvatar = null;
 
       async function fetchCharacters() {
-        const res = await fetch(`https://api.jikan.moe/v4/characters?limit=3&offset=${offset}&order_by=favorites&sort=desc`);
+        const res = await fetch(`https://api.jikan.moe/v4/characters?limit=4&offset=${offset}&order_by=favorites&sort=desc`);
         const json = await res.json();
         return (json.data || []).filter(c =>
           c.name && c.images?.jpg?.image_url &&
-          !/dog|cat|bear|pig|sheep|panda|duck/i.test(c.name)
+          !/dog|cat|bear|pig|sheep|panda|duck|horse|rabbit/i.test(c.name)
         );
       }
 
@@ -185,7 +186,7 @@
         plus.textContent = "+";
         plus.onclick = () => {
           plus.remove();
-          offset += 3;
+          offset += 4;
           fetchCharacters().then(renderCharacters);
         };
         grid.appendChild(plus);
