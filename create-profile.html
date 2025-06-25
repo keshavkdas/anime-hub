@@ -47,11 +47,12 @@
 
     .avatar-tray {
       display: flex;
+      justify-content: center;
       gap: 10px;
       align-items: center;
-      overflow-x: auto;
       padding: 10px 0;
       transition: all 0.3s ease-in-out;
+      overflow: hidden;
     }
 
     .avatar-bubble {
@@ -89,11 +90,24 @@
       transform: scale(0.85);
     }
 
+    .avatar-bubble.blurred-left:hover {
+      opacity: 1;
+      filter: none;
+      transform: scale(1.05);
+      z-index: 2;
+    }
+
     .avatar-bubble.selected-center {
       border: 3px solid #ff6600;
       transform: scale(1.1);
       box-shadow: 0 0 10px #ff6600;
       z-index: 2;
+    }
+
+    .avatar-bubble.blurred-left:hover ~ .selected-center {
+      opacity: 0.4;
+      filter: blur(2px);
+      transform: scale(0.85);
     }
 
     @keyframes popIn {
@@ -277,33 +291,33 @@
       const tray = document.getElementById("avatar-tray");
       tray.innerHTML = "";
 
-      // Older selections blurred to left
-      selectedAvatars.slice(0, -1).forEach(char => {
+      const displayAvatars = selectedAvatars.slice(-4);
+
+      displayAvatars.slice(0, -1).forEach((char, index) => {
         const div = document.createElement("div");
         div.className = "avatar-bubble blurred-left animate";
         div.innerHTML = `<img src="${char.src}" alt="${char.name}" title="${char.name}" />`;
+        div.onclick = () => {
+          // Move clicked avatar to end (center)
+          selectedAvatars.push(char);
+          renderTray();
+        };
         tray.appendChild(div);
       });
 
-      // Latest selection in center
-      if (selectedAvatars.length) {
-        const current = selectedAvatars[selectedAvatars.length - 1];
+      if (displayAvatars.length) {
+        const current = displayAvatars[displayAvatars.length - 1];
         const div = document.createElement("div");
         div.className = "avatar-bubble selected-center animate";
         div.innerHTML = `<img src="${current.src}" alt="${current.name}" title="${current.name}" />`;
         tray.appendChild(div);
       }
 
-      // + Button
       const plus = document.createElement("div");
       plus.className = "avatar-bubble plus animate";
       plus.innerText = "+";
       plus.onclick = toggleOverlay;
       tray.appendChild(plus);
-
-      setTimeout(() => {
-        tray.scrollLeft = tray.scrollWidth;
-      }, 100);
     }
 
     function toggleOverlay() {
@@ -381,7 +395,7 @@
     });
 
     document.addEventListener("DOMContentLoaded", () => {
-      renderTray(); // Only + initially
+      renderTray(); // Initial only +
     });
   </script>
 </body>
