@@ -151,7 +151,7 @@ window.signup = async () => {
       document.getElementById("verify-overlay").style.display = "none";
       localStorage.setItem("user", JSON.stringify(data.user));
       googleCredResponse = null;
-      window.location.href = "index.html";
+      window.location.href = "create-profile.html";
     }
   }, 3000);
 };
