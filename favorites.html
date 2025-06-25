@@ -15,7 +15,7 @@
       padding: 0;
     }
 
-        header {
+    header {
       background-color: #1f1f1f;
       padding: 1rem 2rem;
       display: flex;
@@ -36,7 +36,7 @@
       text-decoration: none;
       font-weight: 600;
     }
-    
+
     nav a:hover {
       color: #f97316;
     }
@@ -91,37 +91,63 @@
     }
 
     .remove-fav-btn {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 30px;
-  height: 30px;
-  background: rgba(0, 0, 0, 0.6); /* blackish bubble */
-  border-radius: 50%;
-  color: white;
-  font-size: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  z-index: 2;
-}
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 30px;
+      height: 30px;
+      background: rgba(0, 0, 0, 0.6);
+      border-radius: 50%;
+      color: white;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      z-index: 2;
+    }
 
-.remove-fav-btn:hover {
-  transform: scale(1.1);
-  box-shadow: 0 0 8px rgba(255, 0, 0, 0.6);
-}
-
+    .remove-fav-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 8px rgba(255, 0, 0, 0.6);
+    }
 
     .card-title {
       margin-top: 0.5rem;
       font-size: 0.9rem;
       color: #eee;
     }
+
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #ff6600;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 14px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      z-index: 9999;
+      transition: opacity 0.3s ease;
+    }
+
+    .toast.hidden {
+      display: none;
+    }
   </style>
 </head>
 <body>
+<script>
+  const user = JSON.parse(localStorage.getItem("user"));
+  if (!user) {
+    sessionStorage.setItem("toast", "🔒 This action requires login");
+    window.location.href = "index.html";
+  }
+</script>
+
 <header>
   <h1><a href="index.html" style="color: #f97316; text-decoration: none;">AnimeHub</a></h1>
   <nav>
@@ -151,36 +177,55 @@
   </div>
 </div>
 
-<script>
-function renderFavorites(key, containerId, detailsPage) {
-  const list = JSON.parse(localStorage.getItem(key)) || [];
-  const container = document.getElementById(containerId);
+<div id="toast" class="toast hidden"></div>
 
-  if (!list.length) {
-    container.innerHTML = `<p>No favorites yet.</p>`;
-    return;
+<script>
+  function renderFavorites(key, containerId, detailsPage) {
+    const list = JSON.parse(localStorage.getItem(key)) || [];
+    const container = document.getElementById(containerId);
+
+    if (!list.length) {
+      container.innerHTML = `<p>No favorites yet.</p>`;
+      return;
+    }
+
+    container.innerHTML = list.map((item, index) => `
+      <div class="favorite-item">
+        <button class="remove-fav-btn" onclick="removeFavorite('${key}', ${index})">&times;</button>
+        <img src="${item.imageUrl}" alt="${item.title}" onclick="location.href='${detailsPage}?id=${item.id}'" />
+        <div class="card-title">${item.title}</div>
+      </div>
+    `).join('');
   }
 
-  container.innerHTML = list.map((item, index) => `
-    <div class="favorite-item">
-      <button class="remove-fav-btn" onclick="removeFavorite('${key}', ${index})">&times;</button>
-      <img src="${item.imageUrl}" alt="${item.title}" onclick="location.href='${detailsPage}?id=${item.id}'" />
-      <div class="card-title">${item.title}</div>
-    </div>
-  `).join('');
-}
+  function removeFavorite(key, index) {
+    const favs = JSON.parse(localStorage.getItem(key)) || [];
+    favs.splice(index, 1);
+    localStorage.setItem(key, JSON.stringify(favs));
+    location.reload();
+  }
 
-function removeFavorite(key, index) {
-  const favs = JSON.parse(localStorage.getItem(key)) || [];
-  favs.splice(index, 1);
-  localStorage.setItem(key, JSON.stringify(favs));
-  location.reload();
-}
+  window.addEventListener("DOMContentLoaded", () => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (user && user.uid) {
+      renderFavorites(`animeFavorites_${user.uid}`, 'animeFavorites', 'anime-details.html');
+      renderFavorites(`mangaFavorites_${user.uid}`, 'mangaFavorites', 'manga-details.html');
+      renderFavorites(`manhwaFavorites_${user.uid}`, 'manhwaFavorites', 'manhwa-details.html');
+    }
 
-// Load all favorites
-renderFavorites('animeFavorites', 'animeFavorites', 'anime-details.html');
-renderFavorites('mangaFavorites', 'mangaFavorites', 'manga-details.html');
-renderFavorites('manhwaFavorites', 'manhwaFavorites', 'manhwa-details.html');
+    // show toast if redirected
+    const msg = sessionStorage.getItem("toast");
+    if (msg) {
+      const toast = document.getElementById("toast");
+      toast.innerText = msg;
+      toast.classList.remove("hidden");
+
+      setTimeout(() => {
+        toast.classList.add("hidden");
+        sessionStorage.removeItem("toast");
+      }, 3000);
+    }
+  });
 </script>
 </body>
 </html>
