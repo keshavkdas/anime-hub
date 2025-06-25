@@ -222,10 +222,45 @@
     <div class="related-list" id="similarList"></div>
   </div>
 </div>
-  
-  <div id="toast" style="visibility:hidden;"></div>
+
+  <div id="toast" style="
+  visibility: hidden;
+  min-width: 250px;
+  background-color: #f97316;
+  color: white;
+  text-align: center;
+  border-radius: 4px;
+  padding: 12px;
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-weight: bold;
+  font-size: 16px;
+  z-index: 1000;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+"></div>
 
 <script>
+
+let toastTimeout;
+function showToast(message) {
+  const toast = document.getElementById("toast");
+  if (!toast) return;
+
+  toast.textContent = message;
+  toast.style.visibility = 'visible';
+  toast.style.opacity = '1';
+
+  clearTimeout(toastTimeout);
+  toastTimeout = setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.visibility = 'hidden';
+  }, 2500);
+}
+
 const params = new URLSearchParams(window.location.search);
 const mangaId = params.get('id');
 
@@ -244,41 +279,6 @@ function isManhwa(genres, type) {
 function isInFavorites(id) {
   const arr = JSON.parse(localStorage.getItem(favKey)) || [];
   return arr.some(item => String(item.id) === String(id));
-}
-function showToast(message) {
-  let toast = document.getElementById("toast");
-  if (!toast) {
-    toast = document.createElement("div");
-    toast.id = "toast";
-    toast.style.cssText = `
-      visibility: hidden;
-      min-width: 250px;
-      background-color: #f97316;
-      color: white;
-      text-align: center;
-      border-radius: 4px;
-      padding: 12px;
-      position: fixed;
-      bottom: 30px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-weight: bold;
-      font-size: 16px;
-      z-index: 1000;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-    `;
-    document.body.appendChild(toast);
-  }
-
-  toast.textContent = message;
-  toast.style.visibility = 'visible';
-  toast.style.opacity = '1';
-
-  clearTimeout(window.toastTimeout);
-  window.toastTimeout = setTimeout(() => {
-    toast.style.opacity = '0';
-    toast.style.visibility = 'hidden';
-  }, 2500);
 }
 
 function toggleFavorite(id, title, img) {
