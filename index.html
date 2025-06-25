@@ -437,7 +437,22 @@
   ">
   Added to favorites!
 </div>
-  
+  <script>
+  window.addEventListener("DOMContentLoaded", () => {
+    const profile = JSON.parse(localStorage.getItem("profile"));
+    const avatarImg = document.querySelector(".profile-bubble img");
+
+    if (profile && profile.avatar) {
+      avatarImg.src = profile.avatar;
+      avatarImg.alt = profile.username + "'s Avatar";
+    } else {
+      // Default fallback avatar
+      avatarImg.src = "images/default-avatar.png"; // Replace with your default path
+      avatarImg.alt = "Default Avatar";
+    }
+  });
+</script>
+
  <script>
   function toggleDropdown() {
   const dropdown = document.getElementById("profileDropdown");
