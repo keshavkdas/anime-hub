@@ -245,13 +245,11 @@
   transform: scale(1.1);
 }
 
-    .profile-section {
+   .profile-section {
   position: absolute;
-  top: 100px;
+  top: 80px;
   right: 20px;
-  display: flex;
-  align-items: center;
-  z-index: 10;
+  z-index: 20;
 }
 
 .profile-bubble {
@@ -262,57 +260,68 @@
   border: 2px solid #ff6600;
   cursor: pointer;
   background-color: #0d1117;
+  transition: transform 0.4s ease;
+  position: relative;
+}
+
+.profile-bubble.rotating {
+  transform: rotate(360deg);
 }
 
 .profile-bubble img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: filter 0.4s ease;
+}
+
+.profile-bubble.blur img {
+  filter: blur(3px);
 }
 
 .dropdown {
   position: absolute;
-  top: 0;
-  right: 110px;
-  transform: translateX(100%) translateX(10px);
+  top: 50%;
+  right: 70px;
+  transform: translateY(-50%) scale(0);
+  transform-origin: right center;
   background-color: #161b22;
   border: 1px solid #ff6600;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.5);
-  display: none;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
+  display: flex;
   flex-direction: column;
   min-width: 140px;
   z-index: 9999;
   padding: 10px 0;
+  transition: transform 0.4s ease, opacity 0.4s ease;
+  opacity: 0;
+}
+
+.dropdown.show {
+  transform: translateY(-50%) scale(1);
+  opacity: 1;
 }
 
 .dropdown button {
   padding: 10px 16px;
   color: #ff6600;
-  text-align: left;
-  font-size: 14px;
   background: #0f0f0f;
   border: none;
-  cursor: pointer;
+  text-align: left;
   width: 100%;
+  cursor: pointer;
+  font-size: 14px;
 }
 
 .dropdown button:hover {
   background: #ff6600;
   color: white;
 }
+.profile-bubble:hover {
+  box-shadow: 0 0 12px #ff6600;
+}
 
-    main {
-      padding: 20px;
-    }
-
-    .username-label {
-      margin-top: 12px;
-      text-align: center;
-      font-weight: 600;
-      color: #ff6600;
-    }
-    
   </style>
 </head>
 
@@ -331,17 +340,16 @@
   </header>
 
   <section class="hero">  
-   <div class="profile-section">
-  <div class="profile-bubble" onclick="toggleDropdown()">
-    <img src="..." alt="Avatar" />
-  </div>
-  <div class="dropdown" id="dropdown">
-    <button onclick="goToProfile()">👤 Profile</button>
-    <button onclick="goToSettings()">⚙️ Settings</button>
-    <button onclick="logout()">🚪 Log Out</button>
-  </div>
-</div>
-  </div>
+    <div class="profile-section">
+      <div class="profile-bubble" onclick="toggleDropdown()">
+        <img src="..." alt="Avatar" />
+      </div>
+      <div class="dropdown" id="dropdown">
+        <button onclick="goToProfile()">👤 Profile</button>
+        <button onclick="goToSettings()">⚙️ Settings</button>
+        <button onclick="logout()">🚪 Log Out</button>
+      </div>
+    </div>
     <h2>Welcome to AnimeHub</h2>
     <p>Your one-stop destination for the latest anime shows, movies, and more.</p>
     <a href="login.html">Login/Signup</a>
@@ -419,7 +427,39 @@
     }
   });
 </script>
+<script>
+function toggleDropdown() {
+  const bubble = document.getElementById("avatar-bubble");
+  const img = document.getElementById("avatar-img");
+  const menu = document.getElementById("dropdown");
 
+  // Add rotation class
+  bubble.classList.add("rotating");
+  img.classList.add("blur");
+
+  // Toggle dropdown visibility
+  setTimeout(() => {
+    menu.classList.toggle("show");
+    bubble.classList.remove("rotating");
+
+    if (!menu.classList.contains("show")) {
+      img.classList.remove("blur");
+    }
+  }, 300);
+}
+
+// Close dropdown if clicking outside
+document.addEventListener("click", function (e) {
+  const bubble = document.getElementById("avatar-bubble");
+  const menu = document.getElementById("dropdown");
+  const img = document.getElementById("avatar-img");
+
+  if (!bubble.contains(e.target) && !menu.contains(e.target)) {
+    menu.classList.remove("show");
+    img.classList.remove("blur");
+  }
+});
+</script>
   
 <script>
   let currentPage = 1;
