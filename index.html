@@ -488,6 +488,20 @@ document.addEventListener("click", function (e) {
     const favs = JSON.parse(localStorage.getItem(key)) || [];
     return favs.some(fav => String(fav.id) === String(id));
   }
+  function shuffleArrayWithSeed(array, seed) {
+  const seededRandom = (s) => {
+    let x = Math.sin(s++) * 10000;
+    return x - Math.floor(x);
+  };
+
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(seededRandom(seed + i) * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+
+  return array;
+}
+
 
   async function loadTrendingAnime() {
     const container = document.getElementById("animeContainer");
