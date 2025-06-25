@@ -482,7 +482,10 @@ document.addEventListener("click", function (e) {
   let toastTimeout;
 
   function isInFavorites(id) {
-    const favs = JSON.parse(localStorage.getItem('animeFavorites')) || [];
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (!user) return false;
+    const key = `animeFavorites_${user.username}`;
+    const favs = JSON.parse(localStorage.getItem(key)) || [];
     return favs.some(fav => String(fav.id) === String(id));
   }
 
@@ -549,12 +552,15 @@ document.addEventListener("click", function (e) {
 
 function addToFavorites(id, title, imageUrl) {
   try {
-    if (!id || !title || !imageUrl) {
-      showToast('Missing anime info!');
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (!user) {
+      showToast('🔐 This action requires login');
+      setTimeout(() => window.location.href = "index.html", 1500);
       return;
     }
 
-    const favs = JSON.parse(localStorage.getItem('animeFavorites')) || [];
+    const key = `animeFavorites_${user.username}`;
+    const favs = JSON.parse(localStorage.getItem(key)) || [];
     const index = favs.findIndex(fav => String(fav.id) === String(id));
     const heartBtn = document.querySelector(`.favorite-bubble[data-id="${id}"]`);
 
@@ -574,14 +580,14 @@ function addToFavorites(id, title, imageUrl) {
       showToast('Added to favorites!');
       if (heartBtn) heartBtn.textContent = '💖';
     }
-    localStorage.setItem('animeFavorites', JSON.stringify(favs));
+
+    localStorage.setItem(key, JSON.stringify(favs));
     markFavoritesActive();
   } catch (err) {
     console.error('Error toggling favorite:', err);
     showToast('Something went wrong!');
   }
 }
-
 
   function showToast(message) {
     const toast = document.getElementById('toast');
@@ -655,11 +661,17 @@ function addToFavorites(id, title, imageUrl) {
     loadTrendingAnime();
   });
 
-  function markFavoritesActive() {
-  const favorites = JSON.parse(localStorage.getItem('animeFavorites')) || [];
+ function markFavoritesActive() {
+  const user = JSON.parse(localStorage.getItem("user"));
+  if (!user) return;
+
+  const key = `animeFavorites_${user.username}`;
+  const favorites = JSON.parse(localStorage.getItem(key)) || [];
+
   document.querySelectorAll('.anime-card .favorite-bubble').forEach(btn => {
     const card = btn.closest('.anime-card');
     const id = card.querySelector('a')?.href.match(/id=(\d+)/)?.[1];
+
     if (favorites.some(fav => fav.id == id)) {
       btn.classList.add('active');
       btn.textContent = '💖';
@@ -670,7 +682,6 @@ function addToFavorites(id, title, imageUrl) {
   });
 }
 markFavoritesActive();
-
 </script>
 
 <script>  
