@@ -559,7 +559,7 @@ function addToFavorites(id, title, imageUrl) {
       return;
     }
 
-    const key = `animeFavorites_${user.username}`;
+    const key = `animeFavorites_${user.uid}`;
     const favs = JSON.parse(localStorage.getItem(key)) || [];
     const index = favs.findIndex(fav => String(fav.id) === String(id));
     const heartBtn = document.querySelector(`.favorite-bubble[data-id="${id}"]`);
