@@ -140,10 +140,11 @@
   </style>
 </head>
 <body>
+
 <script>
   const user = JSON.parse(localStorage.getItem("user"));
   if (!user) {
-    sessionStorage.setItem("toast", "🔒 This action requires login");
+    sessionStorage.setItem("toast", "🔐 This action requires login");
     window.location.href = "index.html";
   }
 </script>
