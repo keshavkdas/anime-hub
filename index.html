@@ -438,6 +438,32 @@
   Added to favorites!
 </div>
   <script>
+  function logout() {
+    // Remove login data
+    localStorage.removeItem("user");
+    localStorage.removeItem("profile");
+
+    // Optionally remove user-specific favorites
+    const keys = Object.keys(localStorage);
+    keys.forEach(k => {
+      if (
+        k.startsWith("animeFavorites_") ||
+        k.startsWith("mangaFavorites_") ||
+        k.startsWith("manhwaFavorites_")
+      ) {
+        localStorage.removeItem(k);
+      }
+    });
+
+    // Optional toast message after redirect
+    sessionStorage.setItem("toast", "👋 Logged out successfully");
+
+    // Redirect
+    window.location.href = "index.html";
+  }
+</script>
+
+  <script>
   window.addEventListener("DOMContentLoaded", () => {
     const profile = JSON.parse(localStorage.getItem("profile"));
     const avatarImg = document.querySelector(".profile-bubble img");
