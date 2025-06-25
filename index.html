@@ -522,6 +522,7 @@ document.addEventListener("click", function (e) {
           </div>
         `;
         container.appendChild(card);
+        markFavoritesActive();
       });
 
       currentPage++;
@@ -573,8 +574,8 @@ function addToFavorites(id, title, imageUrl) {
       showToast('Added to favorites!');
       if (heartBtn) heartBtn.textContent = '💖';
     }
-
     localStorage.setItem('animeFavorites', JSON.stringify(favs));
+    markFavoritesActive();
   } catch (err) {
     console.error('Error toggling favorite:', err);
     showToast('Something went wrong!');
