@@ -252,7 +252,7 @@
   </style>
 </head>
 <body>
-
+  
   <header>
     <h1><a href="index.html" style="color: #f97316; text-decoration: none;">AnimeHub</a></h1>
     <nav>
@@ -299,6 +299,14 @@
   ">
   Added to favorites!
 </div>
+  
+  <script>
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (!user) {
+      sessionStorage.setItem("toast", "🔐 This action requires login");
+      window.location.href = "index.html";
+    }
+  </script>
 
   <script>
   const displayedMangaIds = new Set(); // Global: Track already shown manga
@@ -309,7 +317,7 @@
 
   const urlParams = new URLSearchParams(window.location.search);
   const type = urlParams.get("type") || "manga";
-  const favKey = type === "manhwa" ? "manhwaFavorites" : "mangaFavorites";
+  const favKey = `${type === "manhwa" ? "manhwaFavorites" : "mangaFavorites"}_${user.uid}`;
 
   let index = 0;
   let currentPage = 1;
@@ -405,7 +413,7 @@
       const imageUrl = manga.images?.jpg?.large_image_url || "";
       const score = manga.score ?? "N/A";
       const chapters = manga.chapters;
-      const isFavorited = favorites.some(fav => fav.id === String(manga.mal_id));
+      const isFavorited = favorites?.some(fav => fav.id === String(manga.mal_id));
 
       card.innerHTML = `
         <div class="card-img-wrapper">
