@@ -484,7 +484,7 @@ document.addEventListener("click", function (e) {
   function isInFavorites(id) {
     const user = JSON.parse(localStorage.getItem("user"));
     if (!user) return false;
-    const key = `animeFavorites_${user.username}`;
+    const key = `animeFavorites_${user.uid}`;
     const favs = JSON.parse(localStorage.getItem(key)) || [];
     return favs.some(fav => String(fav.id) === String(id));
   }
@@ -658,7 +658,7 @@ document.addEventListener("click", function (e) {
   const user = JSON.parse(localStorage.getItem("user"));
   if (!user) return;
 
-  const key = `animeFavorites_${user.username}`;
+  const key = `animeFavorites_${user.uid}`;
   const favorites = JSON.parse(localStorage.getItem(key)) || [];
 
   document.querySelectorAll('.anime-card .favorite-bubble').forEach(btn => {
