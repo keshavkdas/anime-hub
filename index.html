@@ -536,20 +536,6 @@ document.addEventListener("click", function (e) {
     }
   }
 
-  function shuffleArrayWithSeed(array, seed) {
-    const seededRandom = (s) => {
-      let x = Math.sin(s++) * 10000;
-      return x - Math.floor(x);
-    };
-
-    for (let i = array.length - 1; i > 0; i--) {
-      const j = Math.floor(seededRandom(seed + i) * (i + 1));
-      [array[i], array[j]] = [array[j], array[i]];
-    }
-
-    return array;
-  }
-
   function addToFavorites(id, title, imageUrl) {
   try {
     const user = JSON.parse(localStorage.getItem("user"));
@@ -562,18 +548,18 @@ document.addEventListener("click", function (e) {
     const key = `animeFavorites_${user.uid}`;
     const favs = JSON.parse(localStorage.getItem(key)) || [];
     const index = favs.findIndex(fav => String(fav.id) === String(id));
-    const heartBtn = document.querySelector(`.favorite-bubble[data-id="${id}"]`);
+    const heartButtons = document.querySelectorAll(`.favorite-bubble[data-id="${id}"]`);
 
     if (index > -1) {
-      // Remove from favorites
+      // Remove
       favs.splice(index, 1);
       showToast('Removed from favorites!');
-      if (heartBtn) {
-        heartBtn.textContent = '❤️';
-        heartBtn.classList.remove('active');
-      }
+      heartButtons.forEach(btn => {
+        btn.textContent = '❤️';
+        btn.classList.remove('active');
+      });
     } else {
-      // Add to favorites
+      // Add
       favs.push({
         id: String(id),
         title: title.trim(),
@@ -581,22 +567,20 @@ document.addEventListener("click", function (e) {
         type: 'anime'
       });
       showToast('Added to favorites!');
-      if (heartBtn) {
-        heartBtn.textContent = '💖';
-        heartBtn.classList.add('active');
-      }
+      heartButtons.forEach(btn => {
+        btn.textContent = '💖';
+        btn.classList.add('active');
+      });
     }
 
     localStorage.setItem(key, JSON.stringify(favs));
-
-    // Optional: re-run to sync all heart icons across the page
     markFavoritesActive();
-
   } catch (err) {
     console.error('Error toggling favorite:', err);
     showToast('Something went wrong!');
   }
 }
+
 
   function showToast(message) {
     const toast = document.getElementById('toast');
