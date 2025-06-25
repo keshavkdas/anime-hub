@@ -550,7 +550,7 @@ document.addEventListener("click", function (e) {
     return array;
   }
 
-function addToFavorites(id, title, imageUrl) {
+  function addToFavorites(id, title, imageUrl) {
   try {
     const user = JSON.parse(localStorage.getItem("user"));
     if (!user) {
@@ -565,12 +565,15 @@ function addToFavorites(id, title, imageUrl) {
     const heartBtn = document.querySelector(`.favorite-bubble[data-id="${id}"]`);
 
     if (index > -1) {
-      // Already in favorites: Remove
+      // Remove from favorites
       favs.splice(index, 1);
       showToast('Removed from favorites!');
-      if (heartBtn) heartBtn.textContent = '❤️';
+      if (heartBtn) {
+        heartBtn.textContent = '❤️';
+        heartBtn.classList.remove('active');
+      }
     } else {
-      // Not in favorites: Add
+      // Add to favorites
       favs.push({
         id: String(id),
         title: title.trim(),
@@ -578,11 +581,17 @@ function addToFavorites(id, title, imageUrl) {
         type: 'anime'
       });
       showToast('Added to favorites!');
-      if (heartBtn) heartBtn.textContent = '💖';
+      if (heartBtn) {
+        heartBtn.textContent = '💖';
+        heartBtn.classList.add('active');
+      }
     }
 
     localStorage.setItem(key, JSON.stringify(favs));
+
+    // Optional: re-run to sync all heart icons across the page
     markFavoritesActive();
+
   } catch (err) {
     console.error('Error toggling favorite:', err);
     showToast('Something went wrong!');
