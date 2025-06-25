@@ -296,10 +296,18 @@
 </div>
 
 <script>
+  const user = JSON.parse(localStorage.getItem("user"));
+  if (!user) {
+    sessionStorage.setItem("toast", "🔐 This action requires login");
+    window.location.href = "index.html";
+  }
+
+  const favKey = `manhwaFavorites_${user.uid}`;
   const track = document.getElementById("carouselTrack");
   const manhwaResults = document.getElementById("manhwaResults");
   const nextBtn = document.querySelector(".carousel-btn.next");
   const prevBtn = document.querySelector(".carousel-btn.prev");
+  const backToTopBtn = document.getElementById('backToTop');
 
   let index = 0;
   let currentPage = 1;
@@ -307,12 +315,32 @@
   let shownIds = new Set();
   let carouselInterval;
   let toastTimeout;
+  let favorites = JSON.parse(localStorage.getItem(favKey)) || [];
+
+  function isAdult(m) {
+    const genres = [...(m.genres || []), ...(m.themes || []), ...(m.demographics || [])].map(g => g.name);
+    return genres.some(g => ["Hentai", "Erotica", "Ecchi"].includes(g));
+  }
+
+  function showToast(message) {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.style.visibility = 'visible';
+    toast.style.opacity = '1';
+
+    clearTimeout(toastTimeout);
+    toastTimeout = setTimeout(() => {
+      toast.style.opacity = '0';
+      toast.style.visibility = 'hidden';
+    }, 2500);
+  }
 
   async function loadAutoCarousel() {
     try {
       const res = await fetch("https://api.jikan.moe/v4/manga?order_by=popularity&limit=10&type=manhwa");
       const json = await res.json();
       const filtered = json.data.filter(m => !isAdult(m));
+
       filtered.forEach(manhwa => {
         shownIds.add(manhwa.mal_id);
         const slide = document.createElement('div');
@@ -358,25 +386,17 @@
     try {
       const res = await fetch(`https://api.jikan.moe/v4/manga?page=${currentPage}&limit=25&type=manhwa`);
       const json = await res.json();
-      const favorites = JSON.parse(localStorage.getItem("manhwaFavorites")) || [];
+      const filtered = json.data.filter(m => !shownIds.has(m.mal_id) && !isAdult(m));
 
-      const filtered = json.data
-      .filter(m => !shownIds.has(m.mal_id) && !isAdult(m));
-
-      const combined = filtered.sort(() => Math.random() - 0.5);
-
-      combined.forEach(manhwa => {
+      filtered.forEach(manhwa => {
         shownIds.add(manhwa.mal_id);
         const card = document.createElement("div");
         card.className = "anime-card";
 
         const title = manhwa.title;
         const image = manhwa.images?.jpg?.large_image_url || "";
-        const score = manhwa.score ?? "N/A";
-        const type = manhwa.type ?? "Unknown";
-        const chapters = manhwa.chapters;
         const malId = manhwa.mal_id.toString();
-        const isFavorited = favorites.some(fav => fav.id?.toString() === malId);
+        const isFavorited = favorites.some(fav => fav.id === malId);
 
         card.innerHTML = `
           <div class="card-img-wrapper">
@@ -403,53 +423,41 @@
     }
   }
 
-  function isAdult(m) {
-    const genres = [...(m.genres || []), ...(m.themes || []), ...(m.demographics || [])].map(g => g.name);
-    return genres.some(g => ["Hentai", "Erotica", "Ecchi"].includes(g));
-  }
-
-  function showToast(message) {
-    const toast = document.getElementById('toast');
-    toast.textContent = message;
-    toast.style.visibility = 'visible';
-    toast.style.opacity = '1';
-
-    clearTimeout(toastTimeout);
-    toastTimeout = setTimeout(() => {
-      toast.style.opacity = '0';
-      toast.style.visibility = 'hidden';
-    }, 2500);
-  }
-
   document.addEventListener("click", (e) => {
     if (e.target.classList.contains("fav-btn")) {
       const btn = e.target;
       const id = btn.dataset.id;
-      let favorites = JSON.parse(localStorage.getItem("manhwaFavorites")) || [];
-      const existingIndex = favorites.findIndex(fav => fav.id === id);
+      const card = btn.closest(".anime-card");
+      const title = card.querySelector("h3")?.innerText || "Untitled";
+      const image = card.querySelector("img")?.src || "";
 
-      if (existingIndex > -1) {
-        favorites.splice(existingIndex, 1);
+      const index = favorites.findIndex(fav => fav.id === id);
+
+      if (index > -1) {
+        favorites.splice(index, 1);
         btn.innerText = "❤️";
         btn.classList.remove("active");
         showToast("Removed from Favorites!");
       } else {
-        const card = btn.closest(".anime-card");
-        const title = card.querySelector("h3")?.innerText || "Untitled";
-        const image = card.querySelector("img")?.src || "";
         favorites.push({ id, title, imageUrl: image, type: "manhwa" });
         btn.innerText = "💖";
         btn.classList.add("active");
         showToast("Added to Favorites!");
       }
 
-      localStorage.setItem("manhwaFavorites", JSON.stringify(favorites));
+      localStorage.setItem(favKey, JSON.stringify(favorites));
     }
   });
 
   window.addEventListener("DOMContentLoaded", () => {
     loadAutoCarousel();
     loadMoreManhwa();
+
+    const toastMsg = sessionStorage.getItem("toast");
+    if (toastMsg) {
+      showToast(toastMsg);
+      sessionStorage.removeItem("toast");
+    }
   });
 
   window.addEventListener("scroll", () => {
@@ -457,14 +465,6 @@
     if (scrollTop + clientHeight >= scrollHeight - 100) {
       loadMoreManhwa();
     }
-  });
-</script>
-
-<script>
-  const backToTopBtn = document.getElementById('backToTop');
-
-  window.addEventListener('scroll', () => {
-    backToTopBtn.style.display = window.scrollY > 300 ? 'block' : 'none';
   });
 
   backToTopBtn.addEventListener('click', () => {
