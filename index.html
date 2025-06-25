@@ -339,6 +339,29 @@
 
 .profile-bubble.spinning {
   animation: spin360 0.6s linear;
+  filter: blur(2px); /* blur during spin */
+}
+
+.profile-dropdown {
+  display: none;
+  position: absolute;
+  top: 10px;
+  left: -200px; /* Push fully to the left */
+  background-color: #0f0f0f;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.6);
+  min-width: 180px;
+  z-index: 999;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  opacity: 0;
+  transform: scale(0.8);
+}
+
+.profile-dropdown.show {
+  display: block;
+  opacity: 1;
+  transform: scale(1);
 }
 
   </style>
@@ -433,17 +456,15 @@
   const dropdown = document.getElementById("profileDropdown");
   const avatar = document.querySelector(".profile-bubble");
 
-  // Add spinning class
   avatar.classList.add("spinning");
 
-  // Remove the class after animation ends
   setTimeout(() => {
     avatar.classList.remove("spinning");
   }, 600);
 
-  // Toggle dropdown visibility
-  dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+  dropdown.classList.toggle("show");
 }
+
 
   function logout() {
     localStorage.removeItem("profile");
@@ -451,13 +472,14 @@
   }
 
   document.addEventListener("click", function (e) {
-    const avatar = document.querySelector(".profile-bubble");
-    const dropdown = document.getElementById("profileDropdown");
+  const avatar = document.querySelector(".profile-bubble");
+  const dropdown = document.getElementById("profileDropdown");
 
-    if (!avatar.contains(e.target) && !dropdown.contains(e.target)) {
-      dropdown.style.display = "none";
-    }
-  });
+  if (!avatar.contains(e.target) && !dropdown.contains(e.target)) {
+    dropdown.classList.remove("show");
+  }
+});
+
 </script>
 
   
