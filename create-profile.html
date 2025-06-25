@@ -243,7 +243,7 @@
       border: 0;
     }
     .error {
-      color: #ff4444;
+      color: #ff6600;
       font-size: 13px;
       margin-top: 4px;
       height: 16px; /* Prevent layout shift */
@@ -256,19 +256,23 @@
     <label>Select Your Avatar</label>
     <div class="avatar-tray" id="avatar-tray"></div>
     <div class="error" id="error-avatar"></div>
-    <label>Username</label>
-    <input type="text" id="username" required />
+    <label>Username <span style="color:#ff6600">*</span></label>
+    <input type="text" id="username" />
     <div class="error" id="error-username"></div>
-    <label>First Name</label>
-    <input type="text" id="first-name" required />
+
+    <label>First Name <span style="color:#ff6600">*</span></label>
+    <input type="text" id="first-name" />
     <div class="error" id="error-first-name"></div>
-    <label>Last Name</label>
-    <input type="text" id="last-name" required />
+
+    <label>Last Name <span style="color:#ff6600">*</span></label>
+    <input type="text" id="last-name" />
     <div class="error" id="error-last-name"></div>
-    <label>Date of Birth</label>
-    <input type="date" id="dob" required onkeydown="return false;" onclick="this.showPicker()" />
+
+    <label>Date of Birth <span style="color:#ff6600">*</span></label>
+    <input type="date" id="dob" onkeydown="return false;" onclick="this.showPicker()" />
     <div class="error" id="error-dob"></div>
-    <button onclick="submitProfile()">Submit Profile</button>
+    
+    <button id="submit-btn" onclick="submitProfile()" disabled>Submit Profile</button>
   </div>
 
   <div id="avatar-overlay">
@@ -282,151 +286,222 @@
     </div>
   </div>
 
-  <script>
-    let allAvatars = [];
-    let selectedAvatars = [];
-    let page = 1;
-    let isLoading = false;
+ <script>
+  let allAvatars = [];
+  let selectedAvatars = [];
+  let page = 1;
+  let isLoading = false;
 
-    async function fetchCharacters(pageNum = 1) {
-      const res = await fetch(`https://api.jikan.moe/v4/characters?page=${pageNum}&limit=25&order_by=favorites&sort=desc`);
-      const data = await res.json();
-      return data.data.map(c => ({
-        name: c.name,
-        src: c.images.jpg.image_url
-      }));
+  const state = {
+    username: false,
+    firstName: false,
+    lastName: false,
+    dob: false,
+    avatar: false
+  };
+
+  async function fetchCharacters(pageNum = 1) {
+    const res = await fetch(`https://api.jikan.moe/v4/characters?page=${pageNum}&limit=25&order_by=favorites&sort=desc`);
+    const data = await res.json();
+    return data.data.map(c => ({
+      name: c.name,
+      src: c.images.jpg.image_url
+    }));
+  }
+
+  async function isUsernameTaken(username) {
+    const reserved = ["admin", "goku", "animehub"];
+    return reserved.includes(username.toLowerCase());
+  }
+
+  function renderTray() {
+    const tray = document.getElementById("avatar-tray");
+    tray.innerHTML = "";
+
+    const displayAvatars = selectedAvatars.slice(-4);
+
+    displayAvatars.slice(0, -1).forEach((char) => {
+      const div = document.createElement("div");
+      div.className = "avatar-bubble blurred-left animate";
+      div.innerHTML = `<img src="${char.src}" alt="${char.name}" title="${char.name}" />`;
+      div.onclick = () => {
+        selectedAvatars = selectedAvatars.filter(a => a.src !== char.src);
+        selectedAvatars.push(char);
+        renderTray();
+        validateAvatar();
+      };
+      tray.appendChild(div);
+    });
+
+    if (displayAvatars.length) {
+      const current = displayAvatars[displayAvatars.length - 1];
+      const div = document.createElement("div");
+      div.className = "avatar-bubble selected-center animate";
+      div.innerHTML = `<img src="${current.src}" alt="${current.name}" title="${current.name}" />`;
+      tray.appendChild(div);
     }
 
-    function renderTray() {
-      const tray = document.getElementById("avatar-tray");
-      tray.innerHTML = "";
+    const plus = document.createElement("div");
+    plus.className = "avatar-bubble plus animate";
+    plus.innerText = "+";
+    plus.onclick = toggleOverlay;
+    tray.appendChild(plus);
+  }
 
-      const displayAvatars = selectedAvatars.slice(-4);
-
-      displayAvatars.slice(0, -1).forEach((char, index) => {
-        const div = document.createElement("div");
-        div.className = "avatar-bubble blurred-left animate";
-        div.innerHTML = `<img src="${char.src}" alt="${char.name}" title="${char.name}" />`;
-        div.onclick = () => {
-            selectedAvatars = selectedAvatars.filter(a => a.src !== char.src); // remove from earlier
-            selectedAvatars.push(char); // move to center
-            renderTray();
-            document.getElementById("error-avatar").textContent = "";
-        };
-        tray.appendChild(div);
-      });
-
-      if (displayAvatars.length) {
-        const current = displayAvatars[displayAvatars.length - 1];
-        const div = document.createElement("div");
-        div.className = "avatar-bubble selected-center animate";
-        div.innerHTML = `<img src="${current.src}" alt="${current.name}" title="${current.name}" />`;
-        tray.appendChild(div);
-      }
-
-      const plus = document.createElement("div");
-      plus.className = "avatar-bubble plus animate";
-      plus.innerText = "+";
-      plus.onclick = toggleOverlay;
-      tray.appendChild(plus);
+  function toggleOverlay() {
+    const ov = document.getElementById("avatar-overlay");
+    ov.classList.toggle("active");
+    if (ov.classList.contains("active")) {
+      page = 1;
+      allAvatars = [];
+      document.getElementById("overlay-avatars").innerHTML = "";
+      loadMoreCharacters().then(() => loadMoreCharacters());
     }
+  }
 
-    function toggleOverlay() {
-      const ov = document.getElementById("avatar-overlay");
-      ov.classList.toggle("active");
-      if (ov.classList.contains("active")) {
-        page = 1;
-        allAvatars = [];
-        document.getElementById("overlay-avatars").innerHTML = "";
-        loadMoreCharacters().then(() => loadMoreCharacters());
-      }
-    }
+  function showLoading(show = true) {
+    document.getElementById("loading-spinner").style.display = show ? "block" : "none";
+  }
 
-    function showLoading(show = true) {
-      document.getElementById("loading-spinner").style.display = show ? "block" : "none";
-    }
+  async function loadMoreCharacters() {
+    if (isLoading) return;
+    isLoading = true;
+    showLoading(true);
 
-    async function loadMoreCharacters() {
-      if (isLoading) return;
-      isLoading = true;
-      showLoading(true);
+    const newChars = await fetchCharacters(page++);
+    allAvatars.push(...newChars);
 
-      const newChars = await fetchCharacters(page++);
-      allAvatars.push(...newChars);
+    const container = document.getElementById("overlay-avatars");
+    newChars.forEach(char => {
+      const div = document.createElement("div");
+      div.className = "avatar-bubble";
+      div.innerHTML = `<img src="${char.src}" alt="${char.name}" title="${char.name}" />`;
+      div.onclick = () => {
+        selectedAvatars = selectedAvatars.filter(a => a.src !== char.src);
+        selectedAvatars.push(char);
+        renderTray();
+        validateAvatar();
+        toggleOverlay();
+      };
+      container.appendChild(div);
+    });
 
-      const container = document.getElementById("overlay-avatars");
-      newChars.forEach(char => {
-        const div = document.createElement("div");
-        div.className = "avatar-bubble";
-        div.innerHTML = `<img src="${char.src}" alt="${char.name}" title="${char.name}" />`;
-        div.onclick = () => {
-          selectedAvatars = selectedAvatars.filter(a => a.src !== char.src); // remove if exists
-          selectedAvatars.push(char); // add to end (center)
-          renderTray();
-          document.getElementById("error-avatar").textContent = "";
-          toggleOverlay();
-        };
-        container.appendChild(div);
-      });
+    showLoading(false);
+    isLoading = false;
+  }
 
-      showLoading(false);
-      isLoading = false;
-    }
+  function validateUsername() {
+    const val = document.getElementById("username").value.trim();
+    const err = document.getElementById("error-username");
 
-    function submitProfile() {
-      const u = document.getElementById("username").value.trim();
-      const f = document.getElementById("first-name").value.trim();
-      const l = document.getElementById("last-name").value.trim();
-      const dob = document.getElementById("dob").value;
-      let valid = true;
-
-      const showError = (id, condition) => {
-        const el = document.getElementById(`error-${id}`);
-        if (!condition) {
-          el.textContent = "This is a required field";
-          valid = false;
+    if (!/^[a-zA-Z0-9]+$/.test(val)) {
+      err.textContent = "Only letters and numbers allowed";
+      state.username = false;
+    } else if (val.length < 3) {
+      err.textContent = "At least 3 characters required";
+      state.username = false;
+    } else {
+      isUsernameTaken(val).then(taken => {
+        if (taken) {
+          err.textContent = "Username already taken";
+          state.username = false;
         } else {
-          el.textContent = "";
+          err.textContent = "";
+          state.username = true;
         }
-      };
-
-      showError("username", u);
-      showError("first-name", f);
-      showError("last-name", l);
-      showError("dob", dob);
-      showError("avatar", selectedAvatars.length > 0);
-
-      if (!valid) return;
-      
-      const profile = {
-        avatar: selectedAvatars[selectedAvatars.length - 1].src,
-        username: u,
-        first: f,
-        last: l,
-        dob
-      };
-      localStorage.setItem("profile", JSON.stringify(profile));
-      window.location.href = "index.html";
+        checkFormValidity();
+      });
+      return;
     }
 
-    document.getElementById("search-bar").addEventListener("input", (e) => {
-      const query = e.target.value.toLowerCase();
-      document.querySelectorAll("#overlay-avatars .avatar-bubble").forEach(bubble => {
-        const name = bubble.querySelector("img").title.toLowerCase();
-        bubble.style.display = name.includes(query) ? "block" : "none";
-      });
-    });
+    checkFormValidity();
+  }
 
-    document.querySelector(".avatar-scroll-container").addEventListener("scroll", (e) => {
-      const el = e.target;
-      if (el.scrollTop + el.clientHeight >= el.scrollHeight - 50) {
-        loadMoreCharacters();
-      }
-    });
+  function validateName(id) {
+    const input = document.getElementById(id);
+    const val = input.value.trim();
+    const err = document.getElementById(`error-${id}`);
+    const key = id === "first-name" ? "firstName" : "lastName";
 
-    document.addEventListener("DOMContentLoaded", () => {
-      renderTray(); // Initial only +
+    if (!/^[a-zA-Z]+$/.test(val)) {
+      err.textContent = "Only alphabets allowed";
+      state[key] = false;
+    } else {
+      err.textContent = "";
+      state[key] = true;
+    }
+    checkFormValidity();
+  }
+
+  function validateDob() {
+    const val = document.getElementById("dob").value;
+    const err = document.getElementById("error-dob");
+    if (!val) {
+      err.textContent = "This is a required field";
+      state.dob = false;
+    } else {
+      err.textContent = "";
+      state.dob = true;
+    }
+    checkFormValidity();
+  }
+
+  function validateAvatar() {
+    const err = document.getElementById("error-avatar");
+    if (!selectedAvatars.length) {
+      err.textContent = "Please select an avatar";
+      state.avatar = false;
+    } else {
+      err.textContent = "";
+      state.avatar = true;
+    }
+    checkFormValidity();
+  }
+
+  function checkFormValidity() {
+    const allValid = Object.values(state).every(Boolean);
+    document.getElementById("submit-btn").disabled = !allValid;
+  }
+
+  function submitProfile() {
+    if (!Object.values(state).every(Boolean)) return;
+
+    const profile = {
+      avatar: selectedAvatars[selectedAvatars.length - 1].src,
+      username: document.getElementById("username").value.trim(),
+      first: document.getElementById("first-name").value.trim(),
+      last: document.getElementById("last-name").value.trim(),
+      dob: document.getElementById("dob").value
+    };
+
+    localStorage.setItem("profile", JSON.stringify(profile));
+    window.location.href = "index.html";
+  }
+
+  document.getElementById("search-bar").addEventListener("input", (e) => {
+    const query = e.target.value.toLowerCase();
+    document.querySelectorAll("#overlay-avatars .avatar-bubble").forEach(bubble => {
+      const name = bubble.querySelector("img").title.toLowerCase();
+      bubble.style.display = name.includes(query) ? "block" : "none";
     });
-  </script>
+  });
+
+  document.querySelector(".avatar-scroll-container").addEventListener("scroll", (e) => {
+    const el = e.target;
+    if (el.scrollTop + el.clientHeight >= el.scrollHeight - 50) {
+      loadMoreCharacters();
+    }
+  });
+
+  document.addEventListener("DOMContentLoaded", () => {
+    renderTray();
+    document.getElementById("username").addEventListener("input", validateUsername);
+    document.getElementById("first-name").addEventListener("input", () => validateName("first-name"));
+    document.getElementById("last-name").addEventListener("input", () => validateName("last-name"));
+    document.getElementById("dob").addEventListener("change", validateDob);
+    validateAvatar(); // on load check
+  });
+</script>
+
 </body>
 </html>
