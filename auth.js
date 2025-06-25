@@ -49,6 +49,24 @@ window.onload = () => {
   document.getElementById("verify-overlay").style.display = "none";
   loadGSI();
 
+  // Real-time error clearing
+  [
+    "signup-email",
+    "signup-username",
+    "signup-password",
+    "signup-confirm",
+    "login-email",
+    "login-password"
+  ].forEach(id => {
+    const input = document.getElementById(id);
+    const error = document.getElementById("error-" + id);
+    if (input && error) {
+      input.addEventListener("input", () => {
+        if (input.value.trim()) error.textContent = "";
+      });
+    }
+  });
+
   // Flip between login and signup
   window.toggleForm = () => {
     const loginBox = document.getElementById("login-box");
@@ -73,11 +91,29 @@ window.onload = () => {
   };
 };
 
-// Login
+// 🔐 Login
 window.login = async () => {
-  const email = document.getElementById("login-email").value.trim();
-  const password = document.getElementById("login-password").value.trim();
-  if (!email || !password) return alert("Please fill in both fields.");
+  const emailEl = document.getElementById("login-email");
+  const passwordEl = document.getElementById("login-password");
+  const email = emailEl.value.trim();
+  const password = passwordEl.value.trim();
+
+  const errEmail = document.getElementById("error-login-email");
+  const errPass = document.getElementById("error-login-password");
+  errEmail.textContent = "";
+  errPass.textContent = "";
+
+  let valid = true;
+  if (!email) {
+    errEmail.textContent = "This is a required field.";
+    valid = false;
+  }
+  if (!password) {
+    errPass.textContent = "This is a required field.";
+    valid = false;
+  }
+
+  if (!valid) return;
 
   const res = await fetch(WORKER_URL, {
     method: "POST",
@@ -90,24 +126,60 @@ window.login = async () => {
     localStorage.setItem("user", JSON.stringify(data.user));
     window.location.href = "index.html";
   } else {
-    alert(data.error || "Login failed.");
+    errPass.textContent = data.error || "Login failed.";
   }
 };
 
-// Signup
+// 🧾 Signup
 window.signup = async () => {
   const email = document.getElementById("signup-email").value.trim();
   const username = document.getElementById("signup-username").value.trim();
   const password = document.getElementById("signup-password").value.trim();
   const confirm = document.getElementById("signup-confirm").value.trim();
 
-  if (!email || !username || !password || !confirm)
-    return alert("All fields are required.");
-  if (password !== confirm)
-    return alert("Passwords do not match.");
-  if (password.length < 6 || !/[0-9]/.test(password) || !/[!@#$%^&*]/.test(password)) {
-    return alert("Password must be 6+ chars, include a number & a special character.");
+  const errEmail = document.getElementById("error-signup-email");
+  const errUser = document.getElementById("error-signup-username");
+  const errPass = document.getElementById("error-signup-password");
+  const errConfirm = document.getElementById("error-signup-confirm");
+
+  errEmail.textContent = errUser.textContent = errPass.textContent = errConfirm.textContent = "";
+
+  let valid = true;
+
+  if (!email) {
+    errEmail.textContent = "This is a required field.";
+    valid = false;
   }
+
+  if (!username) {
+    errUser.textContent = "This is a required field.";
+    valid = false;
+  }
+
+  if (!password) {
+    errPass.textContent = "This is a required field.";
+    valid = false;
+  }
+
+  if (!confirm) {
+    errConfirm.textContent = "This is a required field.";
+    valid = false;
+  }
+
+  if (password && confirm && password !== confirm) {
+    errConfirm.textContent = "Passwords do not match.";
+    valid = false;
+  }
+
+  if (
+    password &&
+    (password.length < 6 || !/[0-9]/.test(password) || !/[!@#$%^&*]/.test(password))
+  ) {
+    errPass.textContent = "Password must be 6+ chars, include a number & special character.";
+    valid = false;
+  }
+
+  if (!valid) return;
 
   const body = { action: "signup", email, username, password };
   if (googleCredResponse) {
@@ -122,13 +194,13 @@ window.signup = async () => {
 
   const data = await res.json();
   if (!data.success) {
-    alert(data.error || "Signup failed.");
+    errUser.textContent = data.error || "Signup failed.";
     return;
   }
 
   // Firebase: send verification email manually
   if (!data.verificationSent) {
-    alert("Failed to send verification email.");
+    errEmail.textContent = "Failed to send verification email.";
     return;
   }
 
