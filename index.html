@@ -263,6 +263,13 @@
   box-shadow: 0 2px 10px rgba(0,0,0,0.6);
   transition: filter 0.3s;
 }
+.profile-bubble img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* OR 'cover' */
+  padding: 4px;         /* Optional: adds spacing inside the circle */
+  border-radius: 50%;   /* Ensures it's round */
+}
 
 .profile-bubble.spinning {
   animation: spin360 0.6s linear;
