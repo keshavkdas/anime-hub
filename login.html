@@ -43,6 +43,21 @@
       text-align: center;
     }
 
+    h2[data-hover]:hover::after {
+      content: attr(data-hover);
+      display: block;
+      font-size: 14px;
+      color: #ffa500;
+      margin-top: 4px;
+    }
+
+    label {
+      display: block;
+      margin-top: 12px;
+      margin-bottom: 4px;
+      font-weight: 500;
+    }
+
     .input-group {
       position: relative;
     }
@@ -123,6 +138,14 @@
       transform: rotateY(0deg);
     }
 
+    .error-msg {
+      font-size: 13px;
+      color: #ff4d4d;
+      margin-top: -6px;
+      margin-bottom: 6px;
+      display: none;
+    }
+
     #gsi-button {
       width: 100%;
       margin: 10px 0;
@@ -194,6 +217,7 @@
         box-shadow: none;
       }
     }
+
     .gsi-center-wrapper {
       display: flex;
       justify-content: center;
@@ -213,16 +237,22 @@
     <div class="auth-container">
       <!-- Login -->
       <div id="login-box" class="visible">
-        <h2>Welcome Back</h2>
+        <h2 data-hover="Welcome">ようこそ</h2>
+        <label for="login-email">Email <span style="color:red">*</span></label>
         <input id="login-email" type="email" placeholder="Email" required />
+
+        <label for="login-password">Password <span style="color:red">*</span></label>
         <div class="input-group">
           <input id="login-password" type="password" placeholder="Password" required />
           <span class="toggle-eye" id="toggle-login-pass">👁️</span>
         </div>
+
         <button onclick="login()">Login</button>
+
         <div class="gsi-center-wrapper">
           <div id="gsi-button"></div>
         </div>
+
         <div class="toggle">
           New here? <a id="show-signup">Sign up</a>
         </div>
@@ -231,12 +261,22 @@
       <!-- Signup -->
       <div id="signup-box" class="hidden">
         <h2>Create Your Account</h2>
+
+        <label for="signup-email">Email <span style="color:red">*</span></label>
         <input id="signup-email" type="email" placeholder="Email" required readonly />
+        <div id="error-email" class="error-msg"></div>
+
+        <label for="signup-username">Username <span style="color:red">*</span></label>
         <input id="signup-username" type="text" placeholder="Username" required />
+        <div id="error-username" class="error-msg"></div>
+
+        <label for="signup-password">Password <span style="color:red">*</span></label>
         <div class="input-group">
           <input id="signup-password" type="password" placeholder="Password" required />
           <span class="toggle-eye" id="toggle-signup-pass">👁️</span>
         </div>
+        <div id="error-password" class="error-msg"></div>
+
         <div id="password-hint">
           <strong>Password must:</strong><br />
           • Be at least 6 characters<br />
@@ -244,17 +284,23 @@
           • Include a special character<br />
           • Have an uppercase letter
         </div>
+
         <div id="password-strength-container" style="display: none;">
           <div id="password-strength-bar">
             <div id="password-strength-bar-inner"></div>
           </div>
         </div>
+
+        <label for="signup-confirm">Confirm Password <span style="color:red">*</span></label>
         <div class="input-group">
           <input id="signup-confirm" type="password" placeholder="Confirm Password" required />
           <span class="toggle-eye" id="toggle-signup-confirm">👁️</span>
         </div>
+        <div id="error-confirm" class="error-msg"></div>
         <div id="confirm-feedback">Passwords do not match</div>
-        <button onclick="signup()">Create Account</button>
+
+        <button onclick="signup()" id="signup-btn" disabled>Create Account</button>
+
         <div class="toggle">
           Already have an account? <a id="show-login">Login</a>
         </div>
@@ -270,7 +316,6 @@
       This page will refresh automatically once verified.
     </div>
   </div>
-
   <script>
     const passwordField = document.getElementById("signup-password");
     const confirmField = document.getElementById("signup-confirm");
