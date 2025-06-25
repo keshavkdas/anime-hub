@@ -77,19 +77,12 @@
 
     .avatar-bubble.plus {
       background-color: black;
-      color: #ff6600;
+      display: flex;
+      justify-content: center;
+      align-items: center;
       font-size: 30px;
-      position: relative;
+      color: #ff6600;
     }
-
-    .avatar-bubble.plus::before {
-      content: "+";
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-    }
-    
     .avatar-bubble.blurred-left {
       opacity: 0.4;
       filter: blur(2px);
