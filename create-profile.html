@@ -242,6 +242,12 @@
     input[type="date"]::-moz-focus-inner {
       border: 0;
     }
+    .error {
+      color: #ff4444;
+      font-size: 13px;
+      margin-top: 4px;
+      height: 16px; /* Prevent layout shift */
+    }
   </style>
 </head>
 <body>
@@ -249,14 +255,19 @@
     <h2>Create Your Profile</h2>
     <label>Select Your Avatar</label>
     <div class="avatar-tray" id="avatar-tray"></div>
+    <div class="error" id="error-avatar"></div>
     <label>Username</label>
     <input type="text" id="username" required />
+    <div class="error" id="error-username"></div>
     <label>First Name</label>
     <input type="text" id="first-name" required />
+    <div class="error" id="error-first-name"></div>
     <label>Last Name</label>
     <input type="text" id="last-name" required />
+    <div class="error" id="error-last-name"></div>
     <label>Date of Birth</label>
     <input type="date" id="dob" required onkeydown="return false;" onclick="this.showPicker()" />
+    <div class="error" id="error-dob"></div>
     <button onclick="submitProfile()">Submit Profile</button>
   </div>
 
@@ -300,6 +311,7 @@
             selectedAvatars = selectedAvatars.filter(a => a.src !== char.src); // remove from earlier
             selectedAvatars.push(char); // move to center
             renderTray();
+            document.getElementById("error-avatar").textContent = "";
         };
         tray.appendChild(div);
       });
@@ -351,6 +363,7 @@
           selectedAvatars = selectedAvatars.filter(a => a.src !== char.src); // remove if exists
           selectedAvatars.push(char); // add to end (center)
           renderTray();
+          document.getElementById("error-avatar").textContent = "";
           toggleOverlay();
         };
         container.appendChild(div);
@@ -365,9 +378,26 @@
       const f = document.getElementById("first-name").value.trim();
       const l = document.getElementById("last-name").value.trim();
       const dob = document.getElementById("dob").value;
-      if (!selectedAvatars.length || !u || !f || !l || !dob) {
-        return alert("Complete all fields and select an avatar.");
-      }
+      let valid = true;
+
+      const showError = (id, condition) => {
+        const el = document.getElementById(`error-${id}`);
+        if (!condition) {
+          el.textContent = "This is a required field";
+          valid = false;
+        } else {
+          el.textContent = "";
+        }
+      };
+
+      showError("username", u);
+      showError("first-name", f);
+      showError("last-name", l);
+      showError("dob", dob);
+      showError("avatar", selectedAvatars.length > 0);
+
+      if (!valid) return;
+      
       const profile = {
         avatar: selectedAvatars[selectedAvatars.length - 1].src,
         username: u,
