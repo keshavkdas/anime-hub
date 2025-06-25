@@ -298,9 +298,9 @@
         div.className = "avatar-bubble blurred-left animate";
         div.innerHTML = `<img src="${char.src}" alt="${char.name}" title="${char.name}" />`;
         div.onclick = () => {
-          // Move clicked avatar to end (center)
-          selectedAvatars.push(char);
-          renderTray();
+            selectedAvatars = selectedAvatars.filter(a => a.src !== char.src); // remove from earlier
+            selectedAvatars.push(char); // move to center
+            renderTray();
         };
         tray.appendChild(div);
       });
@@ -349,7 +349,8 @@
         div.className = "avatar-bubble";
         div.innerHTML = `<img src="${char.src}" alt="${char.name}" title="${char.name}" />`;
         div.onclick = () => {
-          selectedAvatars.push(char);
+          selectedAvatars = selectedAvatars.filter(a => a.src !== char.src); // remove if exists
+          selectedAvatars.push(char); // add to end (center)
           renderTray();
           toggleOverlay();
         };
