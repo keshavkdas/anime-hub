@@ -244,76 +244,62 @@
   background: rgba(255, 121, 18, 0.1);
   transform: scale(1.1);
 }
-    .banner {
-      position: relative;
-      background: url('https://images.unsplash.com/photo-1614852200161-cd8c474ea90b?auto=format&fit=crop&w=1500&q=80') center/cover no-repeat;
-      height: 250px;
-      display: flex;
-      align-items: flex-end;
-      padding: 20px;
-      box-shadow: inset 0 -40px 40px rgba(0,0,0,0.8);
-    }
-
-    .banner h1 {
-      margin: 0;
-      font-size: 36px;
-      color: white;
-      z-index: 1;
-    }
 
     .profile-section {
-      position: absolute;
-      top: 80px;
-      right: 20px;
-      display: flex;
-      align-items: center;
-      z-index: 10;
-    }
+  position: absolute;
+  top: 80px;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  z-index: 10;
+}
 
-    .profile-bubble {
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      overflow: hidden;
-      border: 2px solid #ff6600;
-      cursor: pointer;
-      background-color: #0d1117;
-    }
+.profile-bubble {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid #ff6600;
+  cursor: pointer;
+  background-color: #0d1117;
+}
 
-    .profile-bubble img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
+.profile-bubble img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
 
-    .dropdown {
-      margin-left: 10px;
-      background-color: #161b22;
-      border: 1px solid #ff6600;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.5);
-      display: none;
-      flex-direction: column;
-      min-width: 130px;
-      z-index: 9999;
-      padding: 10px 0;
-      position: absolute;
-      top: 0;
-      left: 70px; /* Push to right side */
-    }
+.dropdown {
+  position: absolute;
+  top: 0;
+  left: 70px;
+  background-color: #161b22;
+  border: 1px solid #ff6600;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+  display: none;
+  flex-direction: column;
+  min-width: 140px;
+  z-index: 9999;
+  padding: 10px 0;
+}
 
-    .dropdown a {
-      padding: 10px 16px;
-      color: #ff6600;
-      text-decoration: none;
-      background: #0f0f0f;
-      transition: background 0.2s;
-    }
+.dropdown button {
+  padding: 10px 16px;
+  color: #ff6600;
+  text-align: left;
+  font-size: 14px;
+  background: #0f0f0f;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+}
 
-    .dropdown a:hover {
-      background: #ff6600;
-      color: white;
-    }
+.dropdown button:hover {
+  background: #ff6600;
+  color: white;
+}
 
     main {
       padding: 20px;
