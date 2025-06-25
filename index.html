@@ -391,7 +391,7 @@
     </div>
     <h2>Welcome to AnimeHub</h2>
     <p>Your one-stop destination for the latest anime shows, movies, and more.</p>
-    <a href="login.html">Login/Signup</a>
+    <a id="browse-btn" href="login.html">Login/Signup</a>
   </section>
 
   <section class="hianime-carousel-section" style="padding: 0; margin: 0;">
@@ -804,4 +804,13 @@ markFavoritesActive();
   backToTopBtn.addEventListener('click', () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
+</script>
+<script>
+  const user = JSON.parse(localStorage.getItem("user"));
+  const browseBtn = document.getElementById("browse-btn");
+
+  if (user && browseBtn) {
+    browseBtn.innerText = "Start Browsing";
+    browseBtn.href = "browse.html";
+  }
 </script>
