@@ -1,4 +1,17 @@
 const WORKER_URL = "https://anime-hub-auth.keshavkdas23.workers.dev/";
+
+async function fetchAndStoreProfile(uid) {
+  const res = await fetch(WORKER_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ action: "getProfile", uid })
+  });
+
+  const data = await res.json();
+  if (data.success && data.profile) {
+    localStorage.setItem("profile", JSON.stringify(data.profile));
+  }
+}
 let googleCredResponse = null;
 
 function loadGSI() {
@@ -36,6 +49,7 @@ async function handleGoogleCredential(response) {
 
   if (data.exists) {
     localStorage.setItem("user", JSON.stringify({ uid: data.uid, email }));
+    await fetchAndStoreProfile(data.uid);
     window.location.href = "index.html";
   } else {
     document.getElementById("signup-email").value = email;
@@ -124,6 +138,7 @@ window.login = async () => {
   const data = await res.json();
   if (data.success) {
     localStorage.setItem("user", JSON.stringify(data.user));
+    await fetchAndStoreProfile(data.user.uid);
     window.location.href = "index.html";
   } else {
     errPass.textContent = data.error || "Login failed.";
