@@ -372,6 +372,15 @@
     document.getElementById("show-signup").onclick = () => toggleForm();
     document.getElementById("show-login").onclick = () => toggleForm();
 
+    // 👇 Add this block to connect input typing with enabling the button
+    ["signup-email", "signup-username", "signup-password", "signup-confirm"].forEach(id => {
+      const el = document.getElementById(id);
+      el.addEventListener("input", () => {
+        if (window.checkSignupValidity) checkSignupValidity();
+      });
+    });
+
+
   </script>
   <script type="module" src="auth.js"></script>
 </body>
