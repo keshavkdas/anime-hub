@@ -48,10 +48,29 @@ async function handleGoogleCredential(response) {
   const data = await res.json();
 
   if (data.exists) {
-    localStorage.setItem("user", JSON.stringify({ uid: data.uid, email }));
-    await fetchAndStoreProfile(data.uid);
-    window.location.href = "index.html";
-  } else {
+  // Fetch the full profile to extract username
+  const profileRes = await fetch(WORKER_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ action: "getProfile", uid: data.uid })
+  });
+
+  const profileData = await profileRes.json();
+  const username = profileData?.profile?.username || "";
+
+  // Store full user object including username
+  localStorage.setItem("user", JSON.stringify({
+    uid: data.uid,
+    email,
+    username
+  }));
+
+  // Also store profile separately
+  await fetchAndStoreProfile(data.uid);
+
+  // Redirect to homepage
+  window.location.href = "index.html";
+}else {
     document.getElementById("signup-email").value = email;
     toggleForm();
     document.getElementById("signup-username").focus();
@@ -249,7 +268,11 @@ window.signup = async () => {
     if (vd.verified) {
       clearInterval(poll);
       document.getElementById("verify-overlay").style.display = "none";
-      localStorage.setItem("user", JSON.stringify(data.user));
+      localStorage.setItem("user", JSON.stringify({
+        uid: data.user.uid,
+        email: data.user.email,
+        username
+      }));
       googleCredResponse = null;
       window.location.href = "create-profile.html";
     }
