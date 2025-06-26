@@ -437,22 +437,6 @@
   ">
   Added to favorites!
 </div>
-  <script>
-  window.addEventListener("DOMContentLoaded", () => {
-    const profile = JSON.parse(localStorage.getItem("profile"));
-    const avatarImg = document.querySelector("#profile-bubble");
-
-    if (avatarImg) {
-      if (profile && profile.avatar) {
-        avatarImg.src = profile.avatar;
-        avatarImg.alt = `${profile.username}'s Avatar`;
-      } else {
-        avatarImg.src = "images/default-avatar.png";
-        avatarImg.alt = "Default Avatar";
-      }
-    }
-  });
-</script>
 
   <script>
   function logout() {
@@ -484,7 +468,7 @@
       avatarImg.alt = profile.username + "'s Avatar";
     } else {
       // Default fallback avatar
-      avatarImg.src = "images/default-avatar.png"; // Replace with your default path
+      avatarImg.src = "avatar.jpg"; // Replace with your default path
       avatarImg.alt = "Default Avatar";
     }
   });
