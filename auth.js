@@ -184,6 +184,7 @@ window.login = async () => {
 };
 
 // Signup logic
+// Signup logic
 window.signup = async () => {
   const email = document.getElementById("signup-email").value.trim();
   const username = document.getElementById("signup-username").value.trim();
@@ -251,6 +252,12 @@ window.signup = async () => {
     return;
   }
 
+  // ✅ Store username into KV-style localStorage key
+  localStorage.setItem("username:" + username, JSON.stringify({
+    uid: data.user.uid,
+    email
+  }));
+
   document.getElementById("verify-overlay").style.display = "flex";
   const idToken = data.idToken;
 
@@ -268,13 +275,17 @@ window.signup = async () => {
     if (vd.verified) {
       clearInterval(poll);
       document.getElementById("verify-overlay").style.display = "none";
+
+      // ✅ Store full user data for later profile use
       localStorage.setItem("user", JSON.stringify({
         uid: data.user.uid,
         email: data.user.email,
         username
       }));
+
       googleCredResponse = null;
       window.location.href = "create-profile.html";
     }
   }, 3000);
 };
+
