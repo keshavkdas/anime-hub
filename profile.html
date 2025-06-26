@@ -2,163 +2,124 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Your Profile – AnimeHub</title>
+  <title>My Profile – AnimeHub</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #0f0f0f;
+      background-color: #0d1117;
       color: #f0f0f0;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
     }
 
     header {
-      background: #1c1c1c;
-      padding: 12px 20px;
+      background-color: #161b22;
+      padding: 10px 20px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-bottom: 1px solid #222;
     }
 
     header h1 {
+      margin: 0;
       color: #ff6600;
       font-size: 22px;
-      margin: 0;
     }
 
-    .banner {
-      height: 160px;
-      background: url('https://images.unsplash.com/photo-1603312409933-d5d504b9a4ff?fit=crop&w=1280&q=80') center/cover no-repeat;
-      position: relative;
-    }
-
-    .profile-header {
-      display: flex;
-      align-items: center;
-      padding: 0 30px;
-      margin-top: -50px;
-      gap: 20px;
-    }
-
-    .avatar {
-      width: 100px;
-      height: 100px;
-      border-radius: 50%;
-      border: 3px solid #ff6600;
-      background-color: #000;
-      object-fit: cover;
-    }
-
-    .username-block {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .username-block h2 {
-      font-size: 22px;
-      margin: 0;
+    nav a {
+      margin-left: 20px;
       color: #fff;
-    }
-
-    .username-block .badge {
-      color: #ffcc00;
-      font-size: 14px;
-      margin-top: 4px;
-    }
-
-    .main {
-      display: flex;
-      max-width: 1000px;
-      margin: 30px auto;
-      gap: 20px;
-      padding: 0 20px;
-    }
-
-    .sidebar {
-      width: 220px;
-      background-color: #161b22;
-      border-radius: 8px;
-      padding: 16px;
-    }
-
-    .sidebar h3 {
-      color: #ff6600;
-      font-size: 14px;
-      margin-bottom: 10px;
-    }
-
-    .sidebar ul {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-
-    .sidebar li {
-      padding: 10px;
-      color: #ccc;
-      font-size: 14px;
-      cursor: pointer;
-      border-radius: 4px;
-    }
-
-    .sidebar li:hover {
-      background-color: #262b30;
-      color: #ff6600;
-    }
-
-    .content {
-      flex: 1;
-      background-color: #161b22;
-      border-radius: 8px;
-      padding: 20px;
-    }
-
-    .content h3 {
-      color: #ff6600;
-      margin-bottom: 20px;
-    }
-
-    .profile-info {
-      display: grid;
-      grid-template-columns: 150px 1fr;
-      row-gap: 16px;
-    }
-
-    .profile-info .label {
-      color: #999;
+      text-decoration: none;
       font-weight: bold;
     }
 
-    .profile-info .value {
-      color: #f0f0f0;
+    .profile-container {
+      max-width: 960px;
+      margin: 40px auto;
+      background: #161b22;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(255, 102, 0, 0.3);
+      overflow: hidden;
+      display: flex;
+      flex-direction: row;
     }
 
-    .toast {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #ff6600;
-      color: white;
-      padding: 12px 20px;
-      border-radius: 5px;
-      font-size: 15px;
-      display: none;
-      z-index: 1000;
+    .profile-sidebar {
+      background: #0d1117;
+      width: 280px;
+      padding: 20px;
+      border-right: 1px solid #222;
+    }
+
+    .profile-sidebar img {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      border: 3px solid #ff6600;
+      margin: 0 auto;
+      display: block;
+    }
+
+    .username {
+      text-align: center;
+      font-size: 20px;
+      font-weight: bold;
+      margin-top: 10px;
+      color: #ff6600;
+    }
+
+    .profile-main {
+      flex: 1;
+      padding: 30px;
+    }
+
+    .profile-main h2 {
+      color: #ff6600;
+      margin-bottom: 15px;
+    }
+
+    .stat-section {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .stat-box {
+      flex: 1;
+      min-width: 220px;
+      background: #0d1117;
+      padding: 20px;
+      border-radius: 10px;
+      border: 1px solid #222;
+    }
+
+    .stat-box h3 {
+      color: #f97316;
+      margin-bottom: 10px;
+    }
+
+    .stat-box p {
+      font-size: 14px;
+      margin: 6px 0;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      color: #888;
+      font-size: 14px;
     }
 
     @media (max-width: 768px) {
-      .main {
+      .profile-container {
         flex-direction: column;
       }
 
-      .sidebar {
-        width: 100%;
-      }
-
-      .profile-info {
-        grid-template-columns: 1fr;
+      .profile-sidebar {
+        border-right: none;
+        border-bottom: 1px solid #222;
+        text-align: center;
       }
     }
   </style>
@@ -166,77 +127,67 @@
 <body>
   <header>
     <h1>AnimeHub</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="favorites.html">Favorites</a>
+      <a href="settings.html">Settings</a>
+    </nav>
   </header>
 
-  <div class="banner"></div>
-
-  <div class="profile-header">
-    <img src="avatar.jpg" alt="Avatar" class="avatar" id="profile-avatar" />
-    <div class="username-block">
-      <h2 id="profile-username">Loading...</h2>
-      <span class="badge">🌟 Premium Member</span>
+  <div class="profile-container">
+    <div class="profile-sidebar">
+      <img id="profile-avatar" src="avatar.jpg" alt="Avatar" />
+      <div class="username" id="profile-username">Username</div>
     </div>
-  </div>
-
-  <div class="main">
-    <div class="sidebar">
-      <h3>General</h3>
-      <ul>
-        <li>Membership Plan</li>
-        <li>Preferences</li>
-        <li>Email Notifications</li>
-        <li>Change Email</li>
-        <li>Change Password</li>
-        <li>My Devices</li>
-      </ul>
-    </div>
-
-    <div class="content">
-      <h3>Profile Information</h3>
-      <div class="profile-info">
-        <div class="label">Username</div>
-        <div class="value" id="val-username"></div>
-
-        <div class="label">First Name</div>
-        <div class="value" id="val-first"></div>
-
-        <div class="label">Last Name</div>
-        <div class="value" id="val-last"></div>
-
-        <div class="label">Date of Birth</div>
-        <div class="value" id="val-dob"></div>
-
-        <div class="label">Email</div>
-        <div class="value" id="val-email"></div>
+    <div class="profile-main">
+      <h2>My Stats</h2>
+      <div class="stat-section">
+        <div class="stat-box">
+          <h3>Anime</h3>
+          <p><strong>Total:</strong> <span id="anime-total">0</span></p>
+          <p><strong>Last Added:</strong> <span id="anime-last">—</span></p>
+        </div>
+        <div class="stat-box">
+          <h3>Manga</h3>
+          <p><strong>Total:</strong> <span id="manga-total">0</span></p>
+          <p><strong>Last Added:</strong> <span id="manga-last">—</span></p>
+        </div>
+        <div class="stat-box">
+          <h3>Manhwa</h3>
+          <p><strong>Total:</strong> <span id="manhwa-total">0</span></p>
+          <p><strong>Last Added:</strong> <span id="manhwa-last">—</span></p>
+        </div>
       </div>
     </div>
   </div>
 
-  <div class="toast" id="toast">This action requires login</div>
+  <footer>
+    &copy; 2025 AnimeHub. All rights reserved.
+  </footer>
 
   <script>
     const user = JSON.parse(localStorage.getItem("user"));
     const profile = JSON.parse(localStorage.getItem("profile"));
-
-    function showToast(msg) {
-      const toast = document.getElementById("toast");
-      toast.textContent = msg;
-      toast.style.display = "block";
-      setTimeout(() => toast.style.display = "none", 3000);
-    }
+    const avatar = document.getElementById("profile-avatar");
+    const uname = document.getElementById("profile-username");
 
     if (!user || !profile) {
-      showToast("This action requires login");
-      setTimeout(() => window.location.href = "index.html", 1500);
-    } else {
-      document.getElementById("profile-avatar").src = profile.avatar;
-      document.getElementById("profile-username").textContent = profile.username;
-      document.getElementById("val-username").textContent = profile.username;
-      document.getElementById("val-first").textContent = profile.first;
-      document.getElementById("val-last").textContent = profile.last;
-      document.getElementById("val-dob").textContent = profile.dob;
-      document.getElementById("val-email").textContent = user.email;
+      window.location.href = "login.html";
     }
+
+    avatar.src = profile.avatar || "avatar.jpg";
+    uname.textContent = profile.username || "Guest";
+
+    function loadStats(type) {
+      const key = `${type}Favorites_${user.uid}`;
+      const data = JSON.parse(localStorage.getItem(key)) || [];
+      document.getElementById(`${type}-total`).textContent = data.length;
+      document.getElementById(`${type}-last`).textContent = data.length
+        ? data[data.length - 1].title
+        : "—";
+    }
+
+    ["anime", "manga", "manhwa"].forEach(loadStats);
   </script>
 </body>
 </html>
