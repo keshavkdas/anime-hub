@@ -400,7 +400,7 @@ if (currentUser?.uid) {
   const err = document.getElementById("error-username");
 
   if (!val) {
-    err.textContent = "This is a required field.";
+    err.textContent = `Must match signup username: ${signupUsername}`;
     state.username = false;
   } else if (!/^[a-zA-Z0-9]+$/.test(val)) {
     err.textContent = "Only letters and numbers allowed";
@@ -508,7 +508,10 @@ if (currentUser?.uid) {
   document.addEventListener("DOMContentLoaded", () => {
     flatpickr("#dob", {
       dateFormat: "Y-m-d",
-      maxDate: "today"
+      maxDate: "today",
+      allowInput: false, // 🛑 prevents typing
+      clickOpens: true,  // ✅ ensures calendar opens on click
+      disableMobile: true // ✅ forces desktop UI on all devices
     });
     renderTray();
     document.getElementById("username").addEventListener("input", validateUsername);
