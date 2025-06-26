@@ -1,5 +1,7 @@
 const WORKER_URL = "https://anime-hub-auth.keshavkdas23.workers.dev/";
+let googleCredResponse = null;
 
+// Fetch and store profile in localStorage
 async function fetchAndStoreProfile(uid) {
   const res = await fetch(WORKER_URL, {
     method: "POST",
@@ -12,8 +14,8 @@ async function fetchAndStoreProfile(uid) {
     localStorage.setItem("profile", JSON.stringify(data.profile));
   }
 }
-let googleCredResponse = null;
 
+// Google Sign-In (GSI) setup
 function loadGSI() {
   const script = document.createElement("script");
   script.src = "https://accounts.google.com/gsi/client";
@@ -31,12 +33,11 @@ function loadGSI() {
   document.head.appendChild(script);
 }
 
+// Handle GSI credential response
 async function handleGoogleCredential(response) {
   googleCredResponse = response;
   const payload = JSON.parse(atob(response.credential.split(".")[1]));
   const email = payload.email;
-
-  console.log("Google email:", email);
 
   const res = await fetch(WORKER_URL, {
     method: "POST",
@@ -45,7 +46,6 @@ async function handleGoogleCredential(response) {
   });
 
   const data = await res.json();
-  console.log("checkUser response:", data);
 
   if (data.exists) {
     localStorage.setItem("user", JSON.stringify({ uid: data.uid, email }));
@@ -58,7 +58,26 @@ async function handleGoogleCredential(response) {
   }
 }
 
-// ✅ Only ONE window.onload — all setup goes here
+// Enable/disable signup button based on form validity
+function checkSignupValidity() {
+  const email = document.getElementById("signup-email").value.trim();
+  const username = document.getElementById("signup-username").value.trim();
+  const password = document.getElementById("signup-password").value.trim();
+  const confirm = document.getElementById("signup-confirm").value.trim();
+
+  const validPassword =
+    password.length >= 6 &&
+    /\d/.test(password) &&
+    /[!@#$%^&*]/.test(password) &&
+    /[A-Z]/.test(password);
+
+  const passwordsMatch = password === confirm;
+  const allValid = email && username && validPassword && passwordsMatch;
+
+  document.getElementById("signup-btn").disabled = !allValid;
+}
+
+// On page load
 window.onload = () => {
   document.getElementById("verify-overlay").style.display = "none";
   loadGSI();
@@ -81,15 +100,17 @@ window.onload = () => {
     }
   });
 
-  // Flip between login and signup
+  // Signup field listeners for button activation
+  ["signup-email", "signup-username", "signup-password", "signup-confirm"]
+    .forEach(id => {
+      const el = document.getElementById(id);
+      el.addEventListener("input", checkSignupValidity);
+    });
+
+  // Flip between login and signup forms
   window.toggleForm = () => {
     const loginBox = document.getElementById("login-box");
     const signupBox = document.getElementById("signup-box");
-
-    if (!loginBox || !signupBox) {
-      console.error("login-box or signup-box not found in DOM.");
-      return;
-    }
 
     if (loginBox.classList.contains("visible")) {
       loginBox.classList.remove("visible");
@@ -105,15 +126,13 @@ window.onload = () => {
   };
 };
 
-// 🔐 Login
+// Login logic
 window.login = async () => {
-  const emailEl = document.getElementById("login-email");
-  const passwordEl = document.getElementById("login-password");
-  const email = emailEl.value.trim();
-  const password = passwordEl.value.trim();
-
+  const email = document.getElementById("login-email").value.trim();
+  const password = document.getElementById("login-password").value.trim();
   const errEmail = document.getElementById("error-login-email");
   const errPass = document.getElementById("error-login-password");
+
   errEmail.textContent = "";
   errPass.textContent = "";
 
@@ -145,7 +164,7 @@ window.login = async () => {
   }
 };
 
-// 🧾 Signup
+// Signup logic
 window.signup = async () => {
   const email = document.getElementById("signup-email").value.trim();
   const username = document.getElementById("signup-username").value.trim();
@@ -165,32 +184,27 @@ window.signup = async () => {
     errEmail.textContent = "This is a required field.";
     valid = false;
   }
-
   if (!username) {
     errUser.textContent = "This is a required field.";
     valid = false;
   }
-
   if (!password) {
     errPass.textContent = "This is a required field.";
     valid = false;
   }
-
   if (!confirm) {
     errConfirm.textContent = "This is a required field.";
     valid = false;
   }
-
   if (password && confirm && password !== confirm) {
     errConfirm.textContent = "Passwords do not match.";
     valid = false;
   }
-
   if (
     password &&
-    (password.length < 6 || !/[0-9]/.test(password) || !/[!@#$%^&*]/.test(password))
+    (password.length < 6 || !/[0-9]/.test(password) || !/[!@#$%^&*]/.test(password) || !/[A-Z]/.test(password))
   ) {
-    errPass.textContent = "Password must be 6+ chars, include a number & special character.";
+    errPass.textContent = "Password must be 6+ chars, include a number, special char, and uppercase.";
     valid = false;
   }
 
@@ -213,7 +227,6 @@ window.signup = async () => {
     return;
   }
 
-  // Firebase: send verification email manually
   if (!data.verificationSent) {
     errEmail.textContent = "Failed to send verification email.";
     return;
