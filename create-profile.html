@@ -444,6 +444,18 @@
     };
 
     localStorage.setItem("profile", JSON.stringify(profile));
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (user?.uid) {
+      await fetch("https://anime-hub-auth.keshavkdas23.workers.dev/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "saveProfile",
+          uid: user.uid,
+          profile
+        })
+      });
+    }
     window.location.href = "index.html";
   }
 
