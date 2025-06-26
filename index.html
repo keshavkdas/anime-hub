@@ -470,28 +470,54 @@
   }
 </script>
 
-  <script>
-  window.addEventListener("DOMContentLoaded", () => {
+ <script>
+  const WORKER_URL = "https://anime-hub-auth.keshavkdas23.workers.dev/";
+
+  async function loadUserProfile() {
     const user = JSON.parse(localStorage.getItem("user"));
-    const profile = JSON.parse(localStorage.getItem("profile"));
     const avatarImg = document.querySelector(".profile-bubble img");
     const avatarBubble = document.querySelector(".profile-bubble");
 
-    if (profile && profile.avatar) {
+    if (!user?.uid || !avatarImg || !avatarBubble) return;
+
+    let profile = JSON.parse(localStorage.getItem("profile"));
+
+    if (!profile || !profile.avatar) {
+      try {
+        const res = await fetch(WORKER_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "getProfile",
+            uid: user.uid
+          })
+        });
+
+        const data = await res.json();
+        if (data.success && data.profile) {
+          profile = data.profile;
+          localStorage.setItem("profile", JSON.stringify(profile));
+        }
+      } catch (err) {
+        console.error("Error fetching profile from KV:", err);
+      }
+    }
+
+    if (profile?.avatar) {
       avatarImg.src = profile.avatar;
-      avatarImg.alt = profile.username + "'s Avatar";
+      avatarImg.alt = `${profile.username}'s Avatar`;
     } else {
-      // fallback avatar
       avatarImg.src = "avatar.jpg";
       avatarImg.alt = "Default Avatar";
     }
 
-    // Disable dropdown if not logged in
+    // Enable dropdown only for logged-in users
     avatarBubble.onclick = () => {
-      if (!user) return;
       toggleDropdown();
     };
-  });
+  }
+
+  window.addEventListener("DOMContentLoaded", loadUserProfile);
 </script>
 
  <script>
