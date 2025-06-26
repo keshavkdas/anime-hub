@@ -111,6 +111,56 @@
       from { transform: translateY(30px); opacity: 0; }
       to { transform: translateY(0); opacity: 1; }
     }
+
+    .achievements-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+    }
+
+    .achievement-card {
+      background: #0d1117;
+      border: 2px solid #ff6600;
+      padding: 15px;
+      border-radius: 12px;
+      text-align: center;
+      font-size: 16px;
+      transition: transform 0.3s;
+      position: relative;
+    }
+
+    .achievement-card:hover {
+      transform: scale(1.05);
+    }
+
+    .emoji {
+      font-size: 30px;
+      display: block;
+      margin-bottom: 8px;
+      transition: transform 0.3s;
+    }
+
+    .achievement-card:hover .emoji {
+      animation: bounce 0.5s ease-in-out infinite alternate;
+    }
+
+    @keyframes bounce {
+      from { transform: translateY(0); }
+      to { transform: translateY(-5px); }
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #1f2937;
+      color: white;
+      padding: 15px 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px #ff6600;
+      z-index: 999;
+      display: none;
+    }
   </style>
 </head>
 <body>
@@ -147,8 +197,14 @@
         <canvas id="chart-manhwa"></canvas>
       </div>
     </div>
+
+    <div class="section">
+      <h2>Achievements</h2>
+      <div class="achievements-grid" id="achievements"></div>
+    </div>
   </div>
 
+  <div class="toast" id="toast"></div>
   <script>
     const user = JSON.parse(localStorage.getItem("user"));
     const profile = JSON.parse(localStorage.getItem("profile"));
@@ -219,6 +275,35 @@
     buildTimeSeriesChart("chart-manga", mangaMap, "Manga Favorites", "#40e0d0");
     buildTimeSeriesChart("chart-manhwa", manhwaMap, "Manhwa Favorites", "#a259ff");
     buildTimeSeriesChart("chart-combined", combinedMap, "All Favorites", "#f97316");
+
+    const achievements = [
+      { id: 'achv1', emoji: '🎉', title: 'First Favorite Added' },
+      { id: 'achv2', emoji: '🔥', title: '10+ Anime Favorited' },
+      { id: 'achv3', emoji: '📖', title: 'Manga Explorer' },
+      { id: 'achv4', emoji: '🌍', title: 'Manhwa Enthusiast' }
+    ];
+
+    const unlocked = JSON.parse(localStorage.getItem("unlockedAchievements") || "[]");
+    const seen = JSON.parse(localStorage.getItem("seenAchievements") || "[]");
+    const newOnes = unlocked.filter(id => !seen.includes(id));
+    const container = document.getElementById("achievements");
+
+    achievements.forEach(a => {
+      if (unlocked.includes(a.id)) {
+        const card = document.createElement("div");
+        card.className = "achievement-card";
+        card.innerHTML = `<span class='emoji'>${a.emoji}</span>${a.title}`;
+        container.appendChild(card);
+      }
+    });
+
+    if (newOnes.length > 0) {
+      const toast = document.getElementById("toast");
+      toast.textContent = "🏆 New Achievement Unlocked!";
+      toast.style.display = "block";
+      setTimeout(() => toast.style.display = "none", 4000);
+      localStorage.setItem("seenAchievements", JSON.stringify([...seen, ...newOnes]));
+    }
   </script>
 </body>
 </html>
