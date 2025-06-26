@@ -5,6 +5,7 @@
   <title>My Profile – AnimeHub</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@1.1.0"></script>
   <style>
     body {
       background-color: #0d1117;
@@ -12,6 +13,7 @@
       font-family: 'Segoe UI', sans-serif;
       margin: 0;
       padding: 0;
+      overflow-x: hidden;
     }
 
     .back-btn {
@@ -21,39 +23,41 @@
       font-size: 24px;
       text-decoration: none;
       color: #ff6600;
+      z-index: 10;
     }
 
     .banner {
       width: 100%;
-      height: 180px;
+      height: 200px;
       background: linear-gradient(to right, #ff6600, #ff9900);
-      border-bottom: 3px solid #ff6600;
       position: relative;
     }
 
     .profile-avatar {
       position: absolute;
-      left: 30px;
       bottom: -60px;
+      left: 50%;
+      transform: translateX(-50%);
       width: 120px;
       height: 120px;
       border-radius: 50%;
-      border: 4px solid #0d1117;
-      background: #fff;
+      border: 5px solid #0d1117;
+      background-color: #fff;
       object-fit: cover;
+      z-index: 5;
     }
 
     .username-display {
-      margin-left: 170px;
-      margin-top: 20px;
+      text-align: center;
+      margin-top: 80px;
       font-size: 28px;
       font-weight: bold;
       color: #ff6600;
     }
 
     .main-content {
-      max-width: 960px;
-      margin: 80px auto 40px;
+      max-width: 1000px;
+      margin: 40px auto;
       padding: 0 20px;
     }
 
@@ -79,47 +83,89 @@
     .stat-box {
       flex: 1;
       min-width: 200px;
-      background: #0d1117;
       padding: 15px;
-      border: 1px solid #222;
       border-radius: 8px;
+      color: white;
+      font-weight: bold;
     }
 
-    .stat-box h3 {
-      margin: 0 0 10px;
-      color: #ffa94d;
-    }
+    .anime-box { background-color: #ff4500; }
+    .manga-box { background-color: #ffa500; }
+    .manhwa-box { background-color: #facc15; color: #000; }
 
-    .stat-box p {
-      margin: 5px 0;
+    .graph-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
     }
 
     canvas {
-      max-width: 100%;
+      width: 100% !important;
+      height: 200px !important;
+      background: #0d1117;
+      padding: 10px;
+      border-radius: 8px;
+      animation: slideUp 1s ease-out;
     }
 
-    footer {
+    @keyframes slideUp {
+      from { transform: translateY(30px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .achievements-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+    }
+
+    .achievement-card {
+      background: #0d1117;
+      border: 2px solid #ff6600;
+      padding: 15px;
+      border-radius: 12px;
       text-align: center;
-      padding: 20px;
-      color: #888;
-      font-size: 14px;
+      font-size: 16px;
+      transition: transform 0.3s;
+      position: relative;
     }
 
-    @media (max-width: 768px) {
-      .username-display {
-        margin-left: 0;
-        margin-top: 70px;
-        text-align: center;
-      }
+    .achievement-card:hover {
+      transform: scale(1.05);
+    }
 
-      .profile-avatar {
-        left: calc(50% - 60px);
-      }
+    .emoji {
+      font-size: 30px;
+      display: block;
+      margin-bottom: 8px;
+      transition: transform 0.3s;
+    }
+
+    .achievement-card:hover .emoji {
+      animation: bounce 0.5s ease-in-out infinite alternate;
+    }
+
+    @keyframes bounce {
+      from { transform: translateY(0); }
+      to { transform: translateY(-5px); }
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #1f2937;
+      color: white;
+      padding: 15px 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px #ff6600;
+      z-index: 999;
+      display: none;
     }
   </style>
 </head>
 <body>
-  <a href="index.html" class="back-btn">←</a>
+  <a href="index.html" class="back-btn">&#8592;</a>
   <div class="banner"></div>
   <img id="profile-avatar" class="profile-avatar" src="avatar.jpg" alt="Avatar" />
   <div class="username-display" id="profile-username">Username</div>
@@ -128,54 +174,45 @@
     <div class="section">
       <h2>My Stats</h2>
       <div class="stat-grid">
-        <div class="stat-box">
-          <h3>Anime</h3>
-          <p><strong>Total:</strong> <span id="anime-total">0</span></p>
-          <p><strong>Last Added:</strong> <span id="anime-last">—</span></p>
+        <div class="stat-box anime-box">
+          <p>Anime Total: <span id="anime-total">0</span></p>
+          <p>Last: <span id="anime-last">—</span></p>
         </div>
-        <div class="stat-box">
-          <h3>Manga</h3>
-          <p><strong>Total:</strong> <span id="manga-total">0</span></p>
-          <p><strong>Last Added:</strong> <span id="manga-last">—</span></p>
+        <div class="stat-box manga-box">
+          <p>Manga Total: <span id="manga-total">0</span></p>
+          <p>Last: <span id="manga-last">—</span></p>
         </div>
-        <div class="stat-box">
-          <h3>Manhwa</h3>
-          <p><strong>Total:</strong> <span id="manhwa-total">0</span></p>
-          <p><strong>Last Added:</strong> <span id="manhwa-last">—</span></p>
+        <div class="stat-box manhwa-box">
+          <p>Manhwa Total: <span id="manhwa-total">0</span></p>
+          <p>Last: <span id="manhwa-last">—</span></p>
         </div>
       </div>
     </div>
 
     <div class="section">
-      <h2>Favorites Distribution</h2>
-      <canvas id="favoritesChart"></canvas>
+      <h2>Favorites Charts</h2>
+      <div class="graph-container">
+        <canvas id="chart-combined"></canvas>
+        <canvas id="chart-anime"></canvas>
+        <canvas id="chart-manga"></canvas>
+        <canvas id="chart-manhwa"></canvas>
+      </div>
     </div>
 
     <div class="section">
       <h2>Achievements</h2>
-      <ul>
-        <li>🎉 First Favorite Added</li>
-        <li>🔥 10+ Anime Favorited</li>
-        <li>📖 Manga Explorer</li>
-        <li>🌍 Manhwa Enthusiast</li>
-      </ul>
+      <div class="achievements-grid" id="achievements"></div>
     </div>
   </div>
 
-  <footer>
-    &copy; 2025 AnimeHub. All rights reserved.
-  </footer>
-
+  <div class="toast" id="toast"></div>
   <script>
     const user = JSON.parse(localStorage.getItem("user"));
     const profile = JSON.parse(localStorage.getItem("profile"));
     const avatar = document.getElementById("profile-avatar");
     const uname = document.getElementById("profile-username");
 
-    if (!user || !profile) {
-      window.location.href = "login.html";
-    }
-
+    if (!user || !profile) window.location.href = "login.html";
     avatar.src = profile.avatar || "avatar.jpg";
     uname.textContent = profile.username || "Guest";
 
@@ -185,40 +222,53 @@
       manhwa: JSON.parse(localStorage.getItem(`manhwaFavorites_${user.uid}`)) || []
     };
 
-    const setStats = (type) => {
+    ["anime", "manga", "manhwa"].forEach(type => {
       document.getElementById(`${type}-total`).textContent = stats[type].length;
-      document.getElementById(`${type}-last`).textContent = stats[type].length
-        ? stats[type][stats[type].length - 1].title
-        : "—";
-    };
+      document.getElementById(`${type}-last`).textContent = stats[type].length ? stats[type][stats[type].length - 1].title : "—";
+    });
 
-    ["anime", "manga", "manhwa"].forEach(setStats);
-
-    // Chart
-    const ctx = document.getElementById('favoritesChart').getContext('2d');
-    new Chart(ctx, {
-      type: 'doughnut',
-      data: {
-        labels: ['Anime', 'Manga', 'Manhwa'],
-        datasets: [{
-          label: 'Favorites Count',
-          data: [stats.anime.length, stats.manga.length, stats.manhwa.length],
-          backgroundColor: ['#ff6600', '#ffa94d', '#ffcc80'],
-          borderColor: '#161b22',
-          borderWidth: 2
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: {
-            labels: {
-              color: '#fff'
-            }
+    const makeBarChart = (id, label, data, color) => {
+      new Chart(document.getElementById(id), {
+        type: 'bar',
+        data: {
+          labels: [label],
+          datasets: [{ label, data: [data], backgroundColor: color }]
+        },
+        options: {
+          plugins: { legend: { labels: { color: '#fff' } } },
+          scales: {
+            y: { ticks: { color: '#fff' }, beginAtZero: true },
+            x: { ticks: { color: '#fff' } }
           }
         }
-      }
+      });
+    };
+
+    makeBarChart('chart-combined', 'Total Favorites', stats.anime.length + stats.manga.length + stats.manhwa.length, '#ff6600');
+    makeBarChart('chart-anime', 'Anime', stats.anime.length, '#ff4500');
+    makeBarChart('chart-manga', 'Manga', stats.manga.length, '#ffa500');
+    makeBarChart('chart-manhwa', 'Manhwa', stats.manhwa.length, '#facc15');
+
+    const achievements = [
+      { emoji: '🎉', title: 'First Favorite Added' },
+      { emoji: '🔥', title: '10+ Anime Favorited' },
+      { emoji: '📖', title: 'Manga Explorer' },
+      { emoji: '🌍', title: 'Manhwa Enthusiast' }
+    ];
+
+    const container = document.getElementById("achievements");
+    achievements.forEach(a => {
+      const card = document.createElement("div");
+      card.className = "achievement-card";
+      card.innerHTML = `<span class='emoji'>${a.emoji}</span>${a.title}`;
+      container.appendChild(card);
     });
+
+    const toast = document.getElementById("toast");
+    toast.textContent = "🏆 New Achievement Unlocked!";
+    toast.style.display = "block";
+    setTimeout(() => toast.style.display = "none", 3000);
   </script>
 </body>
 </html>
+
