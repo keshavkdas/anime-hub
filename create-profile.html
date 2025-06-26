@@ -428,7 +428,7 @@
     document.getElementById("submit-btn").disabled = !allValid;
   }
 
-  function submitProfile() {
+  async function submitProfile() {
     if (!Object.values(state).every(Boolean)) return;
 
     const profile = {
