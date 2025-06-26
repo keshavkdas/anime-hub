@@ -457,6 +457,13 @@
   window.location.href = "index.html";
 }
 </script>
+<script>
+  const user = JSON.parse(localStorage.getItem("user"));
+  if (!user) {
+    const dropdown = document.getElementById("profileDropdown");
+    if (dropdown) dropdown.classList.remove("show");
+  }
+</script>
 
   <script>
   window.addEventListener("DOMContentLoaded", () => {
@@ -476,6 +483,9 @@
 
  <script>
   function toggleDropdown() {
+  const user = JSON.parse(localStorage.getItem("user"));
+  if (!user) return; // ❌ Do nothing if user is not logged in
+    
   const dropdown = document.getElementById("profileDropdown");
   const avatar = document.querySelector(".profile-bubble");
 
