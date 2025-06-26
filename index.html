@@ -873,7 +873,11 @@ markFavoritesActive();
 
   // 2. Update character bubble
   const profile = JSON.parse(localStorage.getItem("profile"));
-  const avatar = user && profile?.avatar ? profile.avatar : "default.png"; // your default character image
+  if (profile && profile.avatar) {
+    document.getElementById("profile-bubble").src = profile.avatar;
+  } else {
+    document.getElementById("profile-bubble").src = "avatar.jpg"; // or your fallback image
+  }
   document.getElementById("profile-bubble").src = avatar;
 
   // 3. Disable ❤️ and other favorite clicks if not logged in
