@@ -295,7 +295,7 @@
     achievements.forEach(a => {
       const card = document.createElement("div");
       card.className = "achievement-card" + (unlocked.includes(a.id) ? "" : " locked");
-      card.innerHTML = `<span class='emoji'>${a.emoji}</span>${a.title}`;
+      card.innerHTML = `<span class='emoji'>${a.emoji}</span><div>${a.title}</div>`;
       container.appendChild(card);
     });
 
