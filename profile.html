@@ -127,6 +127,12 @@
       font-size: 16px;
       transition: transform 0.3s;
       position: relative;
+      opacity: 1;
+    }
+
+    .achievement-card.locked {
+      filter: grayscale(100%);
+      opacity: 0.5;
     }
 
     .achievement-card:hover {
@@ -276,12 +282,10 @@
     buildTimeSeriesChart("chart-manhwa", manhwaMap, "Manhwa Favorites", "#a259ff");
     buildTimeSeriesChart("chart-combined", combinedMap, "All Favorites", "#f97316");
 
-    const achievements = [
-      { id: 'achv1', emoji: '🎉', title: 'First Favorite Added' },
-      { id: 'achv2', emoji: '🔥', title: '10+ Anime Favorited' },
-      { id: 'achv3', emoji: '📖', title: 'Manga Explorer' },
-      { id: 'achv4', emoji: '🌍', title: 'Manhwa Enthusiast' }
-    ];
+    const achievements = Array.from({ length: 50 }, (_, i) => {
+      const emojis = ['🎉','🔥','📖','🌍','🏅','⭐','💫','🧠','🧩','🎯','🏆','💥','⚡','🪄','🛡️','🎮','🎶','🧱','🧵','🧪','🚀','🛰️','🪐','🌠','🌟','💎','📈','🧭','📚','🎓','🔮','💡','🕹️','🎲','🏹','🧙','🧛','🧟','🦸','🦹','🤖','👾','🧞','👑','🧸','🗺️','🛸','🔧','🧰','🎬'];
+      return { id: `achv${i+1}`, emoji: emojis[i % emojis.length], title: `Achievement ${i+1}` };
+    });
 
     const unlocked = JSON.parse(localStorage.getItem("unlockedAchievements") || "[]");
     const seen = JSON.parse(localStorage.getItem("seenAchievements") || "[]");
@@ -289,12 +293,10 @@
     const container = document.getElementById("achievements");
 
     achievements.forEach(a => {
-      if (unlocked.includes(a.id)) {
-        const card = document.createElement("div");
-        card.className = "achievement-card";
-        card.innerHTML = `<span class='emoji'>${a.emoji}</span>${a.title}`;
-        container.appendChild(card);
-      }
+      const card = document.createElement("div");
+      card.className = "achievement-card" + (unlocked.includes(a.id) ? "" : " locked");
+      card.innerHTML = `<span class='emoji'>${a.emoji}</span>${a.title}`;
+      container.appendChild(card);
     });
 
     if (newOnes.length > 0) {
