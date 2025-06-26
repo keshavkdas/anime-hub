@@ -211,6 +211,7 @@
   </div>
 
   <div class="toast" id="toast"></div>
+  
   <script>
   const user = JSON.parse(localStorage.getItem("user"));
   const profile = JSON.parse(localStorage.getItem("profile"));
@@ -230,21 +231,35 @@
     return map;
   };
 
-  // ✅ Unified stats array-based
-  const stats = {
-    anime: JSON.parse(localStorage.getItem(`animeFavorites_${user.uid}`)) || [],
-    manga: JSON.parse(localStorage.getItem(`mangaFavorites_${user.uid}`)) || [],
-    manhwa: JSON.parse(localStorage.getItem(`manhwaFavorites_${user.uid}`)) || []
-  };
-  stats.total = stats.anime.length + stats.manga.length + stats.manhwa.length;
+  const userKey = user.uid;
+  let favData = { anime: [], manga: [], manhwa: [] };
 
-  // ✅ Display counts and last items
-  ["anime", "manga", "manhwa"].forEach(type => {
-    document.getElementById(`${type}-total`).textContent = stats[type].length;
-    document.getElementById(`${type}-last`).textContent = stats[type].length ? stats[type][stats[type].length - 1].title : "—";
-  });
+  async function loadFavorites() {
+    try {
+      let resp = await fetch(`/api/user/${userKey}/favorites`);
+      if (!resp.ok) throw new Error('API failed');
+      favData = await resp.json();
+    } catch (e) {
+      ['anime', 'manga', 'manhwa'].forEach(type => {
+        favData[type] = JSON.parse(localStorage.getItem(`${type}Favorites_${userKey}`)) || [];
+      });
+    }
+  }
 
-  // ✅ Build time-series chart
+  function updateDailyStreak() {
+    const lastDate = localStorage.getItem('lastFavDate');
+    const today = new Date().toISOString().split('T')[0];
+    const streak = Number(localStorage.getItem('dailyStreak')) || 0;
+
+    if (lastDate === today) return streak;
+
+    const yesterday = new Date(Date.now() - 864e5).toISOString().split('T')[0];
+    const newStreak = (lastDate === yesterday) ? streak + 1 : 1;
+    localStorage.setItem('lastFavDate', today);
+    localStorage.setItem('dailyStreak', newStreak);
+    return newStreak;
+  }
+
   const buildTimeSeriesChart = (ctxId, dataMap, label, color) => {
     const today = new Date();
     const labels = Array.from({ length: 30 }, (_, i) => {
@@ -273,64 +288,93 @@
     });
   };
 
-  const animeMap = parseDates(stats.anime);
-  const mangaMap = parseDates(stats.manga);
-  const manhwaMap = parseDates(stats.manhwa);
-  const combinedMap = {};
-  [animeMap, mangaMap, manhwaMap].forEach(map => {
-    for (const key in map) combinedMap[key] = (combinedMap[key] || 0) + map[key];
-  });
-
-  buildTimeSeriesChart("chart-anime", animeMap, "Anime Favorites", "#ff6600");
-  buildTimeSeriesChart("chart-manga", mangaMap, "Manga Favorites", "#40e0d0");
-  buildTimeSeriesChart("chart-manhwa", manhwaMap, "Manhwa Favorites", "#a259ff");
-  buildTimeSeriesChart("chart-combined", combinedMap, "All Favorites", "#f97316");
-
-  // ✅ Achievements logic
-  const achievementStats = {
-    anime: stats.anime.length,
-    manga: stats.manga.length,
-    manhwa: stats.manhwa.length,
-    total: stats.total
+  const generateDynamicAchievements = () => {
+    const emojis = ['🎉','🔥','📖','🌍','💯','⭐','🏅','🎯','💥','⚡'];
+    const types = [
+      { key:'anime', name:'Anime Favorites' },
+      { key:'manga', name:'Manga Favorites' },
+      { key:'manhwa', name:'Manhwa Favorites' },
+      { key:'total', name:'Total Favorites' },
+      { key:'streak', name:'Daily Streak' }
+    ];
+    const achievements = [];
+    let id = 1;
+    for (const t of types) {
+      const targets = [1, 5, 10, 20, 50, 100];
+      for (const target of targets) {
+        if (achievements.length >= 30) break;
+        achievements.push({
+          id: 'achv' + id++,
+          emoji: emojis[target % emojis.length],
+          title: `${t.name} ≥ ${target}`,
+          desc: `Reach ${target} in ${t.name.toLowerCase()}`,
+          field: t.key,
+          target,
+          condition: (s) => s[t.key] >= target
+        });
+      }
+      if (achievements.length >= 30) break;
+    }
+    return achievements;
   };
 
-  const achievements = [
-    { id: 'achv1', emoji: '🎉', title: 'First Favorite', description: 'Add your first favorite', condition: (s) => s.total >= 1 },
-    { id: 'achv2', emoji: '🔥', title: 'Anime Fan', description: 'Favorite 10 anime', condition: (s) => s.anime >= 10 },
-    { id: 'achv3', emoji: '📖', title: 'Manga Reader', description: 'Favorite 5 manga', condition: (s) => s.manga >= 5 },
-    { id: 'achv4', emoji: '🌍', title: 'Manhwa Explorer', description: 'Favorite 5 manhwa', condition: (s) => s.manhwa >= 5 },
-    { id: 'achv5', emoji: '💯', title: 'Century Mark', description: '100 total favorites', condition: (s) => s.total >= 100 },
-    ...Array.from({ length: 45 }, (_, i) => ({
-      id: `achv${i + 6}`,
-      emoji: ['⭐','🏅','🎯','🧠','🧩','🧪','🚀','👑','💎','📈'][i % 10],
-      title: `Mystery ${i + 6}`,
-      description: 'Unlock by progressing...',
-      condition: () => false
-    }))
-  ];
+  async function initProfile() {
+    await loadFavorites();
 
-  const unlocked = achievements.filter(a => a.condition(achievementStats)).map(a => a.id);
-  localStorage.setItem("unlockedAchievements", JSON.stringify(unlocked));
+    const stats = {
+      anime: favData.anime.length,
+      manga: favData.manga.length,
+      manhwa: favData.manhwa.length,
+      total: favData.anime.length + favData.manga.length + favData.manhwa.length,
+      streak: updateDailyStreak()
+    };
 
-  const seen = JSON.parse(localStorage.getItem("seenAchievements") || "[]");
-  const newOnes = unlocked.filter(id => !seen.includes(id));
+    ["anime", "manga", "manhwa"].forEach(type => {
+      document.getElementById(`${type}-total`).textContent = favData[type].length;
+      document.getElementById(`${type}-last`).textContent = favData[type].length ? favData[type][favData[type].length - 1].title : "—";
+    });
 
-  const container = document.getElementById("achievements");
-  achievements.forEach(a => {
-    const isUnlocked = unlocked.includes(a.id);
-    const card = document.createElement("div");
-    card.className = "achievement-card" + (isUnlocked ? "" : " locked");
-    card.innerHTML = `<span class='emoji' title="${a.description}">${a.emoji}</span><div title="${a.description}">${a.title}</div>`;
-    container.appendChild(card);
-  });
+    const animeMap = parseDates(favData.anime);
+    const mangaMap = parseDates(favData.manga);
+    const manhwaMap = parseDates(favData.manhwa);
+    const combinedMap = {};
+    [animeMap, mangaMap, manhwaMap].forEach(map => {
+      for (const key in map) combinedMap[key] = (combinedMap[key] || 0) + map[key];
+    });
 
-  if (newOnes.length > 0) {
-    const toast = document.getElementById("toast");
-    toast.textContent = "🏆 New Achievement Unlocked!";
-    toast.style.display = "block";
-    setTimeout(() => toast.style.display = "none", 4000);
-    localStorage.setItem("seenAchievements", JSON.stringify([...seen, ...newOnes]));
+    buildTimeSeriesChart("chart-anime", animeMap, "Anime Favorites", "#ff6600");
+    buildTimeSeriesChart("chart-manga", mangaMap, "Manga Favorites", "#40e0d0");
+    buildTimeSeriesChart("chart-manhwa", manhwaMap, "Manhwa Favorites", "#a259ff");
+    buildTimeSeriesChart("chart-combined", combinedMap, "All Favorites", "#f97316");
+
+    const achievements = generateDynamicAchievements();
+    const unlocked = achievements.filter(a => a.condition(stats)).map(a => a.id);
+    localStorage.setItem("unlockedAchievements", JSON.stringify(unlocked));
+    const seen = JSON.parse(localStorage.getItem("seenAchievements") || "[]");
+    const newOnes = unlocked.filter(id => !seen.includes(id));
+
+    const container = document.getElementById("achievements");
+    achievements.forEach(a => {
+      const has = unlocked.includes(a.id);
+      const progress = has ? `${a.target}` : `${stats[a.field]}/${a.target}`;
+      container.insertAdjacentHTML('beforeend',
+        `<div class="achievement-card${has ? '' : ' locked'}">
+          <span class="emoji" title="${a.desc} (${progress})">${a.emoji}</span>
+          <div title="${a.desc}">${a.title}</div>
+        </div>`
+      );
+    });
+
+    if (newOnes.length) {
+      const t = document.getElementById("toast");
+      t.textContent = "🏆 New Achievement Unlocked!";
+      t.style.display = "block";
+      setTimeout(() => t.style.display = "none", 4000);
+      localStorage.setItem("seenAchievements", JSON.stringify([...seen, ...newOnes]));
+    }
   }
+
+  initProfile();
 </script>
 
 </body>
