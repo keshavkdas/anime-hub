@@ -379,6 +379,22 @@
     showLoading(false);
     isLoading = false;
   }
+  let signupUsername = "";
+
+const currentUser = JSON.parse(localStorage.getItem("user"));
+if (currentUser?.uid) {
+  for (const key of Object.keys(localStorage)) {
+    if (key.startsWith("username:")) {
+      try {
+        const obj = JSON.parse(localStorage.getItem(key));
+        if (obj?.uid === currentUser.uid) {
+          signupUsername = key.replace("username:", "");
+          break;
+        }
+      } catch (_) {}
+    }
+  }
+}
 
   function validateUsername() {
   const val = document.getElementById("username").value.trim();
