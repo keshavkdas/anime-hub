@@ -496,20 +496,30 @@
   });
 
   document.addEventListener("DOMContentLoaded", () => {
-    flatpickr("#dob", {
-      dateFormat: "Y-m-d",
-      maxDate: "today",
-      allowInput: false, // 🛑 prevents typing
-      clickOpens: true,  // ✅ ensures calendar opens on click
-      disableMobile: true // ✅ forces desktop UI on all devices
-    });
-    renderTray();
-    document.getElementById("username").addEventListener("input", validateUsername);
-    document.getElementById("first-name").addEventListener("input", () => validateName("first-name"));
-    document.getElementById("last-name").addEventListener("input", () => validateName("last-name"));
-    document.getElementById("dob").addEventListener("change", validateDob);
-    validateAvatar(); // on load check
+  flatpickr("#dob", {
+    dateFormat: "Y-m-d",
+    maxDate: "today",
+    allowInput: false,
+    clickOpens: true,
+    disableMobile: true
   });
+
+  renderTray();
+  validateAvatar(); // on load check
+
+  // ✅ Autofill username
+  const unameInput = document.getElementById("username");
+  if (signupUsername) {
+    unameInput.value = signupUsername;
+    unameInput.setAttribute("readonly", true); // ⛔ prevent tampering
+    state.username = true; // ✅ already validated
+  }
+
+  document.getElementById("first-name").addEventListener("input", () => validateName("first-name"));
+  document.getElementById("last-name").addEventListener("input", () => validateName("last-name"));
+  document.getElementById("dob").addEventListener("change", validateDob);
+});
+
 </script>
 </body>
 </html>
