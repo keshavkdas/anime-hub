@@ -288,7 +288,6 @@
     dob: false,
     avatar: false
   };
-  const signupUsername = JSON.parse(localStorage.getItem("user"))?.username;
 
   async function fetchCharacters(pageNum = 1) {
     const res = await fetch(`https://api.jikan.moe/v4/characters?page=${pageNum}&limit=25&order_by=favorites&sort=desc`);
