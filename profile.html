@@ -161,6 +161,12 @@
       z-index: 999;
       display: none;
     }
+
+    .graph-container {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
   </style>
 </head>
 <body>
@@ -297,6 +303,34 @@
       setTimeout(() => toast.style.display = "none", 4000);
       localStorage.setItem("seenAchievements", JSON.stringify([...shown, ...newAchievements]));
     }
+
+    const buildTimeSeriesChart = (ctxId, dataMap, label, color) => {
+  const today = new Date();
+  const labels = Array.from({ length: 30 }, (_, i) => {
+    const date = new Date(today);
+    date.setDate(date.getDate() - (29 - i));
+    return date.toISOString().split('T')[0];
+  });
+
+  const data = labels.map(date => dataMap[date] || 0);
+
+  new Chart(document.getElementById(ctxId), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{ label, data, backgroundColor: color }]
+    },
+    options: {
+      scales: {
+        y: { beginAtZero: true, ticks: { color: '#fff' } },
+        x: { ticks: { color: '#fff' } }
+      },
+      plugins: {
+        legend: { labels: { color: '#fff' } }
+      }
+    }
+  });
+};
   </script>
 </body>
 </html>
