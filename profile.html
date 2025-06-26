@@ -282,47 +282,39 @@
     buildTimeSeriesChart("chart-manhwa", manhwaMap, "Manhwa Favorites", "#a259ff");
     buildTimeSeriesChart("chart-combined", combinedMap, "All Favorites", "#f97316");
 
-   const achievements = Array.from({ length: 50 }, (_, i) => {
-      const emojis = ['🎉','🔥','📖','🌍','🏅','⭐','💫','🧠','🧩','🎯','🏆','💥','⚡','🪄','🛡️','🎮','🎶','🧱','🧵','🧪','🚀','🛰️','🪐','🌠','🌟','💎','📈','🧭','📚','🎓','🔮','💡','🕹️','🎲','🏹','🧙','🧛','🧟','🦸','🦹','🤖','👾','🧞','👑','🧸','🗺️','🛸','🔧','🧰','🎬'];
-      const conditions = [
-        "Add your first favorite",
-        "Favorite 10 anime",
-        "Favorite 5 manga",
-        "Favorite 5 manhwa",
-        `Complete your profile`,
-        `Login daily for a week`,
-        `Favorite something 5 days in a row`,
-        `Reach 100 favorites`,
-        `Explore trending section`,
-        `Watch 10 anime episodes`,
-        `Read 10 manga chapters`,
-        `Discover 3 new genres`,
-        `Add to favorites from search`,
-        `Rate 5 anime`,
-        `Rate 5 manga`,
-        `Rate 5 manhwa`,
-        `Create a profile banner`,
-        `Change avatar`,
-        `Share a favorite`,
-        `Visit profile 5 times`,
-        ...Array(30).fill("Mystery task...")
-      ];
-      return {
-        id: `achv${i+1}`,
-        emoji: emojis[i % emojis.length],
-        title: `Achievement ${i+1}`,
-        description: conditions[i] || "Complete this to unlock."
-      };
-    });
+    const achievements = [
+      { id: 'achv1', emoji: '🎉', title: 'First Favorite', description: 'Add your first favorite', condition: (s) => s.total >= 1 },
+      { id: 'achv2', emoji: '🔥', title: 'Anime Fan', description: 'Favorite 10 anime', condition: (s) => s.anime >= 10 },
+      { id: 'achv3', emoji: '📖', title: 'Manga Reader', description: 'Favorite 5 manga', condition: (s) => s.manga >= 5 },
+      { id: 'achv4', emoji: '🌍', title: 'Manhwa Explorer', description: 'Favorite 5 manhwa', condition: (s) => s.manhwa >= 5 },
+      { id: 'achv5', emoji: '💯', title: 'Century Mark', description: '100 total favorites', condition: (s) => s.total >= 100 },
+      ...Array.from({ length: 45 }, (_, i) => ({
+        id: `achv${i + 6}`,
+        emoji: ['⭐','🏅','🎯','🧠','🧩','🧪','🚀','👑','💎','📈'][i % 10],
+        title: `Mystery ${i + 6}`,
+        description: 'Unlock by progressing...',
+        condition: () => false
+      }))
+    ];
 
-    const unlocked = JSON.parse(localStorage.getItem("unlockedAchievements") || "[]");
+    const stats = {
+      anime: (JSON.parse(localStorage.getItem('animeFavorites_' + (JSON.parse(localStorage.getItem('user'))?.uid)) || []).length),
+      manga: (JSON.parse(localStorage.getItem('mangaFavorites_' + (JSON.parse(localStorage.getItem('user'))?.uid)) || []).length),
+      manhwa: (JSON.parse(localStorage.getItem('manhwaFavorites_' + (JSON.parse(localStorage.getItem('user'))?.uid)) || []).length)
+    };
+    stats.total = stats.anime + stats.manga + stats.manhwa;
+
+    let unlocked = achievements.filter(a => a.condition(stats)).map(a => a.id);
+    localStorage.setItem("unlockedAchievements", JSON.stringify(unlocked));
+
     const seen = JSON.parse(localStorage.getItem("seenAchievements") || "[]");
     const newOnes = unlocked.filter(id => !seen.includes(id));
-    const container = document.getElementById("achievements");
 
+    const container = document.getElementById("achievements");
     achievements.forEach(a => {
+      const isUnlocked = unlocked.includes(a.id);
       const card = document.createElement("div");
-      card.className = "achievement-card" + (unlocked.includes(a.id) ? "" : " locked");
+      card.className = "achievement-card" + (isUnlocked ? "" : " locked");
       card.innerHTML = `<span class='emoji' title="${a.description}">${a.emoji}</span><div title="${a.description}">${a.title}</div>`;
       container.appendChild(card);
     });
