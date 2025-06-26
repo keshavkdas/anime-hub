@@ -478,6 +478,12 @@
       avatarImg.src = "avatar.jpg"; // Replace with your default path
       avatarImg.alt = "Default Avatar";
     }
+
+    const avatar = document.querySelector(".profile-bubble");
+    avatar.onclick = () => {
+      if (!user) return;
+      toggleDropdown();
+    };
   });
 </script>
 
