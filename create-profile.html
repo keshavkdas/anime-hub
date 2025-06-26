@@ -211,6 +211,25 @@
         grid-template-columns: repeat(2, 1fr);
       }
     }
+    /* Style for overlay scroll container */
+.avatar-scroll-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.avatar-scroll-container::-webkit-scrollbar-track {
+  background: #0d0d0d; /* Black background */
+}
+
+.avatar-scroll-container::-webkit-scrollbar-thumb {
+  background-color: #ff6600; /* Orange thumb */
+  border-radius: 6px;
+}
+
+.avatar-scroll-container {
+  scrollbar-width: thin;
+  scrollbar-color: #ff6600 #0d0d0d; /* Firefox support */
+}
+
   </style>
 </head>
 <body>
