@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Your Profile – AnimeHub</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #0f0f0f, #1f1f1f);
+      color: #f0f0f0;
+    }
+
+    .container {
+      max-width: 420px;
+      margin: 40px auto;
+      background-color: #161b22;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+      text-align: center;
+    }
+
+    .avatar {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      margin-bottom: 15px;
+      border: 3px solid #ff6600;
+      box-shadow: 0 0 10px #ff6600;
+    }
+
+    h2 {
+      color: #ff6600;
+      margin-bottom: 20px;
+    }
+
+    .info {
+      margin: 10px 0;
+      font-size: 16px;
+    }
+
+    .label {
+      font-weight: bold;
+      color: #999;
+    }
+
+    .value {
+      color: #ff6600;
+    }
+
+    .back-btn {
+      margin-top: 25px;
+      background-color: #ff6600;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 6px;
+      font-size: 16px;
+      color: white;
+      cursor: pointer;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #ff6600;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 5px;
+      font-size: 15px;
+      display: none;
+      z-index: 1000;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <img src="avatar.jpg" alt="Avatar" class="avatar" id="profile-avatar" />
+    <h2>Your Profile</h2>
+
+    <div class="info"><span class="label">Username:</span> <span class="value" id="profile-username"></span></div>
+    <div class="info"><span class="label">First Name:</span> <span class="value" id="profile-first"></span></div>
+    <div class="info"><span class="label">Last Name:</span> <span class="value" id="profile-last"></span></div>
+    <div class="info"><span class="label">Date of Birth:</span> <span class="value" id="profile-dob"></span></div>
+
+    <button class="back-btn" onclick="window.location.href='index.html'">⬅ Back to Home</button>
+  </div>
+
+  <div class="toast" id="toast">This action requires login</div>
+
+  <script>
+    const user = JSON.parse(localStorage.getItem("user"));
+    const profile = JSON.parse(localStorage.getItem("profile"));
+
+    function showToast(msg) {
+      const toast = document.getElementById("toast");
+      toast.textContent = msg;
+      toast.style.display = "block";
+      setTimeout(() => toast.style.display = "none", 3000);
+    }
+
+    if (!user || !profile) {
+      showToast("This action requires login");
+      setTimeout(() => window.location.href = "index.html", 1500);
+    } else {
+      document.getElementById("profile-avatar").src = profile.avatar;
+      document.getElementById("profile-username").textContent = profile.username;
+      document.getElementById("profile-first").textContent = profile.first;
+      document.getElementById("profile-last").textContent = profile.last;
+      document.getElementById("profile-dob").textContent = profile.dob;
+    }
+  </script>
+</body>
+</html>
