@@ -371,7 +371,7 @@
   <section class="hero">  
     <div class="profile-section">
       <div class="profile-bubble" onclick="toggleDropdown()">
-        <img src="avatar.jpg" alt="Profile" />
+         <img id="profile-bubble" src="avatar.jpg" alt="Profile" />
       </div>
       <div class="profile-dropdown" id="profileDropdown">
         <div class="dropdown-arrow"></div>
@@ -438,29 +438,40 @@
   Added to favorites!
 </div>
   <script>
-  function logout() {
-    // Remove login data
-    localStorage.removeItem("user");
-    localStorage.removeItem("profile");
+  window.addEventListener("DOMContentLoaded", () => {
+    const profile = JSON.parse(localStorage.getItem("profile"));
+    const avatarImg = document.querySelector("#profile-bubble");
 
-    // Optionally remove user-specific favorites
-    const keys = Object.keys(localStorage);
-    keys.forEach(k => {
-      if (
-        k.startsWith("animeFavorites_") ||
-        k.startsWith("mangaFavorites_") ||
-        k.startsWith("manhwaFavorites_")
-      ) {
-        localStorage.removeItem(k);
+    if (avatarImg) {
+      if (profile && profile.avatar) {
+        avatarImg.src = profile.avatar;
+        avatarImg.alt = `${profile.username}'s Avatar`;
+      } else {
+        avatarImg.src = "images/default-avatar.png";
+        avatarImg.alt = "Default Avatar";
       }
-    });
+    }
+  });
+</script>
 
-    // Optional toast message after redirect
-    sessionStorage.setItem("toast", "👋 Logged out successfully");
+  <script>
+  function logout() {
+  localStorage.removeItem("user");
+    
+  const keys = Object.keys(localStorage);
+  keys.forEach(k => {
+    if (
+      k.startsWith("animeFavorites_") ||
+      k.startsWith("mangaFavorites_") ||
+      k.startsWith("manhwaFavorites_")
+    ) {
+      localStorage.removeItem(k);
+    }
+  });
 
-    // Redirect
-    window.location.href = "index.html";
-  }
+  sessionStorage.setItem("toast", "👋 Logged out successfully");
+  window.location.href = "index.html";
+}
 </script>
 
   <script>
