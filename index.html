@@ -440,23 +440,28 @@
 
   <script>
   function logout() {
-  localStorage.removeItem("user");
-    
-  const keys = Object.keys(localStorage);
-  keys.forEach(k => {
-    if (
-      k.startsWith("animeFavorites_") ||
-      k.startsWith("mangaFavorites_") ||
-      k.startsWith("manhwaFavorites_")
-    ) {
-      localStorage.removeItem(k);
-    }
-  });
+    // Remove user and profile
+    localStorage.removeItem("user");
+    localStorage.removeItem("profile");  // ✅ This was missing
 
-  sessionStorage.setItem("toast", "👋 Logged out successfully");
-  window.location.href = "index.html";
-}
+    // Remove all favorite keys
+    const keys = Object.keys(localStorage);
+    keys.forEach(k => {
+      if (
+        k.startsWith("animeFavorites_") ||
+        k.startsWith("mangaFavorites_") ||
+        k.startsWith("manhwaFavorites_")
+      ) {
+        localStorage.removeItem(k);
+      }
+    });
+
+    // Optional: clear any session state
+    sessionStorage.setItem("toast", "👋 Logged out successfully");
+    window.location.href = "index.html";
+  }
 </script>
+
 <script>
   const user = JSON.parse(localStorage.getItem("user"));
   if (!user) {
@@ -467,20 +472,22 @@
 
   <script>
   window.addEventListener("DOMContentLoaded", () => {
+    const user = JSON.parse(localStorage.getItem("user"));
     const profile = JSON.parse(localStorage.getItem("profile"));
     const avatarImg = document.querySelector(".profile-bubble img");
+    const avatarBubble = document.querySelector(".profile-bubble");
 
     if (profile && profile.avatar) {
       avatarImg.src = profile.avatar;
       avatarImg.alt = profile.username + "'s Avatar";
     } else {
-      // Default fallback avatar
-      avatarImg.src = "avatar.jpg"; // Replace with your default path
+      // fallback avatar
+      avatarImg.src = "avatar.jpg";
       avatarImg.alt = "Default Avatar";
     }
 
-    const avatar = document.querySelector(".profile-bubble");
-    avatar.onclick = () => {
+    // Disable dropdown if not logged in
+    avatarBubble.onclick = () => {
       if (!user) return;
       toggleDropdown();
     };
