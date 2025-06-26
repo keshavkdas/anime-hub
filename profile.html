@@ -212,120 +212,126 @@
 
   <div class="toast" id="toast"></div>
   <script>
-    const user = JSON.parse(localStorage.getItem("user"));
-    const profile = JSON.parse(localStorage.getItem("profile"));
-    const avatar = document.getElementById("profile-avatar");
-    const uname = document.getElementById("profile-username");
+  const user = JSON.parse(localStorage.getItem("user"));
+  const profile = JSON.parse(localStorage.getItem("profile"));
+  const avatar = document.getElementById("profile-avatar");
+  const uname = document.getElementById("profile-username");
 
-    if (!user || !profile) window.location.href = "login.html";
-    avatar.src = profile.avatar || "avatar.jpg";
-    uname.textContent = profile.username || "Guest";
+  if (!user || !profile) window.location.href = "login.html";
+  avatar.src = profile.avatar || "avatar.jpg";
+  uname.textContent = profile.username || "Guest";
 
-    const parseDates = (list) => {
-      const map = {};
-      list.forEach(item => {
-        const d = item.date || new Date().toISOString().split('T')[0];
-        map[d] = (map[d] || 0) + 1;
-      });
-      return map;
-    };
+  const parseDates = (list) => {
+    const map = {};
+    list.forEach(item => {
+      const d = item.date || new Date().toISOString().split('T')[0];
+      map[d] = (map[d] || 0) + 1;
+    });
+    return map;
+  };
 
-    const stats = {
-      anime: JSON.parse(localStorage.getItem(`animeFavorites_${user.uid}`)) || [],
-      manga: JSON.parse(localStorage.getItem(`mangaFavorites_${user.uid}`)) || [],
-      manhwa: JSON.parse(localStorage.getItem(`manhwaFavorites_${user.uid}`)) || []
-    };
+  // ✅ Unified stats array-based
+  const stats = {
+    anime: JSON.parse(localStorage.getItem(`animeFavorites_${user.uid}`)) || [],
+    manga: JSON.parse(localStorage.getItem(`mangaFavorites_${user.uid}`)) || [],
+    manhwa: JSON.parse(localStorage.getItem(`manhwaFavorites_${user.uid}`)) || []
+  };
+  stats.total = stats.anime.length + stats.manga.length + stats.manhwa.length;
 
-    ["anime", "manga", "manhwa"].forEach(type => {
-      document.getElementById(`${type}-total`).textContent = stats[type].length;
-      document.getElementById(`${type}-last`).textContent = stats[type].length ? stats[type][stats[type].length - 1].title : "—";
+  // ✅ Display counts and last items
+  ["anime", "manga", "manhwa"].forEach(type => {
+    document.getElementById(`${type}-total`).textContent = stats[type].length;
+    document.getElementById(`${type}-last`).textContent = stats[type].length ? stats[type][stats[type].length - 1].title : "—";
+  });
+
+  // ✅ Build time-series chart
+  const buildTimeSeriesChart = (ctxId, dataMap, label, color) => {
+    const today = new Date();
+    const labels = Array.from({ length: 30 }, (_, i) => {
+      const date = new Date(today);
+      date.setDate(date.getDate() - (29 - i));
+      return date.toISOString().split('T')[0];
     });
 
-    const buildTimeSeriesChart = (ctxId, dataMap, label, color) => {
-      const today = new Date();
-      const labels = Array.from({ length: 30 }, (_, i) => {
-        const date = new Date(today);
-        date.setDate(date.getDate() - (29 - i));
-        return date.toISOString().split('T')[0];
-      });
+    const data = labels.map(date => dataMap[date] || 0);
 
-      const data = labels.map(date => dataMap[date] || 0);
-
-      new Chart(document.getElementById(ctxId), {
-        type: 'bar',
-        data: {
-          labels,
-          datasets: [{ label, data, backgroundColor: color }]
+    new Chart(document.getElementById(ctxId), {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [{ label, data, backgroundColor: color }]
+      },
+      options: {
+        scales: {
+          y: { beginAtZero: true, ticks: { color: '#fff' } },
+          x: { ticks: { color: '#fff' } }
         },
-        options: {
-          scales: {
-            y: { beginAtZero: true, ticks: { color: '#fff' } },
-            x: { ticks: { color: '#fff' } }
-          },
-          plugins: {
-            legend: { labels: { color: '#fff' } }
-          }
+        plugins: {
+          legend: { labels: { color: '#fff' } }
         }
-      });
-    };
-
-    const animeMap = parseDates(stats.anime);
-    const mangaMap = parseDates(stats.manga);
-    const manhwaMap = parseDates(stats.manhwa);
-    const combinedMap = {};
-    [animeMap, mangaMap, manhwaMap].forEach(map => {
-      for (const key in map) combinedMap[key] = (combinedMap[key] || 0) + map[key];
+      }
     });
+  };
 
-    buildTimeSeriesChart("chart-anime", animeMap, "Anime Favorites", "#ff6600");
-    buildTimeSeriesChart("chart-manga", mangaMap, "Manga Favorites", "#40e0d0");
-    buildTimeSeriesChart("chart-manhwa", manhwaMap, "Manhwa Favorites", "#a259ff");
-    buildTimeSeriesChart("chart-combined", combinedMap, "All Favorites", "#f97316");
+  const animeMap = parseDates(stats.anime);
+  const mangaMap = parseDates(stats.manga);
+  const manhwaMap = parseDates(stats.manhwa);
+  const combinedMap = {};
+  [animeMap, mangaMap, manhwaMap].forEach(map => {
+    for (const key in map) combinedMap[key] = (combinedMap[key] || 0) + map[key];
+  });
 
-    const achievements = [
-      { id: 'achv1', emoji: '🎉', title: 'First Favorite', description: 'Add your first favorite', condition: (s) => s.total >= 1 },
-      { id: 'achv2', emoji: '🔥', title: 'Anime Fan', description: 'Favorite 10 anime', condition: (s) => s.anime >= 10 },
-      { id: 'achv3', emoji: '📖', title: 'Manga Reader', description: 'Favorite 5 manga', condition: (s) => s.manga >= 5 },
-      { id: 'achv4', emoji: '🌍', title: 'Manhwa Explorer', description: 'Favorite 5 manhwa', condition: (s) => s.manhwa >= 5 },
-      { id: 'achv5', emoji: '💯', title: 'Century Mark', description: '100 total favorites', condition: (s) => s.total >= 100 },
-      ...Array.from({ length: 45 }, (_, i) => ({
-        id: `achv${i + 6}`,
-        emoji: ['⭐','🏅','🎯','🧠','🧩','🧪','🚀','👑','💎','📈'][i % 10],
-        title: `Mystery ${i + 6}`,
-        description: 'Unlock by progressing...',
-        condition: () => false
-      }))
-    ];
+  buildTimeSeriesChart("chart-anime", animeMap, "Anime Favorites", "#ff6600");
+  buildTimeSeriesChart("chart-manga", mangaMap, "Manga Favorites", "#40e0d0");
+  buildTimeSeriesChart("chart-manhwa", manhwaMap, "Manhwa Favorites", "#a259ff");
+  buildTimeSeriesChart("chart-combined", combinedMap, "All Favorites", "#f97316");
 
-    const stats = {
-      anime: (JSON.parse(localStorage.getItem('animeFavorites_' + (JSON.parse(localStorage.getItem('user'))?.uid)) || []).length),
-      manga: (JSON.parse(localStorage.getItem('mangaFavorites_' + (JSON.parse(localStorage.getItem('user'))?.uid)) || []).length),
-      manhwa: (JSON.parse(localStorage.getItem('manhwaFavorites_' + (JSON.parse(localStorage.getItem('user'))?.uid)) || []).length)
-    };
-    stats.total = stats.anime + stats.manga + stats.manhwa;
+  // ✅ Achievements logic
+  const achievementStats = {
+    anime: stats.anime.length,
+    manga: stats.manga.length,
+    manhwa: stats.manhwa.length,
+    total: stats.total
+  };
 
-    let unlocked = achievements.filter(a => a.condition(stats)).map(a => a.id);
-    localStorage.setItem("unlockedAchievements", JSON.stringify(unlocked));
+  const achievements = [
+    { id: 'achv1', emoji: '🎉', title: 'First Favorite', description: 'Add your first favorite', condition: (s) => s.total >= 1 },
+    { id: 'achv2', emoji: '🔥', title: 'Anime Fan', description: 'Favorite 10 anime', condition: (s) => s.anime >= 10 },
+    { id: 'achv3', emoji: '📖', title: 'Manga Reader', description: 'Favorite 5 manga', condition: (s) => s.manga >= 5 },
+    { id: 'achv4', emoji: '🌍', title: 'Manhwa Explorer', description: 'Favorite 5 manhwa', condition: (s) => s.manhwa >= 5 },
+    { id: 'achv5', emoji: '💯', title: 'Century Mark', description: '100 total favorites', condition: (s) => s.total >= 100 },
+    ...Array.from({ length: 45 }, (_, i) => ({
+      id: `achv${i + 6}`,
+      emoji: ['⭐','🏅','🎯','🧠','🧩','🧪','🚀','👑','💎','📈'][i % 10],
+      title: `Mystery ${i + 6}`,
+      description: 'Unlock by progressing...',
+      condition: () => false
+    }))
+  ];
 
-    const seen = JSON.parse(localStorage.getItem("seenAchievements") || "[]");
-    const newOnes = unlocked.filter(id => !seen.includes(id));
+  const unlocked = achievements.filter(a => a.condition(achievementStats)).map(a => a.id);
+  localStorage.setItem("unlockedAchievements", JSON.stringify(unlocked));
 
-    const container = document.getElementById("achievements");
-    achievements.forEach(a => {
-      const isUnlocked = unlocked.includes(a.id);
-      const card = document.createElement("div");
-      card.className = "achievement-card" + (isUnlocked ? "" : " locked");
-      card.innerHTML = `<span class='emoji' title="${a.description}">${a.emoji}</span><div title="${a.description}">${a.title}</div>`;
-      container.appendChild(card);
-    });
+  const seen = JSON.parse(localStorage.getItem("seenAchievements") || "[]");
+  const newOnes = unlocked.filter(id => !seen.includes(id));
 
-    if (newOnes.length > 0) {
-      const toast = document.getElementById("toast");
-      toast.textContent = "🏆 New Achievement Unlocked!";
-      toast.style.display = "block";
-      setTimeout(() => toast.style.display = "none", 4000);
-      localStorage.setItem("seenAchievements", JSON.stringify([...seen, ...newOnes]));
-    }
-  </script>
+  const container = document.getElementById("achievements");
+  achievements.forEach(a => {
+    const isUnlocked = unlocked.includes(a.id);
+    const card = document.createElement("div");
+    card.className = "achievement-card" + (isUnlocked ? "" : " locked");
+    card.innerHTML = `<span class='emoji' title="${a.description}">${a.emoji}</span><div title="${a.description}">${a.title}</div>`;
+    container.appendChild(card);
+  });
+
+  if (newOnes.length > 0) {
+    const toast = document.getElementById("toast");
+    toast.textContent = "🏆 New Achievement Unlocked!";
+    toast.style.display = "block";
+    setTimeout(() => toast.style.display = "none", 4000);
+    localStorage.setItem("seenAchievements", JSON.stringify([...seen, ...newOnes]));
+  }
+</script>
+
 </body>
 </html>
