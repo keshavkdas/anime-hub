@@ -266,18 +266,18 @@
 
         <label for="signup-email">Email <span style="color:red">*</span></label>
         <input id="signup-email" type="email" placeholder="Email" required />
-        <div id="error-email" class="error-msg"></div>
+        <div id="error-signup-email" class="error-msg"></div>
 
         <label for="signup-username">Username <span style="color:red">*</span></label>
         <input id="signup-username" type="text" placeholder="Username" required />
-        <div id="error-username" class="error-msg"></div>
+        <div id="error-signup-username" class="error-msg"></div>
 
         <label for="signup-password">Password <span style="color:red">*</span></label>
         <div class="input-group">
           <input id="signup-password" type="password" placeholder="Password" required />
           <span class="toggle-eye" id="toggle-signup-pass">👁️</span>
         </div>
-        <div id="error-password" class="error-msg"></div>
+        <div id="error-signup-password" class="error-msg"></div>
 
         <div id="password-hint">
           <strong>Password must:</strong><br />
@@ -298,7 +298,7 @@
           <input id="signup-confirm" type="password" placeholder="Confirm Password" required />
           <span class="toggle-eye" id="toggle-signup-confirm">👁️</span>
         </div>
-        <div id="error-confirm" class="error-msg"></div>
+        <div id="error-signup-confirm" class="error-msg"></div>
         <div id="confirm-feedback">Passwords do not match</div>
 
         <button onclick="signup()" id="signup-btn" disabled>Create Account</button>
