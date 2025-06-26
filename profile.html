@@ -282,9 +282,37 @@
     buildTimeSeriesChart("chart-manhwa", manhwaMap, "Manhwa Favorites", "#a259ff");
     buildTimeSeriesChart("chart-combined", combinedMap, "All Favorites", "#f97316");
 
-    const achievements = Array.from({ length: 50 }, (_, i) => {
+   const achievements = Array.from({ length: 50 }, (_, i) => {
       const emojis = ['🎉','🔥','📖','🌍','🏅','⭐','💫','🧠','🧩','🎯','🏆','💥','⚡','🪄','🛡️','🎮','🎶','🧱','🧵','🧪','🚀','🛰️','🪐','🌠','🌟','💎','📈','🧭','📚','🎓','🔮','💡','🕹️','🎲','🏹','🧙','🧛','🧟','🦸','🦹','🤖','👾','🧞','👑','🧸','🗺️','🛸','🔧','🧰','🎬'];
-      return { id: `achv${i+1}`, emoji: emojis[i % emojis.length], title: `Achievement ${i+1}` };
+      const conditions = [
+        "Add your first favorite",
+        "Favorite 10 anime",
+        "Favorite 5 manga",
+        "Favorite 5 manhwa",
+        `Complete your profile`,
+        `Login daily for a week`,
+        `Favorite something 5 days in a row`,
+        `Reach 100 favorites`,
+        `Explore trending section`,
+        `Watch 10 anime episodes`,
+        `Read 10 manga chapters`,
+        `Discover 3 new genres`,
+        `Add to favorites from search`,
+        `Rate 5 anime`,
+        `Rate 5 manga`,
+        `Rate 5 manhwa`,
+        `Create a profile banner`,
+        `Change avatar`,
+        `Share a favorite`,
+        `Visit profile 5 times`,
+        ...Array(30).fill("Mystery task...")
+      ];
+      return {
+        id: `achv${i+1}`,
+        emoji: emojis[i % emojis.length],
+        title: `Achievement ${i+1}`,
+        description: conditions[i] || "Complete this to unlock."
+      };
     });
 
     const unlocked = JSON.parse(localStorage.getItem("unlockedAchievements") || "[]");
@@ -295,7 +323,7 @@
     achievements.forEach(a => {
       const card = document.createElement("div");
       card.className = "achievement-card" + (unlocked.includes(a.id) ? "" : " locked");
-      card.innerHTML = `<span class='emoji'>${a.emoji}</span><div>${a.title}</div>`;
+      card.innerHTML = `<span class='emoji' title="${a.description}">${a.emoji}</span><div title="${a.description}">${a.title}</div>`;
       container.appendChild(card);
     });
 
