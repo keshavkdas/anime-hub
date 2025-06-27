@@ -25,20 +25,23 @@
       z-index: 10;
     }
 
-.banner {
+.banner-wrapper {
   position: absolute;
-  top: 0px;
+  top: 0;
   left: 0;
   width: 100%;
   height: 350px;
-  background-color: black;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  image-rendering: auto;
+  overflow: hidden;
   z-index: -1;
-  transition: opacity 0.5s ease;
-  opacity: 1;
+}
+
+.banner-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* or 'contain' if you want unzoomed image */
+  image-rendering: auto;
+  display: block;
+  filter: brightness(1); /* adjust if needed */
 }
 
 .banner.fade {
@@ -297,8 +300,10 @@
 </head>
 <body>
   <a href="index.html" class="back-btn">&#8592;</a>
-  <div class="banner" id="banner"> </div>
+  <div class="banner-wrapper">
+    <img id="banner-image" src="" alt="Profile Banner" class="banner-image" />
   <div class="change-banner-btn" onclick="openBannerSelector()">＋</div>
+  </div>
   <div id="banner-selector" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#000000ee; z-index:1000; overflow-y:auto;">
     <div style="max-width:1200px; margin:auto; padding:40px; text-align:center;">
       <div class="close-banner-btn" onclick="closeBannerSelector()">✕</div>
@@ -842,25 +847,30 @@ function resetBanner() {
 }
 
 function setBannerImage(src) {
+  const img = document.getElementById("banner-img");
+  img.style.opacity = 0;
+  setTimeout(() => {
+    img.src = src;
+    img.onload = () => {
+      img.style.opacity = 1;
+    };
+  }, 250);
   localStorage.setItem("selectedBanner", src);
-  localStorage.removeItem("customBanner"); // clear custom if new banner picked
-  fadeToBanner(`url('${src}')`);
+  localStorage.removeItem("customBanner");
 }
 
-function fadeToBanner(value) {
-  const banner = document.getElementById("banner");
-  banner.classList.add("fade");
+function loadBanner() {
+  const custom = localStorage.getItem("customBanner");
+  const saved = localStorage.getItem("selectedBanner");
+  const img = document.getElementById("banner-img");
 
-  setTimeout(() => {
-    if (value === "black") {
-      banner.style.backgroundImage = "";
-      banner.style.backgroundColor = "black";
-    } else {
-      banner.style.backgroundImage = value;
-      banner.style.backgroundColor = "";
-    }
-    banner.classList.remove("fade");
-  }, 250);
+  if (custom) {
+    img.src = custom;
+  } else if (saved) {
+    img.src = saved;
+  } else {
+    img.src = ""; // fallback to black
+  }
 }
 
 function uploadCustomBanner() {
@@ -872,24 +882,11 @@ function uploadCustomBanner() {
   reader.onload = function (e) {
     const dataURL = e.target.result;
     localStorage.setItem("customBanner", dataURL);
-    localStorage.removeItem("selectedBanner"); // clear predefined banner
-    fadeToBanner(`url('${dataURL}')`);
+    localStorage.removeItem("selectedBanner");
+    setBannerImage(dataURL);
     closeBannerSelector();
   };
   reader.readAsDataURL(file);
-}
-
-function loadBanner() {
-  const custom = localStorage.getItem("customBanner");
-  const saved = localStorage.getItem("selectedBanner");
-
-  if (custom) {
-    fadeToBanner(`url('${custom}')`);
-  } else if (saved) {
-    fadeToBanner(`url('${saved}')`);
-  } else {
-    resetBanner();
-  }
 }
 
   async function initProfile() {
