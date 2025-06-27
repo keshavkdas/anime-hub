@@ -73,28 +73,35 @@
       margin-top: 5px;
     }
 
-    .profile-avatar {
-      position: absolute;
-      bottom: -60px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      border: 5px solid #0d1117;
-      background-color: #fff;
-      object-fit: cover;
-      z-index: 5;
-    }
+    .profile-level-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 30px;
+  margin-top: -60px;
+  flex-wrap: wrap;
+}
 
-    .username-display {
-      text-align: center;
-      margin-top: 80px;
-      font-size: 28px;
-      font-weight: bold;
-      color: #ff6600;
-    }
+.profile-avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 5px solid #0d1117;
+  background-color: #fff;
+  object-fit: cover;
+  z-index: 5;
+  position: relative;
+  left: 0;
+  transform: none;
+}
 
+.username-display {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 28px;
+  font-weight: bold;
+  color: #ff6600;
+}
     .main-content {
       max-width: 1000px;
       margin: 40px auto;
