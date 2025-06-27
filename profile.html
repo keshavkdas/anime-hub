@@ -44,7 +44,7 @@
   filter: brightness(1); /* adjust if needed */
 }
 
-.banner.fade {
+.banner-image.fade-out {
   opacity: 0;
 }
 
@@ -843,18 +843,19 @@ function closeBannerSelector() {
 function resetBanner() {
   localStorage.removeItem("selectedBanner");
   localStorage.removeItem("customBanner");
-  fadeToBanner("black");
 }
 
 function setBannerImage(src) {
-  const img = document.getElementById("banner-img");
-  img.style.opacity = 0;
+  const img = document.getElementById("banner-image");
+  img.classList.add("fade-out");
+
   setTimeout(() => {
     img.src = src;
     img.onload = () => {
-      img.style.opacity = 1;
+      img.classList.remove("fade-out");
     };
-  }, 250);
+  }, 200);
+
   localStorage.setItem("selectedBanner", src);
   localStorage.removeItem("customBanner");
 }
@@ -862,7 +863,7 @@ function setBannerImage(src) {
 function loadBanner() {
   const custom = localStorage.getItem("customBanner");
   const saved = localStorage.getItem("selectedBanner");
-  const img = document.getElementById("banner-img");
+  const img = document.getElementById("banner-image");
 
   if (custom) {
     img.src = custom;
