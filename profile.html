@@ -31,6 +31,47 @@
       background: linear-gradient(to right, #ff6600, #ff9900);
       position: relative;
     }
+    .level-bar-container {
+      margin: -30px auto 20px auto;
+      max-width: 600px;
+      padding: 10px 20px;
+      background: #161b22;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(255, 102, 0, 0.3);
+      text-align: center;
+    }
+
+    .level-title {
+      font-size: 20px;
+      color: #f97316;
+      margin-bottom: 10px;
+    }
+
+    .level-progress-bar {
+      height: 24px;
+      background: #2d3748;
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .level-fill {
+      height: 100%;
+      background: linear-gradient(to right, #f97316, #ff6600);
+      transition: width 0.5s ease;
+    }
+
+    .level-number {
+      margin-top: 8px;
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    .badge-title {
+      font-size: 14px;
+      color: #00ffcc;
+      margin-top: 5px;
+    }
 
     .profile-avatar {
       position: absolute;
@@ -172,6 +213,14 @@
 <body>
   <a href="index.html" class="back-btn">&#8592;</a>
   <div class="banner"></div>
+  <div class="level-bar-container">
+    <div class="level-title">🔥 Progress to Next Level</div>
+    <div class="level-progress-bar">
+      <div class="level-fill" id="level-fill" style="width: 0%"></div>
+    </div>
+    <div class="level-number" id="level-number">Level 1</div>
+    <div class="badge-title" id="badge-title"></div>
+  </div>
   <img id="profile-avatar" class="profile-avatar" src="avatar.jpg" alt="Avatar" />
   <div class="username-display" id="profile-username">Username</div>
 
@@ -529,7 +578,88 @@
   desc: "Reach all other 29 achievements",
   field: "total",
   target: 99999 // you can check via unlocked.length === 29
+},
+{
+  id: "achv31",
+  emoji: "📅",
+  title: "Weekly Warrior",
+  desc: "Add at least 1 favorite every day for 7 days straight",
+  field: "streak",
+  target: 7
+},
+{
+  id: "achv32",
+  emoji: "👻",
+  title: "Midnight Fave",
+  desc: "Add a favorite between 12AM and 1AM",
+  field: "total",
+  target: 1
+},
+{
+  id: "achv33",
+  emoji: "🌍",
+  title: "Global Tastes",
+  desc: "Favorite one anime, one manga, and one manhwa",
+  field: "total",
+  target: 3
+},
+{
+  id: "achv34",
+  emoji: "⏳",
+  title: "Flash Fave",
+  desc: "Add 3 favorites within 60 seconds",
+  field: "total",
+  target: 3
+},
+{
+  id: "achv35",
+  emoji: "💤",
+  title: "Late Night Binge",
+  desc: "Add favorites after 2AM, 3 days in a row",
+  field: "streak",
+  target: 3
+},
+{
+  id: "achv36",
+  emoji: "📈",
+  title: "Rising Star",
+  desc: "Increase your favorites by 10 in a single day",
+  field: "total",
+  target: 10
+},
+{
+  id: "achv37",
+  emoji: "🎯",
+  title: "Perfect Day",
+  desc: "Add 1 favorite of each type (anime, manga, manhwa) on the same day",
+  field: "total",
+  target: 3
+},
+{
+  id: "achv38",
+  emoji: "🧭",
+  title: "Explorer",
+  desc: "Add favorites across 10 different days",
+  field: "total",
+  target: 10
+},
+{
+  id: "achv39",
+  emoji: "📆",
+  title: "Monthly Marathon",
+  desc: "Favorite something 30 days in a row",
+  field: "streak",
+  target: 30
+},
+{
+  id: "achv40",
+  emoji: "🌠",
+  title: "Supernova Collector",
+  desc: "Reach 500 total favorites",
+  field: "total",
+  target: 500
 }
+
 
     ];
 
@@ -563,7 +693,19 @@ achs.find(a => a.id === "achv30").condition = () => {
 
     return achs;
   };
+    function updateLevelUI(unlocked) {
+      const levelNumber = Math.min(10, Math.floor(unlocked.length / 4) + 1);
+      const currentExp = unlocked.length % 4;
+      const percent = (currentExp / 4) * 100;
+      document.getElementById("level-fill").style.width = `${percent}%`;
+      document.getElementById("level-number").textContent = `Level ${levelNumber}`;
 
+      const badge = document.getElementById("badge-title");
+      if (levelNumber >= 10) badge.textContent = "🏆 Title: Master";
+      else if (levelNumber >= 8) badge.textContent = "⚔️ Title: Novice";
+      else if (levelNumber >= 5) badge.textContent = "🎓 Title: Apprentice";
+      else badge.textContent = "";
+    }
   async function initProfile() {
     await loadFavorites();
 
@@ -595,6 +737,7 @@ achs.find(a => a.id === "achv30").condition = () => {
 
     const achievements = generateAchievements();
     const unlocked = achievements.filter(a => a.condition(stats)).map(a => a.id);
+    updateLevelUI(unlocked);
     localStorage.setItem("unlockedAchievements", JSON.stringify(unlocked));
     const seen = JSON.parse(localStorage.getItem("seenAchievements") || "[]");
     const newOnes = unlocked.filter(id => !seen.includes(id));
