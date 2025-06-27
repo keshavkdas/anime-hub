@@ -35,7 +35,7 @@
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  z-index: 1;
+  z-index: -1;
   transition: opacity 0.5s ease;
   opacity: 1;
 }
@@ -47,25 +47,27 @@
 .change-banner-btn {
   position: absolute;
   top: 12px;
-  right: 16px;
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  background-color: #ff6600;
+  right: 20px;
+  width: 40px;
+  height: 40px;
+  background: #ff6600;
   color: white;
-  font-size: 26px;
+  font-size: 24px;
   font-weight: bold;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
   cursor: pointer;
+  z-index: 99;
   box-shadow: 0 0 10px rgba(255, 102, 0, 0.6);
-  z-index: 10;
   transition: transform 0.2s ease;
+  line-height: 1; /* Prevent vertical misalignment */
 }
+
 .change-banner-btn:hover {
   transform: scale(1.1);
 }
+
 
 
 .level-title {
@@ -277,10 +279,8 @@
 </head>
 <body>
   <a href="index.html" class="back-btn">&#8592;</a>
-  <div class="banner" id="banner">
-    <div class="change-banner-btn" onclick="openBannerSelector()">＋</div>
-  </div>
-
+  <div class="banner" id="banner"> </div>
+  <div class="change-banner-btn" onclick="openBannerSelector()">＋</div>
   <div id="banner-selector" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#000000ee; z-index:1000; overflow-y:auto;">
     <div style="max-width:1200px; margin:auto; padding:40px; text-align:center;">
       <button onclick="closeBannerSelector()" style="margin-bottom:20px; background:red; color:white; border:none; padding:10px 16px; border-radius:6px;">Close ✖️</button>
