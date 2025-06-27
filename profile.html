@@ -35,7 +35,7 @@
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  z-index: -1;
+  z-index: 1;
   transition: opacity 0.5s ease;
   opacity: 1;
 }
@@ -47,25 +47,26 @@
 .change-banner-btn {
   position: absolute;
   top: 12px;
-  right: 20px;
-  width: 36px;
-  height: 36px;
-  background: #ff6600;
-  color: white;
-  font-size: 24px;
+  right: 16px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
-  box-shadow: 0 0 10px rgba(255, 102, 0, 0.6);
+  background-color: #ff6600;
+  color: white;
+  font-size: 26px;
+  font-weight: bold;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  box-shadow: 0 0 10px rgba(255, 102, 0, 0.6);
   z-index: 10;
-  transition: transform 0.2s;
+  transition: transform 0.2s ease;
 }
-
 .change-banner-btn:hover {
   transform: scale(1.1);
 }
+
 
 .level-title {
   font-size: 18px;
