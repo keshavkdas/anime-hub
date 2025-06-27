@@ -31,11 +31,41 @@
   left: 0;
   width: 100%;
   height: 220px;
-  background: url("banner/banner-1.jpg") center center / cover no-repeat;
+  background-color: black;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   z-index: -1;
-  transition: background 0.5s ease;
+  transition: opacity 0.5s ease;
+  opacity: 1;
 }
 
+.banner.fade {
+  opacity: 0;
+}
+
+.change-banner-btn {
+  position: absolute;
+  top: 12px;
+  right: 20px;
+  width: 36px;
+  height: 36px;
+  background: #ff6600;
+  color: white;
+  font-size: 24px;
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgba(255, 102, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  transition: transform 0.2s;
+}
+
+.change-banner-btn:hover {
+  transform: scale(1.1);
+}
 
 .level-title {
   font-size: 18px;
@@ -246,17 +276,22 @@
 </head>
 <body>
   <a href="index.html" class="back-btn">&#8592;</a>
-  <div class="banner"></div>
-  <button onclick="openBannerSelector()" style="background:#ff6600; color:white; border:none; padding:10px 16px; border-radius:8px; cursor:pointer;">
-  🎨 Change Banner
-</button>
-
-<div id="banner-selector" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#000000dd; z-index:1000; overflow-y:auto;">
-  <div style="padding:40px; display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:20px;">
-    <button onclick="closeBannerSelector()" style="grid-column:1 / -1; background:red; color:white; border:none; padding:8px 12px; border-radius:6px;">Close ✖️</button>
-    <div id="banner-grid"></div>
+  <div class="banner" id="banner">
+    <div class="change-banner-btn" onclick="openBannerSelector()">＋</div>
   </div>
-</div>
+
+  <div id="banner-selector" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#000000ee; z-index:1000; overflow-y:auto;">
+    <div style="max-width:1200px; margin:auto; padding:40px; text-align:center;">
+      <button onclick="closeBannerSelector()" style="margin-bottom:20px; background:red; color:white; border:none; padding:10px 16px; border-radius:6px;">Close ✖️</button>
+      <button onclick="resetBanner()" style="margin-bottom:20px; margin-left:10px; background:#444; color:white; border:none; padding:10px 16px; border-radius:6px;">Reset to Default</button>
+      <label style="display:block; margin:20px 0; color:white;">
+        Upload Custom Banner:
+        <input type="file" id="bannerUpload" accept="image/*" onchange="uploadCustomBanner()" style="margin-left:10px;" />
+      </label>
+      <div id="banner-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:20px;"></div>
+    </div>
+  </div>
+
   <div class="profile-top">
   <div class="profile-info">
     <img id="profile-avatar" class="profile-avatar" src="avatar.jpg" alt="Avatar" />
@@ -755,22 +790,26 @@ achs.find(a => a.id === "achv30").condition = () => {
       else if (levelNumber >= 5) badge.textContent = "🎓 Title: Apprentice";
       else badge.textContent = "";
     }
-   function openBannerSelector() {
+   
+function openBannerSelector() {
   const grid = document.getElementById("banner-grid");
   grid.innerHTML = "";
+
   for (let i = 1; i <= 30; i++) {
     const img = document.createElement("img");
     img.src = `banner/banner-${i}.jpg`;
     img.style.width = "100%";
+    img.style.height = "140px";
+    img.style.objectFit = "cover";
     img.style.borderRadius = "8px";
     img.style.cursor = "pointer";
     img.onclick = () => {
-      localStorage.setItem("selectedBanner", img.src);
-      document.querySelector(".banner").style.backgroundImage = `url('${img.src}')`;
+      setBannerImage(img.src);
       closeBannerSelector();
     };
     grid.appendChild(img);
   }
+
   document.getElementById("banner-selector").style.display = "block";
 }
 
@@ -778,10 +817,60 @@ function closeBannerSelector() {
   document.getElementById("banner-selector").style.display = "none";
 }
 
+function resetBanner() {
+  localStorage.removeItem("selectedBanner");
+  localStorage.removeItem("customBanner");
+  fadeToBanner("black");
+}
+
+function setBannerImage(src) {
+  localStorage.setItem("selectedBanner", src);
+  localStorage.removeItem("customBanner"); // clear custom if new banner picked
+  fadeToBanner(`url('${src}')`);
+}
+
+function fadeToBanner(value) {
+  const banner = document.getElementById("banner");
+  banner.classList.add("fade");
+
+  setTimeout(() => {
+    if (value === "black") {
+      banner.style.backgroundImage = "";
+      banner.style.backgroundColor = "black";
+    } else {
+      banner.style.backgroundImage = value;
+      banner.style.backgroundColor = "";
+    }
+    banner.classList.remove("fade");
+  }, 250);
+}
+
+function uploadCustomBanner() {
+  const fileInput = document.getElementById("bannerUpload");
+  const file = fileInput.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function (e) {
+    const dataURL = e.target.result;
+    localStorage.setItem("customBanner", dataURL);
+    localStorage.removeItem("selectedBanner"); // clear predefined banner
+    fadeToBanner(`url('${dataURL}')`);
+    closeBannerSelector();
+  };
+  reader.readAsDataURL(file);
+}
+
 function loadBanner() {
-  const banner = localStorage.getItem("selectedBanner");
-  if (banner) {
-    document.querySelector(".banner").style.backgroundImage = `url('${banner}')`;
+  const custom = localStorage.getItem("customBanner");
+  const saved = localStorage.getItem("selectedBanner");
+
+  if (custom) {
+    fadeToBanner(`url('${custom}')`);
+  } else if (saved) {
+    fadeToBanner(`url('${saved}')`);
+  } else {
+    resetBanner();
   }
 }
 
