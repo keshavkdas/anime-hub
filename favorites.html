@@ -213,7 +213,27 @@
       renderFavorites(`mangaFavorites_${user.uid}`, 'mangaFavorites', 'manga-details.html');
       renderFavorites(`manhwaFavorites_${user.uid}`, 'manhwaFavorites', 'manhwa-details.html');
     }
+    // ✅ Add missing `.date` field to favorites
+    const today = new Date().toISOString().split("T")[0];
+    ["anime", "manga", "manhwa"].forEach(type => {
+      const key = `${type}Favorites_${user.uid}`;
+      let list = JSON.parse(localStorage.getItem(key)) || [];
 
+      let changed = false;
+      list = list.map(item => {
+        if (!item.date) {
+          changed = true;
+          return { ...item, date: today };
+        }
+        return item;
+      });
+
+      if (changed) {
+        localStorage.setItem(key, JSON.stringify(list));
+        console.log(`🗓️ Date added to some ${type} favorites`);
+      }
+    });
+  }
     // show toast if redirected
     const msg = sessionStorage.getItem("toast");
     if (msg) {
