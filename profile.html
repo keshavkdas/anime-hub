@@ -34,47 +34,49 @@
   background: linear-gradient(to right, #ff6600, #ff9900);
   z-index: -1; /* sends it behind content */
 }
-    .level-bar-container {
-      margin: -30px auto 20px auto;
-      max-width: 600px;
-      padding: 10px 20px;
-      background: #161b22;
-      border-radius: 12px;
-      box-shadow: 0 0 10px rgba(255, 102, 0, 0.3);
-      text-align: center;
-    }
 
-    .level-title {
-      font-size: 20px;
-      color: #f97316;
-      margin-bottom: 10px;
-    }
+.level-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #f97316;
+  margin-bottom: 0;
+}
 
-    .level-progress-bar {
-      height: 24px;
-      background: #2d3748;
-      border-radius: 12px;
-      overflow: hidden;
-      position: relative;
-    }
+.level-progress-bar {
+  height: 16px;
+  width: 100%;
+  background: #2a2f3a;
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: inset 0 0 5px rgba(0,0,0,0.5);
+}
 
-    .level-fill {
-      height: 100%;
-      background: linear-gradient(to right, #f97316, #ff6600);
-      transition: width 0.5s ease;
-    }
+.level-fill {
+  height: 100%;
+  background: linear-gradient(to right, #ff6600, #ff9900);
+  transition: width 0.4s ease;
+  border-radius: 10px;
+  animation: pulseGlow 2s infinite ease-in-out;
+}
 
-    .level-number {
-      margin-top: 8px;
-      font-weight: bold;
-      font-size: 16px;
-    }
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 10px rgba(255, 102, 0, 0.5); }
+  50% { box-shadow: 0 0 20px rgba(255, 102, 0, 0.9); }
+}
 
-    .badge-title {
-      font-size: 14px;
-      color: #00ffcc;
-      margin-top: 5px;
-    }
+.level-number {
+  font-size: 14px;
+  font-weight: 500;
+  color: #f0f0f0;
+}
+
+.badge-title {
+  font-size: 13px;
+  font-style: italic;
+  color: #00ffc8;
+  opacity: 0.85;
+}
 
 
 .profile-top {
@@ -82,7 +84,7 @@
   align-items: center;
   justify-content: flex-start;
   gap: 40px;
-  margin: -60px 0 40px 100px;
+  margin: -60px 0 40px 110px;
   flex-wrap: wrap;
 }
 
@@ -111,11 +113,16 @@
 
 .level-bar-container {
   width: 100%;
-  max-width: 400px;
-  padding: 15px 20px;
-  background: #161b22;
-  border-radius: 12px;
-  box-shadow: 0 0 10px rgba(255, 102, 0, 0.3);
+  max-width: 500px;
+  padding: 16px 24px;
+  background: rgba(22, 27, 34, 0.8);
+  border-radius: 14px;
+  box-shadow: 0 0 20px rgba(255, 102, 0, 0.2);
+  backdrop-filter: blur(4px);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  position: relative;
 }
 
     .main-content {
