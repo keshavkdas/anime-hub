@@ -212,7 +212,7 @@
 
   <div class="toast" id="toast"></div>
   
-  <script>
+ <script>
   const user = JSON.parse(localStorage.getItem("user"));
   const profile = JSON.parse(localStorage.getItem("profile"));
   const avatar = document.getElementById("profile-avatar");
@@ -288,34 +288,280 @@
     });
   };
 
-  const generateDynamicAchievements = () => {
-    const emojis = ['🎉','🔥','📖','🌍','💯','⭐','🏅','🎯','💥','⚡'];
-    const types = [
-      { key:'anime', name:'Anime Favorites' },
-      { key:'manga', name:'Manga Favorites' },
-      { key:'manhwa', name:'Manhwa Favorites' },
-      { key:'total', name:'Total Favorites' },
-      { key:'streak', name:'Daily Streak' }
+  const generateAchievements = () => {
+    const achs = [
+      {
+        id: "achv1",
+        emoji: "🎮",
+        title: "Noob Initiation",
+        desc: "Add your very first favorite",
+        field: "total",
+        target: 1
+      },
+      {
+        id: "achv2",
+        emoji: "🔥",
+        title: "Combo Starter",
+        desc: "Reach 5 anime favorites",
+        field: "anime",
+        target: 5
+      },
+      {
+        id: "achv3",
+        emoji: "📚",
+        title: "Lore Master",
+        desc: "Reach 5 manga favorites",
+        field: "manga",
+        target: 5
+      },
+      {
+        id: "achv4",
+        emoji: "🌐",
+        title: "Webtoon Wanderer",
+        desc: "Reach 5 manhwa favorites",
+        field: "manhwa",
+        target: 5
+      },
+      {
+        id: "achv5",
+        emoji: "⚔️",
+        title: "Grind Lord",
+        desc: "Reach 50 total favorites",
+        field: "total",
+        target: 50
+      },
+      {
+        id: "achv6",
+        emoji: "🗓️",
+        title: "Daily Login Reward",
+        desc: "1-day daily favorite streak",
+        field: "streak",
+        target: 1
+      },
+      {
+        id: "achv7",
+        emoji: "💥",
+        title: "Combo Keeper",
+        desc: "7-day daily favorite streak",
+        field: "streak",
+        target: 7
+      },
+      {
+        id: "achv8",
+        emoji: "👑",
+        title: "Legendary Streaker",
+        desc: "30-day daily favorite streak",
+        field: "streak",
+        target: 30
+      },
+      {
+  id: "achv9",
+  emoji: "💎",
+  title: "Epic Collector",
+  desc: "Reach 100 total favorites",
+  field: "total",
+  target: 100
+},
+{
+  id: "achv10",
+  emoji: "🧠",
+  title: "Tactical Otaku",
+  desc: "Favorite 25 anime titles",
+  field: "anime",
+  target: 25
+},
+{
+  id: "achv11",
+  emoji: "🔓",
+  title: "Unlock All Lore",
+  desc: "Favorite 20 manga titles",
+  field: "manga",
+  target: 20
+},
+{
+  id: "achv12",
+  emoji: "🌀",
+  title: "Dimension Jumper",
+  desc: "Favorite 20 manhwa titles",
+  field: "manhwa",
+  target: 20
+},
+{
+  id: "achv13",
+  emoji: "⚡",
+  title: "Quick Draw",
+  desc: "Add 5 favorites in a single day",
+  field: "total",
+  target: 5 // Handled via map aggregation if needed
+},
+{
+  id: "achv14",
+  emoji: "🔮",
+  title: "Meta Vision",
+  desc: "Reach 150 total favorites",
+  field: "total",
+  target: 150
+},
+{
+  id: "achv15",
+  emoji: "📦",
+  title: "Full Inventory",
+  desc: "Reach 50 manga favorites",
+  field: "manga",
+  target: 50
+},
+{
+  id: "achv16",
+  emoji: "🧬",
+  title: "Series Addict",
+  desc: "Favorite 40 anime",
+  field: "anime",
+  target: 40
+},
+{
+  id: "achv17",
+  emoji: "🎲",
+  title: "Roll the Dice",
+  desc: "Reach 10-day streak",
+  field: "streak",
+  target: 10
+},
+{
+  id: "achv18",
+  emoji: "🛡️",
+  title: "Guardian of Favorites",
+  desc: "Keep a 15-day streak alive",
+  field: "streak",
+  target: 15
+},
+{
+  id: "achv19",
+  emoji: "🔧",
+  title: "Mechanic Mind",
+  desc: "Reach 75 total favorites",
+  field: "total",
+  target: 75
+},
+{
+  id: "achv20",
+  emoji: "🚀",
+  title: "Speedrunner",
+  desc: "Reach 30 favorites within 3 days",
+  field: "total",
+  target: 30
+},
+{
+  id: "achv21",
+  emoji: "🛸",
+  title: "Alien Archivist",
+  desc: "Favorite 60 manhwa titles",
+  field: "manhwa",
+  target: 60
+},
+{
+  id: "achv22",
+  emoji: "🎧",
+  title: "Soundtrack Slayer",
+  desc: "Reach 25 anime favorites",
+  field: "anime",
+  target: 25
+},
+{
+  id: "achv23",
+  emoji: "🧱",
+  title: "Builder's Brain",
+  desc: "Reach 25 manga favorites",
+  field: "manga",
+  target: 25
+},
+{
+  id: "achv24",
+  emoji: "🎮",
+  title: "Game Clear!",
+  desc: "Reach 200 total favorites",
+  field: "total",
+  target: 200
+},
+{
+  id: "achv25",
+  emoji: "🧊",
+  title: "Frozen Focus",
+  desc: "10-day no-miss streak",
+  field: "streak",
+  target: 10
+},
+{
+  id: "achv26",
+  emoji: "🌌",
+  title: "Galaxy Brain",
+  desc: "Reach 300 total favorites",
+  field: "total",
+  target: 300
+},
+{
+  id: "achv27",
+  emoji: "🔗",
+  title: "Combo Chain Master",
+  desc: "Reach 20-day streak",
+  field: "streak",
+  target: 20
+},
+{
+  id: "achv28",
+  emoji: "🧿",
+  title: "Visual Glutton",
+  desc: "Reach 80 anime favorites",
+  field: "anime",
+  target: 80
+},
+{
+  id: "achv29",
+  emoji: "📖",
+  title: "Scripture Seeker",
+  desc: "Reach 80 manga favorites",
+  field: "manga",
+  target: 80
+},
+{
+  id: "achv30",
+  emoji: "🎓",
+  title: "Completionist",
+  desc: "Reach all other 29 achievements",
+  field: "total",
+  target: 99999 // you can check via unlocked.length === 29
+}
+
     ];
-    const achievements = [];
-    let id = 1;
-    for (const t of types) {
-      const targets = [1, 5, 10, 20, 50, 100];
-      for (const target of targets) {
-        if (achievements.length >= 30) break;
-        achievements.push({
-          id: 'achv' + id++,
-          emoji: emojis[target % emojis.length],
-          title: `${t.name} ≥ ${target}`,
-          desc: `Reach ${target} in ${t.name.toLowerCase()}`,
-          field: t.key,
-          target,
-          condition: (s) => s[t.key] >= target
-        });
-      }
-      if (achievements.length >= 30) break;
+
+    // Add placeholders for future ones (up to 30)
+    for (let i = achs.length + 1; i <= 30; i++) {
+      achs.push({
+        id: `achv${i}`,
+        emoji: "❓",
+        title: `Mystery Achievement ${i}`,
+        desc: "???",
+        field: "total",
+        target: 999999
+      });
     }
-    return achievements;
+    // After defining achievements array
+achs.forEach(a => {
+  a.condition = (s) => s[a.field] >= a.target;
+});
+
+// Override for achv30
+achs.find(a => a.id === "achv30").condition = () => {
+  const unlocked = JSON.parse(localStorage.getItem("unlockedAchievements") || "[]");
+  return unlocked.length >= 29;
+};
+
+
+    // Add condition to each
+    achs.forEach(a => {
+      a.condition = (s) => s[a.field] >= a.target;
+    });
+
+    return achs;
   };
 
   async function initProfile() {
@@ -347,7 +593,7 @@
     buildTimeSeriesChart("chart-manhwa", manhwaMap, "Manhwa Favorites", "#a259ff");
     buildTimeSeriesChart("chart-combined", combinedMap, "All Favorites", "#f97316");
 
-    const achievements = generateDynamicAchievements();
+    const achievements = generateAchievements();
     const unlocked = achievements.filter(a => a.condition(stats)).map(a => a.id);
     localStorage.setItem("unlockedAchievements", JSON.stringify(unlocked));
     const seen = JSON.parse(localStorage.getItem("seenAchievements") || "[]");
