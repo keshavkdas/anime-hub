@@ -31,9 +31,11 @@
   left: 0;
   width: 100%;
   height: 220px;
-  background: linear-gradient(to right, #ff6600, #ff9900);
-  z-index: -1; /* sends it behind content */
+  background: url("banner/banner-1.jpg") center center / cover no-repeat;
+  z-index: -1;
+  transition: background 0.5s ease;
 }
+
 
 .level-title {
   font-size: 18px;
@@ -245,6 +247,16 @@
 <body>
   <a href="index.html" class="back-btn">&#8592;</a>
   <div class="banner"></div>
+  <button onclick="openBannerSelector()" style="background:#ff6600; color:white; border:none; padding:10px 16px; border-radius:8px; cursor:pointer;">
+  🎨 Change Banner
+</button>
+
+<div id="banner-selector" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#000000dd; z-index:1000; overflow-y:auto;">
+  <div style="padding:40px; display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:20px;">
+    <button onclick="closeBannerSelector()" style="grid-column:1 / -1; background:red; color:white; border:none; padding:8px 12px; border-radius:6px;">Close ✖️</button>
+    <div id="banner-grid"></div>
+  </div>
+</div>
   <div class="profile-top">
   <div class="profile-info">
     <img id="profile-avatar" class="profile-avatar" src="avatar.jpg" alt="Avatar" />
@@ -743,6 +755,36 @@ achs.find(a => a.id === "achv30").condition = () => {
       else if (levelNumber >= 5) badge.textContent = "🎓 Title: Apprentice";
       else badge.textContent = "";
     }
+   function openBannerSelector() {
+  const grid = document.getElementById("banner-grid");
+  grid.innerHTML = "";
+  for (let i = 1; i <= 30; i++) {
+    const img = document.createElement("img");
+    img.src = `banner/banner-${i}.jpg`;
+    img.style.width = "100%";
+    img.style.borderRadius = "8px";
+    img.style.cursor = "pointer";
+    img.onclick = () => {
+      localStorage.setItem("selectedBanner", img.src);
+      document.querySelector(".banner").style.backgroundImage = `url('${img.src}')`;
+      closeBannerSelector();
+    };
+    grid.appendChild(img);
+  }
+  document.getElementById("banner-selector").style.display = "block";
+}
+
+function closeBannerSelector() {
+  document.getElementById("banner-selector").style.display = "none";
+}
+
+function loadBanner() {
+  const banner = localStorage.getItem("selectedBanner");
+  if (banner) {
+    document.querySelector(".banner").style.backgroundImage = `url('${banner}')`;
+  }
+}
+
   async function initProfile() {
     await loadFavorites();
 
@@ -799,7 +841,7 @@ achs.find(a => a.id === "achv30").condition = () => {
       localStorage.setItem("seenAchievements", JSON.stringify([...seen, ...newOnes]));
     }
   }
-
+  loadBanner();
   initProfile();
 </script>
 
