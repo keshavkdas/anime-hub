@@ -206,21 +206,21 @@
     location.reload();
   }
 
-  window.addEventListener("DOMContentLoaded", () => {
-    const user = JSON.parse(localStorage.getItem("user"));
-    if (user && user.uid) {
-      renderFavorites(`animeFavorites_${user.uid}`, 'animeFavorites', 'anime-details.html');
-      renderFavorites(`mangaFavorites_${user.uid}`, 'mangaFavorites', 'manga-details.html');
-      renderFavorites(`manhwaFavorites_${user.uid}`, 'manhwaFavorites', 'manhwa-details.html');
-    }
-    // ✅ Add missing `.date` field to favorites
+ window.addEventListener("DOMContentLoaded", () => {
+  const user = JSON.parse(localStorage.getItem("user"));
+  if (user && user.uid) {
+    renderFavorites(`animeFavorites_${user.uid}`, 'animeFavorites', 'anime-details.html');
+    renderFavorites(`mangaFavorites_${user.uid}`, 'mangaFavorites', 'manga-details.html');
+    renderFavorites(`manhwaFavorites_${user.uid}`, 'manhwaFavorites', 'manhwa-details.html');
+
+    // ✅ Add missing `.date` field to each favorite (anime, manga, manhwa)
     const today = new Date().toISOString().split("T")[0];
-    ["anime", "manga", "manhwa"].forEach(type => {
+    ["anime", "manga", "manhwa"].forEach((type) => {
       const key = `${type}Favorites_${user.uid}`;
       let list = JSON.parse(localStorage.getItem(key)) || [];
 
       let changed = false;
-      list = list.map(item => {
+      list = list.map((item) => {
         if (!item.date) {
           changed = true;
           return { ...item, date: today };
@@ -234,19 +234,21 @@
       }
     });
   }
-    // show toast if redirected
-    const msg = sessionStorage.getItem("toast");
-    if (msg) {
-      const toast = document.getElementById("toast");
-      toast.innerText = msg;
-      toast.classList.remove("hidden");
 
-      setTimeout(() => {
-        toast.classList.add("hidden");
-        sessionStorage.removeItem("toast");
-      }, 3000);
-    }
-  });
+  // ✅ Show toast if redirected
+  const msg = sessionStorage.getItem("toast");
+  if (msg) {
+    const toast = document.getElementById("toast");
+    toast.innerText = msg;
+    toast.classList.remove("hidden");
+
+    setTimeout(() => {
+      toast.classList.add("hidden");
+      sessionStorage.removeItem("toast");
+    }, 3000);
+  }
+});
+
 </script>
 </body>
 </html>
