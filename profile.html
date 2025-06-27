@@ -68,7 +68,24 @@
   transform: scale(1.1);
 }
 
-
+.close-banner-btn {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 40px;
+  height: 40px;
+  background: #ff6600;
+  color: white;
+  font-size: 20px;
+  font-weight: bold;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 1001;
+  box-shadow: 0 0 10px rgba(255, 102, 0, 0.5);
+}
 
 .level-title {
   font-size: 18px;
@@ -283,8 +300,7 @@
   <div class="change-banner-btn" onclick="openBannerSelector()">＋</div>
   <div id="banner-selector" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#000000ee; z-index:1000; overflow-y:auto;">
     <div style="max-width:1200px; margin:auto; padding:40px; text-align:center;">
-      <button onclick="closeBannerSelector()" style="margin-bottom:20px; background:red; color:white; border:none; padding:10px 16px; border-radius:6px;">Close ✖️</button>
-      <button onclick="resetBanner()" style="margin-bottom:20px; margin-left:10px; background:#444; color:white; border:none; padding:10px 16px; border-radius:6px;">Reset to Default</button>
+      <div class="close-banner-btn" onclick="closeBannerSelector()">✕</div>
       <label style="display:block; margin:20px 0; color:white;">
         Upload Custom Banner:
         <input type="file" id="bannerUpload" accept="image/*" onchange="uploadCustomBanner()" style="margin-left:10px;" />
