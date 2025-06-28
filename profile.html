@@ -399,11 +399,7 @@
   let profile = JSON.parse(localStorage.getItem("profile"));
   if (!profile) {
     try {
-      const res = await fetch(API_BASE, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "getProfile", uid })
-      });
+      const url = `${API_BASE}/api/user/${uid}/favorites/${type}`;
       const result = await res.json();
       if (result.success && result.profile) {
         profile = result.profile;
@@ -420,11 +416,7 @@
   let level = JSON.parse(localStorage.getItem("level"));
   if (!level) {
     try {
-      const res = await fetch(API_BASE, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "getLevel", uid })
-      });
+      const url = `${API_BASE}/api/user/${uid}/favorites/${type}`;
       const result = await res.json();
       if (result.success) {
         level = result.level;
@@ -439,11 +431,7 @@
   let achievements = JSON.parse(localStorage.getItem("achievements"));
   if (!achievements) {
     try {
-      const res = await fetch(API_BASE, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "getAchievements", uid })
-      });
+      const url = `${API_BASE}/api/user/${uid}/favorites/${type}`;
       const result = await res.json();
       if (result.success) {
         achievements = result.achievements;
@@ -458,11 +446,7 @@
  async function loadFavoritesWithFallback(uid, type) {
   const url = `${API_BASE}/api/user/${uid}/favorites/${type}`;
   try {
-    const res = await fetch(`${API_BASE}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "getFavorites", uid, type })
-    });
+    const url = `${API_BASE}/api/user/${uid}/favorites/${type}`;
     const json = await res.json();
     console.log(`📦 ${type.toUpperCase()} API Response:`, json);
 
