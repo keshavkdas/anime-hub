@@ -400,6 +400,7 @@
   if (!profile) {
     try {
       const url = `${API_BASE}/api/user/${uid}/favorites/${type}`;
+      const res = await fetch(url);
       const result = await res.json();
       if (result.success && result.profile) {
         profile = result.profile;
