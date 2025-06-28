@@ -455,13 +455,10 @@ if (!profile) {
   }
 
   // Load favorites (anime, manga, manhwa)
- async function loadFavoritesWithFallback(uid, type) {
+async function loadFavoritesWithFallback(uid, type) {
+  const url = `${API_BASE}/${uid}/favorites/${type}`;
   try {
-    const res = await fetch(`${API_BASE}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "getFavorites", uid, type })
-    });
+    const res = await fetch(url); // ✅ this is a GET request
     const json = await res.json();
     console.log(`📦 ${type.toUpperCase()} API Response:`, json);
 
@@ -469,15 +466,11 @@ if (!profile) {
       localStorage.setItem(`${type}Favorites_${uid}`, JSON.stringify(json));
       return json;
     }
-    if (json?.data && Array.isArray(json.data)) {
-      localStorage.setItem(`${type}Favorites_${uid}`, JSON.stringify(json.data));
-      return json.data;
-    }
   } catch (e) {
     console.warn(`❌ KV fetch failed for ${type}`, e);
   }
 
-  // fallback to localStorage
+  // fallback
   const local = localStorage.getItem(`${type}Favorites_${uid}`);
   try {
     const parsed = JSON.parse(local);
@@ -531,11 +524,7 @@ if (!profile) {
   const types = ['anime', 'manga', 'manhwa'];
   for (const type of types) {
     try {
-      const resp = await fetch("https://anime-hub-auth.keshavkdas23.workers.dev", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "getFavorites", uid: userKey, type })
-    });
+      const resp = await fetch(`https://anime-hub-auth.keshavkdas23.workers.dev/${userKey}/favorites/${type}`);
       if (resp.ok) {
         favData[type] = await resp.json();
       } else {
@@ -546,6 +535,7 @@ if (!profile) {
     }
   }
 }
+
 
   function updateDailyStreak() {
     const lastDate = localStorage.getItem('lastFavDate');
