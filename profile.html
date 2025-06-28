@@ -383,8 +383,9 @@
   </div>
 
   <div class="toast" id="toast"></div>
-  <script>
+ <script>
 (async () => {
+  const API_BASE = "https://anime-hub-auth.keshavkdas23.workers.dev";
   const user = JSON.parse(localStorage.getItem("user"));
   if (!user?.uid) {
     sessionStorage.setItem("toast", "🔐 Please log in");
@@ -393,116 +394,103 @@
 
   const uid = user.uid;
 
-  const API_BASE = "https://anime-hub-auth.keshavkdas23.workers.dev/api/user";
-
-// Helper to load favorites from KV or localStorage
-async function loadFavoritesWithFallback(uid, type) {
-  const kvURL = `${API_BASE}/${uid}/favorites/${type}`;
-  let list = [];
-
-  try {
-    const res = await fetch(kvURL);
-    if (res.ok) {
-      const data = await res.json();
-      if (Array.isArray(data) && data.length > 0) return data;
-    }
-  } catch (e) {
-    console.warn(`❌ Failed to fetch ${type} from KV`, e);
-  }
-
-  // fallback to localStorage
-  try {
-    const local = localStorage.getItem(`${type}Favorites_${uid}`);
-    if (local) {
-      list = JSON.parse(local);
-      if (Array.isArray(list)) return list;
-    }
-  } catch (e) {
-    console.warn(`❌ Failed to read ${type} from localStorage`, e);
-  }
-
-  return [];
-}
-
-  // 🔹 Profile
+  // Load profile
   let profile = JSON.parse(localStorage.getItem("profile"));
   if (!profile) {
-    const res = await fetch("https://anime-hub-auth.keshavkdas23.workers.dev/", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "getProfile", uid })
-    });
-    const result = await res.json();
-    if (result.success) {
-      profile = result.profile;
-      localStorage.setItem("profile", JSON.stringify(profile));
+    try {
+      const res = await fetch(API_BASE, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "getProfile", uid })
+      });
+      const result = await res.json();
+      if (result.success && result.profile) {
+        profile = result.profile;
+        localStorage.setItem("profile", JSON.stringify(profile));
+      } else {
+        return window.location.href = "create-profile.html";
+      }
+    } catch (err) {
+      console.error("❌ Failed to load profile from KV", err);
     }
   }
 
-  // 🔹 Level
+  // Load level
   let level = JSON.parse(localStorage.getItem("level"));
   if (!level) {
-    const res = await fetch("https://anime-hub-auth.keshavkdas23.workers.dev/", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "getLevel", uid })
-    });
-    const result = await res.json();
-    if (result.success) {
-      level = result.level;
-      localStorage.setItem("level", JSON.stringify(level));
+    try {
+      const res = await fetch(API_BASE, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "getLevel", uid })
+      });
+      const result = await res.json();
+      if (result.success) {
+        level = result.level;
+        localStorage.setItem("level", JSON.stringify(level));
+      }
+    } catch (err) {
+      console.warn("⚠️ Level KV fetch failed", err);
     }
   }
 
-  // 🔹 Achievements
+  // Load achievements
   let achievements = JSON.parse(localStorage.getItem("achievements"));
   if (!achievements) {
-    const res = await fetch("https://anime-hub-auth.keshavkdas23.workers.dev/", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "getAchievements", uid })
-    });
-    const result = await res.json();
-    if (result.success) {
-      achievements = result.achievements;
-      localStorage.setItem("achievements", JSON.stringify(achievements));
+    try {
+      const res = await fetch(API_BASE, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "getAchievements", uid })
+      });
+      const result = await res.json();
+      if (result.success) {
+        achievements = result.achievements;
+        localStorage.setItem("achievements", JSON.stringify(achievements));
+      }
+    } catch (err) {
+      console.warn("⚠️ Achievements KV fetch failed", err);
     }
   }
 
-  console.log("Profile Loaded:", profile);
-  console.log("Level Loaded:", level);
-  console.log("Achievements Loaded:", achievements);
-})();
-</script>
-
-  <script>
-(async () => {
-  const user = JSON.parse(localStorage.getItem("user"));
-  if (!user) return window.location.href = "login.html";
-
-  let profile = JSON.parse(localStorage.getItem("profile"));
-
-  if (!profile) {
-    const res = await fetch("https://anime-hub-auth.keshavkdas23.workers.dev/", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        action: "getProfile",
-        uid: user.uid
-      })
-    });
-
-    const result = await res.json();
-    if (result.success && result.profile) {
-      profile = result.profile;
-      localStorage.setItem("profile", JSON.stringify(profile));
-    } else {
-      return window.location.href = "create-profile.html";
+  // Load favorites (anime, manga, manhwa)
+  async function loadFavoritesWithFallback(uid, type) {
+    const url = `${API_BASE}/api/user/${uid}/favorites/${type}`;
+    try {
+      const res = await fetch(url);
+      if (res.ok) {
+        const json = await res.json();
+        if (Array.isArray(json) && json.length > 0) return json;
+      }
+    } catch (e) {
+      console.warn(`❌ KV fetch failed for ${type}`, e);
     }
+
+    // fallback to localStorage
+    const local = localStorage.getItem(`${type}Favorites_${uid}`);
+    try {
+      const parsed = JSON.parse(local);
+      if (Array.isArray(parsed)) return parsed;
+    } catch (e) {
+      console.warn(`⚠️ localStorage parse failed for ${type}`, e);
+    }
+
+    return [];
   }
 
-  // ⬇️ You can now use `profile.avatar`, `profile.username`, etc.
-  console.log("👤 Profile loaded:", profile);
+  const animeFavs = await loadFavoritesWithFallback(uid, "anime");
+  const mangaFavs = await loadFavoritesWithFallback(uid, "manga");
+  const manhwaFavs = await loadFavoritesWithFallback(uid, "manhwa");
+
+  // Optional: count favorites or show stats
+  console.log("👤 Profile:", profile);
+  console.log("📊 Level:", level);
+  console.log("🏆 Achievements:", achievements);
+  console.log("💖 Anime Favorites:", animeFavs.length);
+  console.log("📚 Manga Favorites:", mangaFavs.length);
+  console.log("📖 Manhwa Favorites:", manhwaFavs.length);
+
+  // You can now safely use `profile`, `level`, `achievements`, and favorites in DOM
 })();
 </script>
 
