@@ -397,28 +397,34 @@
 
   // Load profile
   let profile = JSON.parse(localStorage.getItem("profile"));
-  if (!profile) {
-    try {
-      const url = `${API_BASE}/api/user/${uid}/favorites/${type}`;
-      const res = await fetch(url);
-      const result = await res.json();
-      if (result.success && result.profile) {
-        profile = result.profile;
-        localStorage.setItem("profile", JSON.stringify(profile));
-      } else {
-        return window.location.href = "create-profile.html";
-      }
-    } catch (err) {
-      console.error("❌ Failed to load profile from KV", err);
+if (!profile) {
+  try {
+    const res = await fetch(API_BASE, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "getProfile", uid })
+    });
+    const result = await res.json();
+    if (result.success && result.profile) {
+      profile = result.profile;
+      localStorage.setItem("profile", JSON.stringify(profile));
+    } else {
+      return window.location.href = "create-profile.html";
     }
+  } catch (err) {
+    console.error("❌ Failed to load profile from KV", err);
   }
+}
 
   // Load level
   let level = JSON.parse(localStorage.getItem("level"));
   if (!level) {
     try {
-      const url = `${API_BASE}/api/user/${uid}/favorites/${type}`;
-      const res = await fetch(url);
+      const res = await fetch(API_BASE, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "getLevel", uid })
+      });
       const result = await res.json();
       if (result.success) {
         level = result.level;
@@ -433,8 +439,11 @@
   let achievements = JSON.parse(localStorage.getItem("achievements"));
   if (!achievements) {
     try {
-      const url = `${API_BASE}/api/user/${uid}/favorites/${type}`;
-      const res = await fetch(url);
+      const res = await fetch(API_BASE, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "getAchievements", uid })
+      });
       const result = await res.json();
       if (result.success) {
         achievements = result.achievements;
