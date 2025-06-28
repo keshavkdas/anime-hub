@@ -7,25 +7,136 @@
   <link rel="stylesheet" href="style.css" />
   <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@600&family=Poppins:wght@500&display=swap" rel="stylesheet"/>
   <style>
-    /* Your original styles — unchanged */
-    body { background-color: #121212; color: white; font-family: 'Poppins', sans-serif; margin: 0; padding: 0; }
-    header { background-color: #1f1f1f; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
-    header h1 { font-family: 'Oswald', sans-serif; font-size: 2rem; color: #f97316; }
-    nav a { color: white; margin-left: 2rem; text-decoration: none; font-weight: 600; }
-    nav a:hover { color: #f97316; }
-    .section { margin: 2rem; }
-    .section h2 { color: #f97316; margin-bottom: 1rem; }
-    .carousel { display: flex; overflow-x: auto; gap: 1rem; padding: 1rem; background-color: #000; border-radius: 10px; scroll-behavior: smooth; }
-    .carousel::-webkit-scrollbar { height: 10px; }
-    .carousel::-webkit-scrollbar-track { background: #222; border-radius: 10px; }
-    .carousel::-webkit-scrollbar-thumb { background: #f97316; border-radius: 10px; }
-    .favorite-item { flex: 0 0 auto; width: 180px; background-color: #1e1e1e; border-radius: 8px; padding: 0.5rem; text-align: center; position: relative; }
-    .favorite-item img { width: 100%; border-radius: 6px; cursor: pointer; }
-    .remove-fav-btn { position: absolute; top: 8px; right: 8px; width: 30px; height: 30px; background: rgba(0, 0, 0, 0.6); border-radius: 50%; color: white; font-size: 16px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease; z-index: 2; }
-    .remove-fav-btn:hover { transform: scale(1.1); box-shadow: 0 0 8px rgba(255, 0, 0, 0.6); }
-    .card-title { margin-top: 0.5rem; font-size: 0.9rem; color: #eee; }
-    .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background-color: #ff6600; color: white; padding: 12px 24px; border-radius: 8px; font-size: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); z-index: 9999; transition: opacity 0.3s ease; }
-    .toast.hidden { display: none; }
+    body {
+      background-color: #121212;
+      color: white;
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background-color: #1f1f1f;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header h1 {
+      font-family: 'Oswald', sans-serif;
+      font-size: 2rem;
+      color: #f97316;
+    }
+
+    nav a {
+      color: white;
+      margin-left: 2rem;
+      font-family: 'Poppins', sans-serif;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    nav a:hover {
+      color: #f97316;
+    }
+
+    .section {
+      margin: 2rem;
+    }
+
+    .section h2 {
+      color: #f97316;
+      margin-bottom: 1rem;
+    }
+
+    .carousel {
+      display: flex;
+      overflow-x: auto;
+      gap: 1rem;
+      padding: 1rem;
+      background-color: #000;
+      border-radius: 10px;
+      scroll-behavior: smooth;
+    }
+
+    .carousel::-webkit-scrollbar {
+      height: 10px;
+    }
+
+    .carousel::-webkit-scrollbar-track {
+      background: #222;
+      border-radius: 10px;
+    }
+
+    .carousel::-webkit-scrollbar-thumb {
+      background: #f97316;
+      border-radius: 10px;
+    }
+
+    .favorite-item {
+      flex: 0 0 auto;
+      width: 180px;
+      background-color: #1e1e1e;
+      border-radius: 8px;
+      padding: 0.5rem;
+      text-align: center;
+      position: relative;
+    }
+
+    .favorite-item img {
+      width: 100%;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .remove-fav-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 30px;
+      height: 30px;
+      background: rgba(0, 0, 0, 0.6);
+      border-radius: 50%;
+      color: white;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      z-index: 2;
+    }
+
+    .remove-fav-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 8px rgba(255, 0, 0, 0.6);
+    }
+
+    .card-title {
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+      color: #eee;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #ff6600;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 14px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      z-index: 9999;
+      transition: opacity 0.3s ease;
+    }
+
+    .toast.hidden {
+      display: none;
+    }
   </style>
 </head>
 <body>
@@ -86,6 +197,43 @@
     });
   }
 
+  async function syncLocalToKV() {
+    const types = ["anime", "manga", "manhwa"];
+    const today = new Date().toISOString().split("T")[0];
+
+    for (const type of types) {
+      const key = `${type}Favorites_${user.uid}`;
+      const localList = JSON.parse(localStorage.getItem(key) || "[]");
+
+      // Add .date if missing
+      let changed = false;
+      const processed = localList.map(item => {
+        if (!item.date) {
+          changed = true;
+          return { ...item, date: today };
+        }
+        return item;
+      });
+
+      if (changed) {
+        localStorage.setItem(key, JSON.stringify(processed));
+      }
+
+      try {
+        const api = `${API_BASE}/${user.uid}/favorites/${type}`;
+        const res = await fetch(api);
+        const remote = res.ok ? await res.json() : [];
+
+        if (!remote.length && processed.length) {
+          await saveFavorites(user.uid, type, processed);
+          console.log(`✅ Synced ${type} favorites to KV`);
+        }
+      } catch (err) {
+        console.warn(`❌ Failed to sync ${type} favorites`, err);
+      }
+    }
+  }
+
   async function renderFavorites(type, containerId, detailsPage) {
     const container = document.getElementById(containerId);
     const list = await getFavorites(user.uid, type);
@@ -113,6 +261,7 @@
 
   window.addEventListener("DOMContentLoaded", async () => {
     if (user?.uid) {
+      await syncLocalToKV(); // ✅ Sync localStorage to KV first
       await renderFavorites("anime", "animeFavorites", "anime-details.html");
       await renderFavorites("manga", "mangaFavorites", "manga-details.html");
       await renderFavorites("manhwa", "manhwaFavorites", "manhwa-details.html");
@@ -130,5 +279,6 @@
     }
   });
 </script>
+
 </body>
 </html>
