@@ -463,7 +463,6 @@
 </script>
 
 <script>
-  const user = JSON.parse(localStorage.getItem("user"));
   if (!user) {
     const dropdown = document.getElementById("profileDropdown");
     if (dropdown) dropdown.classList.remove("show");
@@ -474,7 +473,6 @@
   const WORKER_URL = "https://anime-hub-auth.keshavkdas23.workers.dev/";
 
   async function loadUserProfile() {
-    const user = JSON.parse(localStorage.getItem("user"));
     const avatarImg = document.querySelector(".profile-bubble img");
     const avatarBubble = document.querySelector(".profile-bubble");
 
@@ -522,7 +520,6 @@
 
  <script>
   function toggleDropdown() {
-  const user = JSON.parse(localStorage.getItem("user"));
   if (!user) return; // ❌ Do nothing if user is not logged in
     
   const dropdown = document.getElementById("profileDropdown");
@@ -552,7 +549,6 @@ document.addEventListener("click", function (e) {
   let toastTimeout;
 
   function isInFavorites(id) {
-    const user = JSON.parse(localStorage.getItem("user"));
     if (!user) return false;
     const key = `animeFavorites_${user.uid}`;
     const favs = JSON.parse(localStorage.getItem(key)) || [];
@@ -622,7 +618,6 @@ document.addEventListener("click", function (e) {
 
   function addToFavorites(id, title, imageUrl) {
   try {
-    const user = JSON.parse(localStorage.getItem("user"));
     if (!user) {
       showToast('🔐 This action requires login');
       setTimeout(() => window.location.href = "index.html", 1500);
@@ -739,7 +734,6 @@ document.addEventListener("click", function (e) {
   });
 
  function markFavoritesActive() {
-  const user = JSON.parse(localStorage.getItem("user"));
   if (!user) return;
 
   const key = `animeFavorites_${user.uid}`;
@@ -895,35 +889,36 @@ markFavoritesActive();
   });
 </script>
 <script>
-  const user = JSON.parse(localStorage.getItem("user"));
+  document.addEventListener("DOMContentLoaded", () => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    const profile = JSON.parse(localStorage.getItem("profile"));
 
-  // 1. Update Browse Button
-  const browseBtn = document.getElementById("browse-btn");
-  if (user && browseBtn) {
-    browseBtn.innerText = "Start Browsing";
-    browseBtn.href = "browse.html";
-  }
+    // Change Login button to "Start Browsing"
+    const browseBtn = document.getElementById("browse-btn");
+    if (user && browseBtn) {
+      browseBtn.innerText = "Start Browsing";
+      browseBtn.href = "browse.html";
+    }
 
-  // 2. Update character bubble
-  const profile = JSON.parse(localStorage.getItem("profile"));
-  if (profile && profile.avatar) {
-    document.getElementById("profile-bubble").src = profile.avatar;
-  } else {
-    document.getElementById("profile-bubble").src = "avatar.jpg"; // or your fallback image
-  }
+    // Set profile avatar bubble
+    const bubble = document.getElementById("profile-bubble");
+    if (bubble) {
+      bubble.src = profile?.avatar || "avatar.jpg";
+    }
 
-  // 3. Disable ❤️ and other favorite clicks if not logged in
-  document.querySelectorAll(".fav-icon").forEach(icon => {
-    icon.onclick = (e) => {
-      if (!user) {
-        e.preventDefault();
-        showToast("🔐 This action requires login");
-        setTimeout(() => window.location.href = "index.html", 1500);
-      }
-    };
+    // Disable favorite icons if not logged in
+    document.querySelectorAll(".fav-icon").forEach(icon => {
+      icon.onclick = (e) => {
+        if (!user) {
+          e.preventDefault();
+          showToast("🔐 This action requires login");
+          setTimeout(() => window.location.href = "index.html", 1500);
+        }
+      };
+    });
   });
 
-  // 4. Toast handler
+  // Toast function
   function showToast(msg) {
     const toast = document.createElement("div");
     toast.textContent = msg;
@@ -941,3 +936,4 @@ markFavoritesActive();
     setTimeout(() => toast.remove(), 1800);
   }
 </script>
+
