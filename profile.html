@@ -393,6 +393,37 @@
 
   const uid = user.uid;
 
+  const API_BASE = "https://anime-hub-auth.keshavkdas23.workers.dev/api/user";
+
+// Helper to load favorites from KV or localStorage
+async function loadFavoritesWithFallback(uid, type) {
+  const kvURL = `${API_BASE}/${uid}/favorites/${type}`;
+  let list = [];
+
+  try {
+    const res = await fetch(kvURL);
+    if (res.ok) {
+      const data = await res.json();
+      if (Array.isArray(data) && data.length > 0) return data;
+    }
+  } catch (e) {
+    console.warn(`❌ Failed to fetch ${type} from KV`, e);
+  }
+
+  // fallback to localStorage
+  try {
+    const local = localStorage.getItem(`${type}Favorites_${uid}`);
+    if (local) {
+      list = JSON.parse(local);
+      if (Array.isArray(list)) return list;
+    }
+  } catch (e) {
+    console.warn(`❌ Failed to read ${type} from localStorage`, e);
+  }
+
+  return [];
+}
+
   // 🔹 Profile
   let profile = JSON.parse(localStorage.getItem("profile"));
   if (!profile) {
