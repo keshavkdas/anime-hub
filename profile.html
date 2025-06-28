@@ -458,7 +458,11 @@
  async function loadFavoritesWithFallback(uid, type) {
   const url = `${API_BASE}/api/user/${uid}/favorites/${type}`;
   try {
-    const res = await fetch(url);
+    const res = await fetch(`${API_BASE}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "getFavorites", uid, type })
+    });
     const json = await res.json();
     console.log(`📦 ${type.toUpperCase()} API Response:`, json);
 
@@ -527,7 +531,11 @@
   const types = ['anime', 'manga', 'manhwa'];
   for (const type of types) {
     try {
-      const resp = await fetch(`https://anime-hub-auth.keshavkdas23.workers.dev/api/user/${userKey}/favorites/${type}`);
+      const resp = await fetch("https://anime-hub-auth.keshavkdas23.workers.dev", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "getFavorites", uid: userKey, type })
+      });
       if (resp.ok) {
         favData[type] = await resp.json();
       } else {
