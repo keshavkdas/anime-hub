@@ -148,11 +148,11 @@
 
     <div class="section">
       <label>Email</label>
-      <input type="email" id="email" />
+      <input type="email" id="email" readonly disabled />
 
       <label>Password</label>
       <input type="password" id="password" />
-      <button onclick="updateEmailPassword()">Update Email & Password</button>
+      <button onclick="updateEmailPassword()">Update Password</button>
     </div>
 
     <div class="section">
@@ -208,18 +208,22 @@ async function fetchKVProfile() {
   return data.success ? data.profile : {};
 }
 
-async function updateEmailPassword() {
-  const email = document.getElementById("email").value.trim();
+async function updatePassword() {
   const password = document.getElementById("password").value.trim();
-  if (!email || !password) return alert("Email and password required.");
+  if (!password) return alert("Password required.");
 
-  await fetch(API_BASE, {
+  const res = await fetch(API_BASE, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ action: "saveEmail", uid, email, password })
+    body: JSON.stringify({ action: "saveEmail", uid, email: user.email, password })
   });
 
-  alert("✅ Email and password updated.");
+  const result = await res.json();
+  if (result.success) {
+    alert("✅ Password updated.");
+  } else {
+    alert("❌ Failed to update password.");
+  }
 }
 
 async function updateProfile() {
