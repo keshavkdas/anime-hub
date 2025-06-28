@@ -264,9 +264,9 @@
 }
 
   async function removeFavorite(type, index) {
-    const list = await getFavorites(user.uid, type);
-    list.splice(index, 1);
-    await saveFavorites(user.uid, type, list);
+    const today = new Date().toISOString().split("T")[0];
+    const updatedList = list.map(item => ({ ...item, date: item.date || today }));
+    await saveFavorites(user.uid, type, updatedList);
     location.reload();
   }
 
