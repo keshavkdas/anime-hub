@@ -383,7 +383,98 @@
   </div>
 
   <div class="toast" id="toast"></div>
-  
+  <script>
+(async () => {
+  const user = JSON.parse(localStorage.getItem("user"));
+  if (!user?.uid) {
+    sessionStorage.setItem("toast", "🔐 Please log in");
+    return window.location.href = "index.html";
+  }
+
+  const uid = user.uid;
+
+  // 🔹 Profile
+  let profile = JSON.parse(localStorage.getItem("profile"));
+  if (!profile) {
+    const res = await fetch("https://anime-hub-auth.keshavkdas23.workers.dev/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "getProfile", uid })
+    });
+    const result = await res.json();
+    if (result.success) {
+      profile = result.profile;
+      localStorage.setItem("profile", JSON.stringify(profile));
+    }
+  }
+
+  // 🔹 Level
+  let level = JSON.parse(localStorage.getItem("level"));
+  if (!level) {
+    const res = await fetch("https://anime-hub-auth.keshavkdas23.workers.dev/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "getLevel", uid })
+    });
+    const result = await res.json();
+    if (result.success) {
+      level = result.level;
+      localStorage.setItem("level", JSON.stringify(level));
+    }
+  }
+
+  // 🔹 Achievements
+  let achievements = JSON.parse(localStorage.getItem("achievements"));
+  if (!achievements) {
+    const res = await fetch("https://anime-hub-auth.keshavkdas23.workers.dev/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "getAchievements", uid })
+    });
+    const result = await res.json();
+    if (result.success) {
+      achievements = result.achievements;
+      localStorage.setItem("achievements", JSON.stringify(achievements));
+    }
+  }
+
+  console.log("Profile Loaded:", profile);
+  console.log("Level Loaded:", level);
+  console.log("Achievements Loaded:", achievements);
+})();
+</script>
+
+  <script>
+(async () => {
+  const user = JSON.parse(localStorage.getItem("user"));
+  if (!user) return window.location.href = "login.html";
+
+  let profile = JSON.parse(localStorage.getItem("profile"));
+
+  if (!profile) {
+    const res = await fetch("https://anime-hub-auth.keshavkdas23.workers.dev/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        action: "getProfile",
+        uid: user.uid
+      })
+    });
+
+    const result = await res.json();
+    if (result.success && result.profile) {
+      profile = result.profile;
+      localStorage.setItem("profile", JSON.stringify(profile));
+    } else {
+      return window.location.href = "create-profile.html";
+    }
+  }
+
+  // ⬇️ You can now use `profile.avatar`, `profile.username`, etc.
+  console.log("👤 Profile loaded:", profile);
+})();
+</script>
+
  <script>
   const user = JSON.parse(localStorage.getItem("user"));
   const profile = JSON.parse(localStorage.getItem("profile"));
