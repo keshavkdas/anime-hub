@@ -1091,8 +1091,8 @@ function uploadCustomBanner() {
       localStorage.setItem("seenAchievements", JSON.stringify([...seen, ...newOnes]));
     }
   }
-  loadBanner();
-  initProfile();
+loadBanner();
+loadFavorites().then(initProfile);
 </script>
 
 </body>
