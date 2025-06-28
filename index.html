@@ -940,22 +940,20 @@ markFavoritesActive();
   }
 </script>
 <script>
-  // Show toast message passed via sessionStorage
   window.addEventListener("DOMContentLoaded", () => {
     const toastMsg = sessionStorage.getItem("toast");
     if (toastMsg) {
-      const toast = document.createElement("div");
-      toast.className = "toast";
-      toast.textContent = toastMsg;
-      document.body.appendChild(toast);
+      const toast = document.getElementById("toast");
+      toast.innerText = toastMsg;
+      toast.classList.remove("hidden");
 
       setTimeout(() => {
-        toast.remove();
+        toast.classList.add("hidden");
+        sessionStorage.removeItem("toast");
       }, 3000);
-
-      sessionStorage.removeItem("toast");
     }
   });
 </script>
+
 
 
