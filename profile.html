@@ -446,7 +446,7 @@
  async function loadFavoritesWithFallback(uid, type) {
   const url = `${API_BASE}/api/user/${uid}/favorites/${type}`;
   try {
-    const url = `${API_BASE}/api/user/${uid}/favorites/${type}`;
+    const res = await fetch(url);
     const json = await res.json();
     console.log(`📦 ${type.toUpperCase()} API Response:`, json);
 
