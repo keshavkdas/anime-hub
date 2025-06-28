@@ -939,4 +939,23 @@ markFavoritesActive();
     setTimeout(() => toast.remove(), 1800);
   }
 </script>
+<script>
+  // Show toast message passed via sessionStorage
+  window.addEventListener("DOMContentLoaded", () => {
+    const toastMsg = sessionStorage.getItem("toast");
+    if (toastMsg) {
+      const toast = document.createElement("div");
+      toast.className = "toast";
+      toast.textContent = toastMsg;
+      document.body.appendChild(toast);
+
+      setTimeout(() => {
+        toast.remove();
+      }, 3000);
+
+      sessionStorage.removeItem("toast");
+    }
+  });
+</script>
+
 
