@@ -393,6 +393,7 @@
   }
 
   const uid = user.uid;
+  console.log("👤 UID for fetching favorites:", uid);
 
   // Load profile
   let profile = JSON.parse(localStorage.getItem("profile"));
@@ -454,30 +455,36 @@
   }
 
   // Load favorites (anime, manga, manhwa)
-  async function loadFavoritesWithFallback(uid, type) {
-    const url = `${API_BASE}/api/user/${uid}/favorites/${type}`;
-    try {
-      const res = await fetch(url);
-      if (res.ok) {
-        const json = await res.json();
-        if (Array.isArray(json) && json.length > 0) return json;
-      }
-    } catch (e) {
-      console.warn(`❌ KV fetch failed for ${type}`, e);
-    }
+ async function loadFavoritesWithFallback(uid, type) {
+  const url = `${API_BASE}/api/user/${uid}/favorites/${type}`;
+  try {
+    const res = await fetch(url);
+    const json = await res.json();
+    console.log(`📦 ${type.toUpperCase()} API Response:`, json);
 
-    // fallback to localStorage
-    const local = localStorage.getItem(`${type}Favorites_${uid}`);
-    try {
-      const parsed = JSON.parse(local);
-      if (Array.isArray(parsed)) return parsed;
-    } catch (e) {
-      console.warn(`⚠️ localStorage parse failed for ${type}`, e);
+    if (Array.isArray(json)) {
+      localStorage.setItem(`${type}Favorites_${uid}`, JSON.stringify(json));
+      return json;
     }
-
-    return [];
+    if (json?.data && Array.isArray(json.data)) {
+      localStorage.setItem(`${type}Favorites_${uid}`, JSON.stringify(json.data));
+      return json.data;
+    }
+  } catch (e) {
+    console.warn(`❌ KV fetch failed for ${type}`, e);
   }
 
+  // fallback to localStorage
+  const local = localStorage.getItem(`${type}Favorites_${uid}`);
+  try {
+    const parsed = JSON.parse(local);
+    if (Array.isArray(parsed)) return parsed;
+  } catch (e) {
+    console.warn(`⚠️ localStorage parse failed for ${type}`, e);
+  }
+
+  return [];
+}
   const animeFavs = await loadFavoritesWithFallback(uid, "anime");
   const mangaFavs = await loadFavoritesWithFallback(uid, "manga");
   const manhwaFavs = await loadFavoritesWithFallback(uid, "manhwa");
@@ -1024,8 +1031,6 @@ function uploadCustomBanner() {
 }
 
   async function initProfile() {
-    await loadFavorites();
-
     const stats = {
       anime: favData.anime.length,
       manga: favData.manga.length,
