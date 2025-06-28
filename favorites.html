@@ -235,22 +235,33 @@
   }
 
   async function renderFavorites(type, containerId, detailsPage) {
-    const container = document.getElementById(containerId);
-    const list = await getFavorites(user.uid, type);
+  const container = document.getElementById(containerId);
+  let list = await getFavorites(user.uid, type);
 
-    if (!list.length) {
-      container.innerHTML = `<p>No favorites yet.</p>`;
-      return;
+  // 🔁 If KV is empty, fallback to localStorage
+  if (!list.length) {
+    const localList = JSON.parse(localStorage.getItem(`${type}Favorites_${user.uid}`)) || [];
+    if (localList.length) {
+      list = localList;
+      // Sync local data to KV
+      await saveFavorites(user.uid, type, list);
+      console.log(`✅ Synced ${type} favorites to KV`);
     }
-
-    container.innerHTML = list.map((item, index) => `
-      <div class="favorite-item">
-        <button class="remove-fav-btn" onclick="removeFavorite('${type}', ${index})">&times;</button>
-        <img src="${item.imageUrl}" alt="${item.title}" onclick="location.href='${detailsPage}?id=${item.id}'" />
-        <div class="card-title">${item.title}</div>
-      </div>
-    `).join('');
   }
+
+  if (!list.length) {
+    container.innerHTML = `<p>No favorites yet.</p>`;
+    return;
+  }
+
+  container.innerHTML = list.map((item, index) => `
+    <div class="favorite-item">
+      <button class="remove-fav-btn" onclick="removeFavorite('${type}', ${index})">&times;</button>
+      <img src="${item.imageUrl}" alt="${item.title}" onclick="location.href='${detailsPage}?id=${item.id}'" />
+      <div class="card-title">${item.title}</div>
+    </div>
+  `).join('');
+}
 
   async function removeFavorite(type, index) {
     const list = await getFavorites(user.uid, type);
