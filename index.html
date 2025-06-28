@@ -437,6 +437,11 @@
   ">
   Added to favorites!
 </div>
+  
+  <script>
+    const user = JSON.parse(localStorage.getItem("user"));
+    const profile = JSON.parse(localStorage.getItem("profile"));
+  </script>
 
   <script>
   function logout() {
@@ -890,8 +895,6 @@ markFavoritesActive();
 </script>
 <script>
   document.addEventListener("DOMContentLoaded", () => {
-    const user = JSON.parse(localStorage.getItem("user"));
-    const profile = JSON.parse(localStorage.getItem("profile"));
 
     // Change Login button to "Start Browsing"
     const browseBtn = document.getElementById("browse-btn");
