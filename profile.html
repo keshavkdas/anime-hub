@@ -498,16 +498,20 @@
   let favData = { anime: [], manga: [], manhwa: [] };
 
   async function loadFavorites() {
+  const types = ['anime', 'manga', 'manhwa'];
+  for (const type of types) {
     try {
-      let resp = await fetch(`/api/user/${userKey}/favorites`);
-      if (!resp.ok) throw new Error('API failed');
-      favData = await resp.json();
-    } catch (e) {
-      ['anime', 'manga', 'manhwa'].forEach(type => {
+      const resp = await fetch(`https://anime-hub-auth.keshavkdas23.workers.dev/api/user/${userKey}/favorites/${type}`);
+      if (resp.ok) {
+        favData[type] = await resp.json();
+      } else {
         favData[type] = JSON.parse(localStorage.getItem(`${type}Favorites_${userKey}`)) || [];
-      });
+      }
+    } catch (e) {
+      favData[type] = JSON.parse(localStorage.getItem(`${type}Favorites_${userKey}`)) || [];
     }
   }
+}
 
   function updateDailyStreak() {
     const lastDate = localStorage.getItem('lastFavDate');
@@ -968,16 +972,19 @@ function setBannerImage(src) {
 }
 
 function loadBanner() {
+  const banner = document.getElementById("banner-image");
   const custom = localStorage.getItem("customBanner");
-  const saved = localStorage.getItem("selectedBanner");
-  const img = document.getElementById("banner-image");
+  const selected = localStorage.getItem("selectedBanner");
 
   if (custom) {
-    img.src = custom;
-  } else if (saved) {
-    img.src = saved;
+    banner.src = custom;
+    banner.style.display = "block";
+  } else if (selected) {
+    banner.src = selected;
+    banner.style.display = "block";
   } else {
-    img.src = ""; // fallback to black
+    banner.style.display = "none"; // hide image
+    document.querySelector(".banner-wrapper").style.backgroundColor = "black";
   }
 }
 
