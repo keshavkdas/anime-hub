@@ -223,12 +223,12 @@
     }
 
     // Merge lists, avoid duplicates based on item.id
-    const merged = [...kvList];
-    for (const item of updatedLocalList) {
-      if (!merged.some(existing => existing.id === item.id)) {
-        merged.push(item);
-      }
-    }
+    // Merge lists uniquely by item.id
+    const mergedMap = new Map();
+    [...kvList, ...updatedLocalList].forEach(item => {
+      if (item?.id) mergedMap.set(item.id, item);
+    });
+    const merged = Array.from(mergedMap.values());
 
     // Save back to KV only if merged list has new items
     if (merged.length > kvList.length) {
