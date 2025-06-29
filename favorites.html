@@ -271,12 +271,20 @@ async function renderFavorites(type, containerId, detailsPage) {
   `).join('');
 }
 
-  async function removeFavorite(type, index) {
-    const today = new Date().toISOString().split("T")[0];
-    const updatedList = list.map(item => ({ ...item, date: item.date || today }));
-    await saveFavorites(user.uid, type, updatedList);
-    location.reload();
-  }
+ async function removeFavorite(type, index) {
+  const key = `${type}Favorites_${user.uid}`;
+  let list = JSON.parse(localStorage.getItem(key)) || [];
+
+  // Remove the selected item
+  list.splice(index, 1);
+
+  // Update localStorage and KV
+  localStorage.setItem(key, JSON.stringify(list));
+  await saveFavorites(user.uid, type, list);
+
+  // Reload the updated list
+  location.reload();
+}
 
   window.addEventListener("DOMContentLoaded", async () => {
     if (user?.uid) {
