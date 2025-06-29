@@ -245,6 +245,30 @@
   color: var(--accent);
   display: none;
 }
+.avatar-scroll-container::-webkit-scrollbar {
+  width: 10px;
+}
+
+.avatar-scroll-container::-webkit-scrollbar-track {
+  background: black;
+  border-radius: 10px;
+}
+
+.avatar-scroll-container::-webkit-scrollbar-thumb {
+  background: var(--accent); /* orange */
+  border-radius: 10px;
+}
+
+.avatar-scroll-container::-webkit-scrollbar-thumb:hover {
+  background: #fb923c; /* slightly lighter orange on hover */
+}
+
+/* Firefox support */
+.avatar-scroll-container {
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent) black;
+}
+
   </style>
 </head>
 <body>
