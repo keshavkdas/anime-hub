@@ -39,10 +39,6 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-      transition: opacity 0.4s ease;
-    }
-    .banner-image.fade-out {
-      opacity: 0;
     }
 
     .profile-top {
@@ -55,14 +51,36 @@
       align-items: center;
       z-index: 2;
     }
-    .profile-avatar {
+    .profile-avatar-wrapper {
+      position: relative;
       width: 120px;
       height: 120px;
+    }
+    .profile-avatar {
+      width: 100%;
+      height: 100%;
       border-radius: 50%;
       border: 3px solid var(--card-bg);
       object-fit: cover;
       background-color: #fff;
     }
+    .edit-icon {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      background: var(--accent);
+      color: white;
+      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 14px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+    }
+
     .username-display {
       margin-top: 10px;
       font-size: 26px;
@@ -72,17 +90,26 @@
     }
 
     .main-content {
-      max-width: 600px;
+      max-width: 960px;
       margin: 40px auto 80px;
       padding: 0 20px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
     }
     .section {
       background: var(--card-bg);
       padding: 24px;
       border-radius: var(--radius);
-      margin-bottom: 30px;
       box-shadow: 0 0 15px var(--shadow-light);
       border: 1px solid var(--primary);
+      flex: 1 1 300px;
+      max-width: 420px;
+    }
+    .full-width-section {
+      width: 100%;
+      max-width: 600px;
     }
     .section h2 {
       color: var(--accent);
@@ -101,12 +128,6 @@
       background-color: var(--bg);
       color: var(--accent);
       font-size: 15px;
-      transition: box-shadow 0.3s ease;
-    }
-    input:focus {
-      outline: none;
-      border-color: var(--accent);
-      box-shadow: 0 0 6px var(--accent);
     }
     button {
       width: 100%;
@@ -120,69 +141,6 @@
       cursor: pointer;
     }
 
-    .avatar-tray { display: flex; justify-content: center; margin-top: 12px; }
-    .avatar-bubble {
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      overflow: hidden;
-      border: 2px solid transparent;
-      transition: transform 0.3s;
-      cursor: pointer;
-      margin: 0 5px;
-    }
-    .avatar-bubble.selected-center {
-      border-color: var(--accent);
-      transform: scale(1.1);
-      box-shadow: 0 0 10px var(--shadow-light);
-    }
-    .avatar-bubble img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    #avatar-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.9);
-      display: none;
-      justify-content: center;
-      align-items: center;
-      z-index: 999;
-    }
-    #avatar-overlay.active { display: flex; }
-    #overlay-box {
-      background: var(--card-bg);
-      width: 90%;
-      max-width: 500px;
-      padding: 20px;
-      border-radius: var(--radius);
-      max-height: 80vh;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-    #overlay-box button { align-self: flex-end; width: auto; padding: 6px 10px; }
-
-    #search-bar {
-      width: 100%;
-      padding: 10px;
-      border-radius: 6px;
-      border: 1px solid #30363d;
-      background: var(--bg);
-      color: var(--text-light);
-    }
-    .overlay-avatars {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      overflow-y: auto;
-      flex-grow: 1;
-    }
-
-    input[type="date"] { background-color: var(--bg); color: var(--accent); }
-
     .toast {
       position: fixed;
       bottom: 20px;
@@ -195,22 +153,20 @@
       font-size: 14px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.3);
       z-index: 9999;
-      transition: opacity 0.3s ease;
     }
     .toast.hidden { display: none; }
   </style>
 </head>
 <body>
-  <a href="profile.html" class="back-btn">&#8592;</a>
-
-  <!-- Banner + Avatar -->
   <div class="banner-wrapper"><img id="banner-image" class="banner-image" src="" alt="Banner"/></div>
   <div class="profile-top">
-    <img id="profile-avatar" class="profile-avatar" src="avatar.jpg" alt="Avatar"/>
+    <div class="profile-avatar-wrapper">
+      <img id="profile-avatar" class="profile-avatar" src="avatar.jpg" alt="Avatar"/>
+      <div class="edit-icon" onclick="toggleOverlay()">✎</div>
+    </div>
     <div class="username-display" id="profile-username">Username</div>
   </div>
 
-  <!-- Settings content -->
   <div class="main-content">
     <div class="section">
       <h2>🔐 Email & Password</h2>
@@ -230,13 +186,7 @@
       <button onclick="updateProfile()">Update Profile</button>
     </div>
 
-    <div class="section">
-      <h2>🧑‍🎨 Avatar</h2>
-      <div class="avatar-tray" id="avatar-tray"></div>
-      <button onclick="toggleOverlay()">Change Avatar</button>
-    </div>
-
-    <div class="section">
+    <div class="section full-width-section">
       <h2>📱 Phone</h2>
       <label>Phone Number</label>
       <input type="text" id="phone" />
@@ -244,15 +194,7 @@
     </div>
   </div>
 
-  <!-- Avatar Overlay -->
-  <div id="avatar-overlay">
-    <div id="overlay-box">
-      <button onclick="toggleOverlay()">✖ Cancel</button>
-      <input id="search-bar" placeholder="Search character..." />
-      <div class="overlay-avatars" id="overlay-avatars"></div>
-    </div>
-  </div>
-
+  <div id="avatar-overlay" style="display:none;"></div>
   <div id="toast" class="toast hidden"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
