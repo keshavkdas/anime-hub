@@ -184,12 +184,13 @@
   function deduplicateFavorites(list) {
     const seen = new Set();
     return list.filter(item => {
-      const key = `${item.id}-${item.type}`;
+      const key = item.id;
       if (seen.has(key)) return false;
       seen.add(key);
       return true;
     });
   }
+
   const API_BASE = "https://anime-hub-auth.keshavkdas23.workers.dev";
 
   async function getFavorites(uid, type) {
@@ -241,7 +242,7 @@
       remote.forEach(item => {
         const id = `${item.id}`;
         if (!remoteMap.has(id)) {
-          remoteMap.set(id, item);
+          remoteMap.set(id, { ...item, type }); // ensure consistency
         }
       });
 
@@ -289,32 +290,22 @@ async function renderFavorites(type, containerId, detailsPage) {
 
   container.innerHTML = list.map((item, index) => `
     <div class="favorite-item">
-      <button class="remove-fav-btn" onclick="removeFavorite('${type}', ${index})">&times;</button>
+      <button class="remove-fav-btn" onclick="removeFavoriteById('${type}', '${item.id}')">&times;</button>
       <img src="${item.imageUrl}" alt="${item.title}" onclick="location.href='${detailsPage}?id=${item.id}'" />
       <div class="card-title">${item.title}</div>
     </div>
   `).join('');
 }
 
-async function removeFavorite(type, index) {
+async function removeFavoriteById(type, id) {
   const key = `${type}Favorites_${user.uid}`;
-  let list = JSON.parse(localStorage.getItem(key) || "[]");
-
-  // 🧹 Always deduplicate first before working on the list
-  list = deduplicateFavorites(list);
-
-  // 🗑️ Remove item at the given index
-  list.splice(index, 1);
-
-  // 💾 Save to localStorage (cleaned)
+  let list = deduplicateFavorites(JSON.parse(localStorage.getItem(key) || "[]"));
+  list = list.filter(item => item.id !== id);
   localStorage.setItem(key, JSON.stringify(list));
-
-  // ☁️ Sync to KV (deduplicated again just to be sure)
   await saveFavorites(user.uid, type, list);
-
-  // 🔄 Refresh to re-render
   location.reload();
 }
+
 </script>
 
 </body>
