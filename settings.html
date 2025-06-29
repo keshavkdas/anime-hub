@@ -5,86 +5,114 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Settings – AnimeHub</title>
   <link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@600&family=Poppins:wght@500&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet"/>
   <style>
+    :root {
+      --primary: #ff6600;
+      --bg: #0d1117;
+      --card-bg: #161b22;
+      --text-light: #f0f0f0;
+      --accent: #f97316;
+      --radius: 12px;
+      --shadow-light: rgba(255, 102, 0, 0.2);
+    }
+
     body {
       margin: 0;
-      font-family: 'Poppins', sans-serif;
-      background: #121212;
-      color: white;
+      background: var(--bg);
+      color: var(--text-light);
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+      padding-top: 350px;
     }
 
-    header {
-      background-color: #1f1f1f;
-      padding: 1rem 2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: sticky;
+    .banner-wrapper {
+      position: absolute;
       top: 0;
-      z-index: 1000;
+      left: 0;
+      width: 100%;
+      height: 350px;
+      overflow: hidden;
+      z-index: -1;
+    }
+    .banner-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: opacity 0.4s ease;
+    }
+    .banner-image.fade-out {
+      opacity: 0;
     }
 
-    header h1 {
-      font-family: 'Oswald', sans-serif;
-      font-size: 2rem;
-      color: #f97316;
+    .profile-top {
+      position: absolute;
+      top: 250px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 2;
     }
-
-    nav a {
-      color: white;
-      margin-left: 2rem;
-      text-decoration: none;
+    .profile-avatar {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      border: 3px solid var(--card-bg);
+      object-fit: cover;
+      background-color: #fff;
+    }
+    .username-display {
+      margin-top: 10px;
+      font-size: 26px;
       font-weight: 600;
-    }
-
-    nav a:hover {
-      color: #f97316;
-    }
-
-    .container {
-      max-width: 480px;
-      margin: 40px auto;
-      padding: 20px 16px;
-      background-color: #1e1e1e;
-      border-radius: 12px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.5);
-    }
-
-    h2 {
+      color: var(--accent);
       text-align: center;
-      margin-bottom: 20px;
-      color: #f97316;
     }
 
+    .main-content {
+      max-width: 600px;
+      margin: 40px auto 80px;
+      padding: 0 20px;
+    }
+    .section {
+      background: var(--card-bg);
+      padding: 24px;
+      border-radius: var(--radius);
+      margin-bottom: 30px;
+      box-shadow: 0 0 15px var(--shadow-light);
+      border: 1px solid var(--primary);
+    }
+    .section h2 {
+      color: var(--accent);
+      margin-bottom: 16px;
+      font-size: 1.4rem;
+    }
     label {
       display: block;
       margin: 12px 0 4px;
-      font-weight: 500;
     }
-
     input {
       width: 100%;
       padding: 10px;
       border: 1px solid #30363d;
       border-radius: 6px;
-      background-color: #0d1117;
-      color: #f97316;
+      background-color: var(--bg);
+      color: var(--accent);
       font-size: 15px;
       transition: box-shadow 0.3s ease;
     }
-
     input:focus {
       outline: none;
-      border-color: #f97316;
-      box-shadow: 0 0 6px #f97316;
+      border-color: var(--accent);
+      box-shadow: 0 0 6px var(--accent);
     }
-
     button {
       width: 100%;
       padding: 12px;
-      margin-top: 12px;
-      background-color: #f97316;
+      margin-top: 16px;
+      background-color: var(--accent);
       border: none;
       border-radius: 6px;
       color: white;
@@ -92,93 +120,68 @@
       cursor: pointer;
     }
 
-    .avatar-tray {
-      display: flex;
-      gap: 10px;
-      overflow-x: auto;
-      padding: 10px 0;
-      scrollbar-width: none;
-    }
-
-    .avatar-tray::-webkit-scrollbar {
-      display: none;
-    }
-
+    .avatar-tray { display: flex; justify-content: center; margin-top: 12px; }
     .avatar-bubble {
       width: 60px;
       height: 60px;
       border-radius: 50%;
       overflow: hidden;
       border: 2px solid transparent;
+      transition: transform 0.3s;
       cursor: pointer;
-      position: relative;
-      transition: all 0.3s ease-in-out;
-      flex-shrink: 0;
+      margin: 0 5px;
     }
-
+    .avatar-bubble.selected-center {
+      border-color: var(--accent);
+      transform: scale(1.1);
+      box-shadow: 0 0 10px var(--shadow-light);
+    }
     .avatar-bubble img {
       width: 100%;
       height: 100%;
       object-fit: cover;
     }
 
-    .avatar-bubble.selected-center {
-      border: 3px solid #f97316;
-      transform: scale(1.1);
-      box-shadow: 0 0 10px #f97316;
-    }
-
     #avatar-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.9);
+      background: rgba(0,0,0,0.9);
       display: none;
       justify-content: center;
       align-items: center;
       z-index: 999;
     }
-
-    #avatar-overlay.active {
-      display: flex;
-    }
-
+    #avatar-overlay.active { display: flex; }
     #overlay-box {
-      background: #161b22;
-      width: 420px;
+      background: var(--card-bg);
+      width: 90%;
+      max-width: 500px;
       padding: 20px;
-      border-radius: 10px;
-      max-height: 90vh;
+      border-radius: var(--radius);
+      max-height: 80vh;
       display: flex;
       flex-direction: column;
       gap: 12px;
     }
+    #overlay-box button { align-self: flex-end; width: auto; padding: 6px 10px; }
 
-    #close-overlay {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background: #0d1117;
-      color: #f97316;
-      border: 1px solid #f97316;
-      border-radius: 50%;
-      width: 30px;
-      height: 30px;
-      font-size: 18px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      cursor: pointer;
-    }
-
-    input[type="date"] {
-      background-color: #0d1117;
-      color: #f97316;
-      border: 1px solid #30363d;
-      border-radius: 6px;
-      padding: 10px;
-      font-size: 15px;
+    #search-bar {
       width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #30363d;
+      background: var(--bg);
+      color: var(--text-light);
     }
+    .overlay-avatars {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      overflow-y: auto;
+      flex-grow: 1;
+    }
+
+    input[type="date"] { background-color: var(--bg); color: var(--accent); }
 
     .toast {
       position: fixed;
@@ -194,282 +197,183 @@
       z-index: 9999;
       transition: opacity 0.3s ease;
     }
-
-    .toast.hidden {
-      display: none;
-    }
-
-    @keyframes popIn {
-      0% { transform: scale(0.6); opacity: 0; }
-      100% { transform: scale(1); opacity: 1; }
-    }
-
-    .avatar-bubble.animate {
-      animation: popIn 0.3s ease-in-out;
-    }
-
-    .section.collapsible {
-      border: 1px solid #30363d;
-      border-radius: 6px;
-      margin-bottom: 1.5rem;
-    }
-
-    .section-header {
-      background-color: #1f1f1f;
-      padding: 10px;
-      cursor: pointer;
-    }
-
-    .section-header h3 {
-      margin: 0;
-      font-size: 1.1rem;
-      color: #f97316;
-    }
-
-    .section-body {
-      padding: 10px 16px;
-      display: none;
-    }
-
-    .section.open .section-body {
-      display: block;
-    }
-
-    #search-bar {
-      padding: 10px;
-      border-radius: 6px;
-      border: 1px solid #30363d;
-      background: #0d1117;
-      color: white;
-    }
-
-    .overlay-avatars {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      overflow-y: auto;
-      max-height: 400px;
-    }
+    .toast.hidden { display: none; }
   </style>
 </head>
 <body>
+  <a href="profile.html" class="back-btn">&#8592;</a>
 
-<header>
-  <h1><a href="index.html" style="color: #f97316; text-decoration: none;">AnimeHub</a></h1>
-  <nav>
-    <a href="index.html">Anime</a>
-    <a href="browse.html">Browse</a>
-    <a href="calendar.html">Schedule</a>
-    <a href="manga.html">Manga</a>
-    <a href="manhwa.html">Manhwa</a>
-    <a href="favorites.html">❤️ Favorites</a>
-  </nav>
-</header>
+  <!-- Banner + Avatar -->
+  <div class="banner-wrapper"><img id="banner-image" class="banner-image" src="" alt="Banner"/></div>
+  <div class="profile-top">
+    <img id="profile-avatar" class="profile-avatar" src="avatar.jpg" alt="Avatar"/>
+    <div class="username-display" id="profile-username">Username</div>
+  </div>
 
-<div class="container">
-  <h2>Settings</h2>
-
-  <div class="section collapsible open">
-    <div class="section-header" onclick="toggleSection(this)">
-      <h3>🔐 Email & Password</h3>
-    </div>
-    <div class="section-body">
+  <!-- Settings content -->
+  <div class="main-content">
+    <div class="section">
+      <h2>🔐 Email & Password</h2>
       <label>Email</label>
       <input type="email" id="email" readonly disabled />
       <label>Password</label>
       <input type="password" id="password" />
       <button onclick="updatePassword()">Update Password</button>
     </div>
-  </div>
 
-  <div class="section collapsible open">
-    <div class="section-header" onclick="toggleSection(this)">
-      <h3>📋 Profile Info</h3>
-    </div>
-    <div class="section-body">
+    <div class="section">
+      <h2>📋 Profile Info</h2>
       <label>Full Name</label>
       <input type="text" id="full-name" />
       <label>Date of Birth</label>
       <input type="text" id="dob" readonly />
       <button onclick="updateProfile()">Update Profile</button>
     </div>
-  </div>
 
-  <div class="section collapsible open">
-    <div class="section-header" onclick="toggleSection(this)">
-      <h3>🧑‍🎨 Avatar</h3>
-    </div>
-    <div class="section-body">
+    <div class="section">
+      <h2>🧑‍🎨 Avatar</h2>
       <div class="avatar-tray" id="avatar-tray"></div>
       <button onclick="toggleOverlay()">Change Avatar</button>
     </div>
-  </div>
 
-  <div class="section collapsible open">
-    <div class="section-header" onclick="toggleSection(this)">
-      <h3>📱 Phone</h3>
-    </div>
-    <div class="section-body">
+    <div class="section">
+      <h2>📱 Phone</h2>
       <label>Phone Number</label>
       <input type="text" id="phone" />
       <button onclick="sendOTP()">Verify & Save</button>
     </div>
   </div>
-</div>
 
-<div id="avatar-overlay">
-  <div id="overlay-box">
-    <button id="close-overlay" onclick="toggleOverlay()">✖</button>
-    <input type="text" id="search-bar" placeholder="Search for character..." />
-    <div class="overlay-avatars" id="overlay-avatars"></div>
+  <!-- Avatar Overlay -->
+  <div id="avatar-overlay">
+    <div id="overlay-box">
+      <button onclick="toggleOverlay()">✖ Cancel</button>
+      <input id="search-bar" placeholder="Search character..." />
+      <div class="overlay-avatars" id="overlay-avatars"></div>
+    </div>
   </div>
-</div>
 
-<div id="toast" class="toast hidden"></div>
+  <div id="toast" class="toast hidden"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-<script>
-  const API_BASE = "https://anime-hub-auth.keshavkdas23.workers.dev";
-  const user = JSON.parse(localStorage.getItem("user"));
-  const uid = user?.uid;
-  let selectedAvatar = "";
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script>
+    const API_BASE = "https://anime-hub-auth.keshavkdas23.workers.dev";
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (!user?.uid) window.location.href = "index.html";
+    let selectedAvatar = "";
 
-  if (!uid) {
-    alert("User not logged in.");
-    window.location.href = "index.html";
-  }
+    // Banner load
+    function loadBanner(){
+      const b = localStorage.getItem("customBanner") || localStorage.getItem("selectedBanner");
+      const img = document.getElementById("banner-image");
+      if(b){ img.src = b; }
+      else { document.querySelector('.banner-wrapper').style.backgroundColor='black'; img.style.display='none'; }
+    }
 
-  function showToast(msg, isError = false) {
-    const toast = document.getElementById("toast");
-    toast.textContent = msg;
-    toast.style.backgroundColor = isError ? "#dc2626" : "#16a34a";
-    toast.classList.remove("hidden");
-    setTimeout(() => toast.classList.add("hidden"), 3000);
-  }
+    // Toast
+    function showToast(txt, err=false){
+      const t = document.getElementById("toast");
+      t.textContent = txt;
+      t.style.backgroundColor = err ? "#dc2626" : "#16a34a";
+      t.classList.remove("hidden");
+      setTimeout(()=>t.classList.add("hidden"), 3000);
+    }
 
-  function toggleSection(header) {
-    const section = header.parentElement;
-    section.classList.toggle("open");
-  }
-
-  async function fetchKVProfile() {
-    const res = await fetch(API_BASE, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "getProfile", uid })
-    });
-    const data = await res.json();
-    return data.success ? data.profile : {};
-  }
-
-  async function updatePassword() {
-    const password = document.getElementById("password").value.trim();
-    if (!password) return showToast("❗ Password required", true);
-
-    const res = await fetch(API_BASE, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "saveEmail", uid, email: user.email, password })
-    });
-
-    const result = await res.json();
-    showToast(result.success ? "✅ Password updated" : "❌ Failed to update", !result.success);
-  }
-
-  async function updateProfile() {
-    const fullName = document.getElementById("full-name").value.trim();
-    const dob = document.getElementById("dob").value;
-    const phone = document.getElementById("phone").value.trim();
-    const [first, ...lastParts] = fullName.split(" ");
-    const last = lastParts.join(" ");
-
-    const profile = {
-      first, last, dob, avatar: selectedAvatar, phone
-    };
-
-    await fetch(API_BASE, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "saveProfile", uid, profile })
-    });
-
-    localStorage.setItem("profile", JSON.stringify(profile));
-    showToast("✅ Profile updated.");
-  }
-
-  function toggleOverlay() {
-    const overlay = document.getElementById("avatar-overlay");
-    overlay.classList.toggle("active");
-    if (overlay.classList.contains("active")) loadOverlayAvatars();
-  }
-
-  async function fetchCharacters(pageNum = 1) {
-    const res = await fetch(`https://api.jikan.moe/v4/characters?page=${pageNum}&limit=25&order_by=favorites&sort=desc`);
-    const data = await res.json();
-    return data.data.map(c => ({ name: c.name, src: c.images.jpg.image_url }));
-  }
-
-  async function loadOverlayAvatars() {
-    const container = document.getElementById("overlay-avatars");
-    container.innerHTML = "";
-    const characters = await fetchCharacters();
-
-    characters.forEach(char => {
-      const div = document.createElement("div");
-      div.className = "avatar-bubble animate";
-      div.innerHTML = `<img src="${char.src}" alt="${char.name}" title="${char.name}" />`;
-      if (char.src === selectedAvatar) div.classList.add("selected-center");
-
-      div.onclick = async () => {
-        selectedAvatar = char.src;
-        renderTray();
-        toggleOverlay();
-        await updateProfile(); // Live save
-      };
-
-      container.appendChild(div);
-    });
-
-    // Search logic
-    document.getElementById("search-bar").addEventListener("input", e => {
-      const query = e.target.value.toLowerCase();
-      document.querySelectorAll("#overlay-avatars .avatar-bubble").forEach(bubble => {
-        const name = bubble.querySelector("img").alt.toLowerCase();
-        bubble.style.display = name.includes(query) ? "block" : "none";
+    // Fetch profile
+    async function fetchProfile(){
+      const res = await fetch(API_BASE, {
+        method:"POST", headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({action:"getProfile", uid:user.uid})
       });
-    });
-  }
+      const j = await res.json();
+      return j.success ? j.profile : {};
+    }
 
-  function renderTray() {
-    const tray = document.getElementById("avatar-tray");
-    tray.innerHTML = "";
-    if (!selectedAvatar) return;
-    const div = document.createElement("div");
-    div.className = "avatar-bubble selected-center animate";
-    div.innerHTML = `<img src="${selectedAvatar}" alt="Avatar" />`;
-    tray.appendChild(div);
-  }
+    function renderTray(){
+      const t = document.getElementById("avatar-tray"); t.innerHTML = "";
+      if(selectedAvatar){
+        const div=document.createElement("div");
+        div.className="avatar-bubble selected-center";
+        div.innerHTML=`<img src="${selectedAvatar}" alt="Avatar"/>`;
+        t.appendChild(div);
+      }
+    }
 
-  async function prefillSettings() {
-    const profile = await fetchKVProfile();
-    document.getElementById("email").value = user.email || "";
-    document.getElementById("full-name").value = `${profile.first || ""} ${profile.last || ""}`;
-    document.getElementById("dob").value = profile.dob || "";
-    document.getElementById("phone").value = profile.phone || "";
-    selectedAvatar = profile.avatar || "";
-    renderTray();
-  }
+    async function prefill(){
+      loadBanner();
+      const p = await fetchProfile();
+      document.getElementById("email").value = user.email;
+      document.getElementById("full-name").value = `${p.first||""} ${p.last||""}`;
+      document.getElementById("dob").value = p.dob||"";
+      document.getElementById("phone").value = p.phone||"";
+      selectedAvatar = p.avatar||"";
+      renderTray();
+      document.getElementById("profile-avatar").src = selectedAvatar || "avatar.jpg";
+      document.getElementById("profile-username").textContent = p.username || user.email;
+    }
 
-  function sendOTP() {
-    showToast("📱 OTP via Firebase not yet implemented.", true);
-  }
+    async function updatePassword(){
+      const pwd = document.getElementById("password").value.trim();
+      if(!pwd) return showToast("Password required", true);
+      const res = await fetch(API_BASE, {
+        method:"POST", headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({action:"saveEmail", uid:user.uid, email:user.email, password:pwd})
+      });
+      const ok = (await res.json()).success;
+      showToast(ok?"Password updated":"Failed to update", !ok);
+    }
 
-  flatpickr("#dob", {
-    dateFormat: "Y-m-d",
-    maxDate: "today"
-  });
+    async function updateProfile(){
+      const full=document.getElementById("full-name").value.trim();
+      const dob=document.getElementById("dob").value;
+      const phone=document.getElementById("phone").value.trim();
+      const [first,...rest]=full.split(" ");
+      const prof={first, last:rest.join(" "), dob, phone, avatar:selectedAvatar};
+      await fetch(API_BASE, {
+        method:"POST", headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({action:"saveProfile", uid:user.uid, profile:prof})
+      });
+      localStorage.setItem("profile", JSON.stringify(prof));
+      showToast("Profile updated");
+      document.getElementById("profile-avatar").src = selectedAvatar;
+    }
 
-  document.addEventListener("DOMContentLoaded", prefillSettings);
-</script>
+    // Avatar overlay
+    function toggleOverlay(){
+      const ov = document.getElementById("avatar-overlay");
+      ov.classList.toggle("active");
+      if(ov.classList.contains("active")) loadOverlay();
+    }
+
+    async function loadOverlay(){
+      const box = document.getElementById("overlay-avatars");
+      box.innerHTML = "";
+      const res = await fetch("https://api.jikan.moe/v4/characters?order_by=favorites&limit=30");
+      const list = (await res.json()).data;
+      list.forEach(c=>{
+        const div=document.createElement("div");
+        div.className="avatar-bubble";
+        div.innerHTML=`<img src="${c.images.jpg.image_url}" alt="${c.name}" title="${c.name}"/>`;
+        if(c.images.jpg.image_url===selectedAvatar) div.classList.add("selected-center");
+        div.onclick = () => {
+          selectedAvatar = c.images.jpg.image_url;
+          renderTray(); toggleOverlay(); updateProfile();
+        };
+        box.appendChild(div);
+      });
+      document.getElementById("search-bar").oninput = e => {
+        const q = e.target.value.toLowerCase();
+        box.childNodes.forEach(c=>{
+          const name = c.querySelector("img").alt.toLowerCase();
+          c.style.display = name.includes(q)? "block":"none";
+        });
+      };
+    }
+
+    function sendOTP(){ showToast("OTP not implemented", true); }
+
+    flatpickr("#dob", { dateFormat:"Y-m-d", maxDate:"today" });
+    document.addEventListener("DOMContentLoaded", prefill);
+  </script>
 </body>
 </html>
