@@ -203,14 +203,23 @@
 
   for (const type of types) {
     const key = `${type}Favorites_${user.uid}`;
-    const localList = JSON.parse(localStorage.getItem(key) || "[]");
+    let localList = JSON.parse(localStorage.getItem(key) || "[]");
 
-    // Add date to local items if missing
-    const processedLocal = localList.map(item =>
+    // ✅ Deduplicate localList first
+    const seenLocal = new Set();
+    localList = localList.filter(item => {
+      const key = `${item.id}-${item.type}`;
+      if (seenLocal.has(key)) return false;
+      seenLocal.add(key);
+      return true;
+    });
+
+    // Add missing dates
+    localList = localList.map(item =>
       item.date ? item : { ...item, date: today }
     );
 
-    // Fetch existing KV list
+    // ✅ Fetch KV favorites
     let remoteList = [];
     try {
       const res = await fetch(`${API_BASE}/${user.uid}/favorites/${type}`);
@@ -219,25 +228,27 @@
       console.warn(`❌ Could not fetch KV for ${type}`, e);
     }
 
-    // Merge and deduplicate
-    const all = [...remoteList, ...processedLocal];
-    const seen = new Set();
-    const deduped = all.filter(item => {
-      if (seen.has(item.id)) return false;
-      seen.add(item.id);
+    // ✅ Combine and deduplicate full list
+    const combined = [...remoteList, ...localList];
+    const seenCombined = new Set();
+    const finalList = combined.filter(item => {
+      const key = `${item.id}-${item.type}`;
+      if (seenCombined.has(key)) return false;
+      seenCombined.add(key);
       return true;
     });
 
-    // Only update if changed
-    if (deduped.length !== remoteList.length) {
-      await saveFavorites(user.uid, type, deduped);
-      console.log(`✅ Synced ${type} favorites to KV (deduplicated)`);
+    // ✅ Save to KV only if new items were added
+    if (finalList.length !== remoteList.length) {
+      await saveFavorites(user.uid, type, finalList);
+      console.log(`✅ KV updated for ${type}`);
     }
 
-    // Save cleaned localList too
-    localStorage.setItem(key, JSON.stringify(deduped));
+    // ✅ Save cleaned list to localStorage
+    localStorage.setItem(key, JSON.stringify(finalList));
   }
 }
+
 
   async function renderFavorites(type, containerId, detailsPage) {
   const container = document.getElementById(containerId);
