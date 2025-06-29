@@ -205,39 +205,37 @@
     const key = `${type}Favorites_${user.uid}`;
     const localList = JSON.parse(localStorage.getItem(key) || "[]");
 
-    // Add .date if missing
-    const updatedLocalList = localList.map(item => {
-      if (!item.date) {
-        return { ...item, date: today };
-      }
-      return item;
-    });
+    // Add date to local items if missing
+    const processedLocal = localList.map(item =>
+      item.date ? item : { ...item, date: today }
+    );
 
-    // Fetch current KV list
-    let kvList = [];
+    // Fetch existing KV list
+    let remoteList = [];
     try {
       const res = await fetch(`${API_BASE}/${user.uid}/favorites/${type}`);
-      kvList = res.ok ? await res.json() : [];
+      if (res.ok) remoteList = await res.json();
     } catch (e) {
-      console.warn(`❌ Failed to fetch ${type} favorites from KV`, e);
+      console.warn(`❌ Could not fetch KV for ${type}`, e);
     }
 
-    // Merge lists, avoid duplicates based on item.id
-    // Merge lists uniquely by item.id
-    const mergedMap = new Map();
-    [...kvList, ...updatedLocalList].forEach(item => {
-      if (item?.id) mergedMap.set(item.id, item);
+    // Merge and deduplicate
+    const all = [...remoteList, ...processedLocal];
+    const seen = new Set();
+    const deduped = all.filter(item => {
+      if (seen.has(item.id)) return false;
+      seen.add(item.id);
+      return true;
     });
-    const merged = Array.from(mergedMap.values());
 
-    // Save back to KV only if merged list has new items
-    if (merged.length > kvList.length) {
-      await saveFavorites(user.uid, type, merged);
-      console.log(`✅ Synced ${type} favorites to KV`);
+    // Only update if changed
+    if (deduped.length !== remoteList.length) {
+      await saveFavorites(user.uid, type, deduped);
+      console.log(`✅ Synced ${type} favorites to KV (deduplicated)`);
     }
 
-    // Update localStorage with merged (in case KV had more data)
-    localStorage.setItem(key, JSON.stringify(merged));
+    // Save cleaned localList too
+    localStorage.setItem(key, JSON.stringify(deduped));
   }
 }
 
