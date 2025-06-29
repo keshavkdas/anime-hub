@@ -268,11 +268,15 @@
 
 
 async function renderFavorites(type, containerId, detailsPage) {
+  console.log(`📦 Rendering favorites for: ${type}`);
+  console.log(`➡️ Raw list from KV:`, list);
   const container = document.getElementById(containerId);
   let list = await getFavorites(user.uid, type);
 
   // 🔁 If KV is empty, fallback to localStorage
   if (!list.length) {
+    console.log(`⚠️ Fallback to localStorage for ${type}`);
+    console.log(localList);
     const localList = JSON.parse(localStorage.getItem(`${type}Favorites_${user.uid}`)) || [];
     list = deduplicateFavorites(localList);
     await saveFavorites(user.uid, type, list);
