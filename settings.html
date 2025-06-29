@@ -194,13 +194,17 @@
     </div>
   </div>
 
-  <div id="avatar-overlay" class="overlay" style="display: none;">
-    <div style="background: #161b22; padding: 20px; border-radius: 10px; max-width: 420px; margin: auto;">
-      <input type="text" id="search-bar" placeholder="Search..." style="width: 100%; padding: 10px; margin-bottom: 10px;" />
-      <div id="overlay-avatars" style="display: flex; flex-wrap: wrap; gap: 10px; max-height: 400px; overflow-y: auto;"></div>
-      <div id="avatar-tray" style="margin-top: 12px; display: flex; justify-content: center;"></div>
+  <div id="avatar-overlay" class="avatar-overlay">
+    <div id="overlay-box">
+      <button id="close-overlay" onclick="toggleOverlay()">✖</button>
+      <input type="text" id="search-bar" placeholder="Search for character..." />
+      <div class="avatar-scroll-container">
+        <div class="overlay-avatars" id="overlay-avatars"></div>
+        <div id="loading-spinner">Loading...</div>
+      </div>
     </div>
   </div>
+
   <div id="toast" class="toast hidden"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
@@ -208,26 +212,70 @@
     const API_BASE = "https://anime-hub-auth.keshavkdas23.workers.dev";
     const user = JSON.parse(localStorage.getItem("user"));
     if (!user?.uid) window.location.href = "index.html";
+
     let selectedAvatar = "";
+    let allAvatars = [];
+    let page = 1;
+    let isLoading = false;
 
-    // Banner load
-    function loadBanner(){
-      const b = localStorage.getItem("customBanner") || localStorage.getItem("selectedBanner");
-      const img = document.getElementById("banner-image");
-      if(b){ img.src = b; }
-      else { document.querySelector('.banner-wrapper').style.backgroundColor='black'; img.style.display='none'; }
+    async function fetchCharacters(pageNum = 1) {
+      const res = await fetch(`https://api.jikan.moe/v4/characters?page=${pageNum}&limit=25&order_by=favorites&sort=desc`);
+      const data = await res.json();
+      return data.data.map(c => ({ name: c.name, src: c.images.jpg.image_url }));
     }
 
-    // Toast
-    function showToast(txt, err=false){
-      const t = document.getElementById("toast");
-      t.textContent = txt;
-      t.style.backgroundColor = err ? "#dc2626" : "#16a34a";
-      t.classList.remove("hidden");
-      setTimeout(()=>t.classList.add("hidden"), 3000);
+    function toggleOverlay() {
+      const ov = document.getElementById("avatar-overlay");
+      ov.classList.toggle("active");
+      if (ov.classList.contains("active")) {
+        page = 1;
+        allAvatars = [];
+        document.getElementById("overlay-avatars").innerHTML = "";
+        loadMoreCharacters();
+      }
     }
 
-    // Fetch profile
+    async function loadMoreCharacters() {
+      if (isLoading) return;
+      isLoading = true;
+      document.getElementById("loading-spinner").style.display = "block";
+
+      const newChars = await fetchCharacters(page++);
+      allAvatars.push(...newChars);
+
+      const container = document.getElementById("overlay-avatars");
+      newChars.forEach(char => {
+        const div = document.createElement("div");
+        div.className = "avatar-bubble";
+        div.innerHTML = `<img src="${char.src}" alt="${char.name}" title="${char.name}" />`;
+        div.onclick = () => {
+          selectedAvatar = char.src;
+          document.getElementById("profile-avatar").src = selectedAvatar;
+          updateProfile();
+          toggleOverlay();
+        };
+        container.appendChild(div);
+      });
+
+      document.getElementById("loading-spinner").style.display = "none";
+      isLoading = false;
+    }
+
+    document.getElementById("search-bar").addEventListener("input", (e) => {
+      const query = e.target.value.toLowerCase();
+      document.querySelectorAll("#overlay-avatars .avatar-bubble").forEach(bubble => {
+        const name = bubble.querySelector("img").title.toLowerCase();
+        bubble.style.display = name.includes(query) ? "block" : "none";
+      });
+    });
+
+    document.querySelector(".avatar-scroll-container").addEventListener("scroll", (e) => {
+      const el = e.target;
+      if (el.scrollTop + el.clientHeight >= el.scrollHeight - 50) {
+        loadMoreCharacters();
+      }
+    });
+
     async function fetchProfile(){
       const res = await fetch(API_BASE, {
         method:"POST", headers:{"Content-Type":"application/json"},
@@ -237,26 +285,14 @@
       return j.success ? j.profile : {};
     }
 
-    function renderTray(){
-      const t = document.getElementById("avatar-tray"); t.innerHTML = "";
-      if(selectedAvatar){
-        const div=document.createElement("div");
-        div.className="avatar-bubble selected-center";
-        div.innerHTML=`<img src="${selectedAvatar}" alt="Avatar"/>`;
-        t.appendChild(div);
-      }
-    }
-
     async function prefill(){
-      loadBanner();
       const p = await fetchProfile();
       document.getElementById("email").value = user.email;
       document.getElementById("full-name").value = `${p.first||""} ${p.last||""}`;
       document.getElementById("dob").value = p.dob||"";
       document.getElementById("phone").value = p.phone||"";
-      selectedAvatar = p.avatar||"";
-      renderTray();
-      document.getElementById("profile-avatar").src = selectedAvatar || "avatar.jpg";
+      selectedAvatar = p.avatar||"avatar.jpg";
+      document.getElementById("profile-avatar").src = selectedAvatar;
       document.getElementById("profile-username").textContent = p.username || user.email;
     }
 
@@ -283,47 +319,14 @@
       });
       localStorage.setItem("profile", JSON.stringify(prof));
       showToast("Profile updated");
-      document.getElementById("profile-avatar").src = selectedAvatar;
     }
 
-    // Avatar overlay
-   function toggleOverlay() {
-    const ov = document.getElementById("avatar-overlay");
-    if (ov.style.display === "none") {
-      ov.style.display = "flex";
-      loadOverlay();
-    } else {
-      ov.style.display = "none";
-    }
-  }
-    async function loadOverlay(){
-      const box = document.getElementById("overlay-avatars");
-      box.innerHTML = "";
-      const res = await fetch("https://api.jikan.moe/v4/characters?order_by=favorites&limit=30");
-      const json = await res.json();
-      const list = json.data;
-      if (Array.isArray(list)) {
-        list.forEach(c => {
-          const div=document.createElement("div");
-          div.className="avatar-bubble";
-          div.innerHTML=`<img src="${c.images.jpg.image_url}" alt="${c.name}" title="${c.name}"/>`;
-          if(c.images.jpg.image_url===selectedAvatar) div.classList.add("selected-center");
-          div.onclick = () => {
-            selectedAvatar = c.images.jpg.image_url;
-            renderTray(); toggleOverlay(); updateProfile();
-          };
-          box.appendChild(div);
-        });
-      } else {
-        showToast("Failed to load avatars", true);
-      }
-      document.getElementById("search-bar").oninput = e => {
-        const q = e.target.value.toLowerCase();
-        box.childNodes.forEach(c=>{
-          const name = c.querySelector("img").alt.toLowerCase();
-          c.style.display = name.includes(q)? "block":"none";
-        });
-      };
+    function showToast(txt, err=false){
+      const t = document.getElementById("toast");
+      t.textContent = txt;
+      t.style.backgroundColor = err ? "#dc2626" : "#16a34a";
+      t.classList.remove("hidden");
+      setTimeout(()=>t.classList.add("hidden"), 3000);
     }
 
     function sendOTP(){ showToast("OTP not implemented", true); }
