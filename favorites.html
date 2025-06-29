@@ -197,42 +197,49 @@
     });
   }
 
-  async function syncLocalToKV() {
-    const types = ["anime", "manga", "manhwa"];
-    const today = new Date().toISOString().split("T")[0];
+ async function syncLocalToKV() {
+  const types = ["anime", "manga", "manhwa"];
+  const today = new Date().toISOString().split("T")[0];
 
-    for (const type of types) {
-      const key = `${type}Favorites_${user.uid}`;
-      const localList = JSON.parse(localStorage.getItem(key) || "[]");
+  for (const type of types) {
+    const key = `${type}Favorites_${user.uid}`;
+    const localList = JSON.parse(localStorage.getItem(key) || "[]");
 
-      // Add .date if missing
-      let changed = false;
-      const processed = localList.map(item => {
-        if (!item.date) {
-          changed = true;
-          return { ...item, date: today };
-        }
-        return item;
-      });
-
-      if (changed) {
-        localStorage.setItem(key, JSON.stringify(processed));
+    // Add .date if missing
+    const updatedLocalList = localList.map(item => {
+      if (!item.date) {
+        return { ...item, date: today };
       }
+      return item;
+    });
 
-      try {
-        const api = `${API_BASE}/${user.uid}/favorites/${type}`;
-        const res = await fetch(api);
-        const remote = res.ok ? await res.json() : [];
+    // Fetch current KV list
+    let kvList = [];
+    try {
+      const res = await fetch(`${API_BASE}/${user.uid}/favorites/${type}`);
+      kvList = res.ok ? await res.json() : [];
+    } catch (e) {
+      console.warn(`❌ Failed to fetch ${type} favorites from KV`, e);
+    }
 
-        if (!remote.length && processed.length) {
-          await saveFavorites(user.uid, type, processed);
-          console.log(`✅ Synced ${type} favorites to KV`);
-        }
-      } catch (err) {
-        console.warn(`❌ Failed to sync ${type} favorites`, err);
+    // Merge lists, avoid duplicates based on item.id
+    const merged = [...kvList];
+    for (const item of updatedLocalList) {
+      if (!merged.some(existing => existing.id === item.id)) {
+        merged.push(item);
       }
     }
+
+    // Save back to KV only if merged list has new items
+    if (merged.length > kvList.length) {
+      await saveFavorites(user.uid, type, merged);
+      console.log(`✅ Synced ${type} favorites to KV`);
+    }
+
+    // Update localStorage with merged (in case KV had more data)
+    localStorage.setItem(key, JSON.stringify(merged));
   }
+}
 
   async function renderFavorites(type, containerId, detailsPage) {
   const container = document.getElementById(containerId);
