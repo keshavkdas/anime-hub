@@ -213,28 +213,32 @@
   for (const type of types) {
     const key = `${type}Favorites_${user.uid}`;
     let localList = JSON.parse(localStorage.getItem(key) || "[]");
-
-    // Add .date if missing
     localList = localList.map(item => item.date ? item : { ...item, date: today });
-
-    // ✅ Deduplicate local
-    localList = deduplicateFavorites(localList);
 
     try {
       const res = await fetch(`${API_BASE}/${user.uid}/favorites/${type}`);
       const remote = res.ok ? await res.json() : [];
 
-      // ✅ Merge and deduplicate both local + remote
-      const merged = deduplicateFavorites([...remote, ...localList]);
+      // Deduplicate local and remote using unique IDs
+      const combined = [...remote, ...localList];
+      const dedupedMap = new Map();
 
-      // ✅ Save to KV if changed
-      if (merged.length !== remote.length) {
-        await saveFavorites(user.uid, type, merged);
-        console.log(`✅ Synced ${type} favorites to KV`);
+      for (const item of combined) {
+        const idKey = `${item.id}`;
+        if (!dedupedMap.has(idKey)) {
+          dedupedMap.set(idKey, { ...item, date: item.date || today });
+        }
       }
 
-      // ✅ Also update localStorage
-      localStorage.setItem(key, JSON.stringify(merged));
+      const finalList = Array.from(dedupedMap.values());
+
+      // Upload only if changed
+      if (finalList.length !== remote.length) {
+        await saveFavorites(user.uid, type, finalList);
+        console.log(`✅ Synced clean ${type} favorites to KV`);
+      }
+
+      localStorage.setItem(key, JSON.stringify(finalList));
     } catch (err) {
       console.warn(`❌ Failed to sync ${type} favorites`, err);
     }
