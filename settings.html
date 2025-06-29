@@ -424,5 +424,27 @@
     flatpickr("#dob", { dateFormat:"Y-m-d", maxDate:"today" });
     document.addEventListener("DOMContentLoaded", prefill);
   </script>
+  <script>
+function loadBanner() {
+  const banner = document.getElementById("banner-image");
+  const custom = localStorage.getItem("customBanner");
+  const selected = localStorage.getItem("selectedBanner");
+
+  if (custom) {
+    banner.src = custom;
+    banner.style.display = "block";
+  } else if (selected) {
+    banner.src = selected;
+    banner.style.display = "block";
+  } else {
+    banner.style.display = "none";
+    document.querySelector(".banner-wrapper").style.backgroundColor = "black";
+  }
+}
+
+// Call on page load
+loadBanner();
+</script>
+
 </body>
 </html>
