@@ -5,27 +5,53 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Settings – AnimeHub</title>
   <link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@600&family=Poppins:wght@500&display=swap" rel="stylesheet"/>
   <style>
     body {
       margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to right, #0f0f0f, #1f1f1f);
-      color: #f0f0f0;
+      font-family: 'Poppins', sans-serif;
+      background: #121212;
+      color: white;
+    }
+
+    header {
+      background-color: #1f1f1f;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header h1 {
+      font-family: 'Oswald', sans-serif;
+      font-size: 2rem;
+      color: #f97316;
+    }
+
+    nav a {
+      color: white;
+      margin-left: 2rem;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    nav a:hover {
+      color: #f97316;
     }
 
     .container {
       max-width: 480px;
       margin: 40px auto;
-      background-color: #161b22;
+      background-color: #1e1e1e;
       padding: 20px;
-      border-radius: 10px;
+      border-radius: 12px;
       box-shadow: 0 0 20px rgba(0,0,0,0.5);
     }
 
     h2 {
       text-align: center;
       margin-bottom: 20px;
-      color: #ff6600;
+      color: #f97316;
     }
 
     label {
@@ -35,24 +61,20 @@
     }
 
     input {
-      width: 90%;
+      width: 100%;
       padding: 10px;
       border: 1px solid #30363d;
       border-radius: 6px;
       background-color: #0d1117;
-      color: #ff6600;
+      color: #f97316;
       font-size: 15px;
-    }
-
-    .section {
-      margin-bottom: 30px;
     }
 
     button {
       width: 100%;
       padding: 12px;
       margin-top: 12px;
-      background-color: #ff6600;
+      background-color: #f97316;
       border: none;
       border-radius: 6px;
       color: white;
@@ -85,9 +107,9 @@
     }
 
     .avatar-bubble.selected-center {
-      border: 3px solid #ff6600;
+      border: 3px solid #f97316;
       transform: scale(1.1);
-      box-shadow: 0 0 10px #ff6600;
+      box-shadow: 0 0 10px #f97316;
     }
 
     #avatar-overlay {
@@ -119,8 +141,8 @@
       top: 10px;
       right: 10px;
       background: #0d1117;
-      color: #ff6600;
-      border: 1px solid #ff6600;
+      color: #f97316;
+      border: 1px solid #f97316;
       border-radius: 50%;
       width: 30px;
       height: 30px;
@@ -133,185 +155,273 @@
 
     input[type="date"] {
       background-color: #0d1117;
-      color: #ff6600;
+      color: #f97316;
       border: 1px solid #30363d;
       border-radius: 6px;
       padding: 10px;
       font-size: 15px;
-      width: 90%;
+      width: 100%;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #f97316;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 14px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      z-index: 9999;
+      transition: opacity 0.3s ease;
+    }
+
+    .toast.hidden {
+      display: none;
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(0.6); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .avatar-bubble.animate {
+      animation: popIn 0.3s ease-in-out;
+    }
+
+    .section.collapsible {
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      margin-bottom: 1.5rem;
+    }
+
+    .section-header {
+      background-color: #1f1f1f;
+      padding: 10px;
+      cursor: pointer;
+    }
+
+    .section-header h3 {
+      margin: 0;
+      font-size: 1.1rem;
+      color: #f97316;
+    }
+
+    .section-body {
+      padding: 10px 16px;
+      display: none;
+    }
+
+    .section.open .section-body {
+      display: block;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h2>Settings</h2>
 
-    <div class="section">
+<header>
+  <h1><a href="index.html" style="color: #f97316; text-decoration: none;">AnimeHub</a></h1>
+  <nav>
+    <a href="index.html">Anime</a>
+    <a href="browse.html">Browse</a>
+    <a href="calendar.html">Schedule</a>
+    <a href="manga.html">Manga</a>
+    <a href="manhwa.html">Manhwa</a>
+    <a href="favorites.html">❤️ Favorites</a>
+  </nav>
+</header>
+
+<div class="container">
+  <h2>Settings</h2>
+
+  <div class="section collapsible open">
+    <div class="section-header" onclick="toggleSection(this)">
+      <h3>Email & Password</h3>
+    </div>
+    <div class="section-body">
       <label>Email</label>
       <input type="email" id="email" readonly disabled />
-
       <label>Password</label>
       <input type="password" id="password" />
-      <button onclick="updateEmailPassword()">Update Password</button>
+      <button onclick="updatePassword()">Update Password</button>
     </div>
+  </div>
 
-    <div class="section">
+  <div class="section collapsible open">
+    <div class="section-header" onclick="toggleSection(this)">
+      <h3>Profile Info</h3>
+    </div>
+    <div class="section-body">
       <label>Full Name</label>
       <input type="text" id="full-name" />
-
       <label>Date of Birth</label>
       <input type="text" id="dob" readonly />
-
       <button onclick="updateProfile()">Update Profile</button>
     </div>
+  </div>
 
-    <div class="section">
-      <label>Avatar</label>
+  <div class="section collapsible open">
+    <div class="section-header" onclick="toggleSection(this)">
+      <h3>Avatar</h3>
+    </div>
+    <div class="section-body">
       <div class="avatar-tray" id="avatar-tray"></div>
       <button onclick="toggleOverlay()">Change Avatar</button>
     </div>
+  </div>
 
-    <div class="section">
+  <div class="section collapsible open">
+    <div class="section-header" onclick="toggleSection(this)">
+      <h3>Phone</h3>
+    </div>
+    <div class="section-body">
       <label>Phone Number</label>
       <input type="text" id="phone" />
       <button onclick="sendOTP()">Verify & Save</button>
     </div>
   </div>
+</div>
 
-  <div id="avatar-overlay">
-    <div id="overlay-box">
-      <button id="close-overlay" onclick="toggleOverlay()">✖</button>
-      <input type="text" id="search-bar" placeholder="Search for character..." />
-      <div class="overlay-avatars" id="overlay-avatars"></div>
-    </div>
+<div id="avatar-overlay">
+  <div id="overlay-box">
+    <button id="close-overlay" onclick="toggleOverlay()">✖</button>
+    <input type="text" id="search-bar" placeholder="Search for character..." />
+    <div class="overlay-avatars" id="overlay-avatars"></div>
   </div>
+</div>
 
-  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-  <script>
-    const API_BASE = "https://anime-hub-auth.keshavkdas23.workers.dev";
-const user = JSON.parse(localStorage.getItem("user"));
-const uid = user?.uid;
-let selectedAvatar = "";
+<div id="toast" class="toast hidden"></div>
 
-if (!uid) {
-  alert("User not logged in.");
-  window.location.href = "index.html";
-}
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>
+  const API_BASE = "https://anime-hub-auth.keshavkdas23.workers.dev";
+  const user = JSON.parse(localStorage.getItem("user"));
+  const uid = user?.uid;
+  let selectedAvatar = "";
 
-async function fetchKVProfile() {
-  const res = await fetch(API_BASE, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ action: "getProfile", uid })
-  });
-  const data = await res.json();
-  return data.success ? data.profile : {};
-}
-
-async function updatePassword() {
-  const password = document.getElementById("password").value.trim();
-  if (!password) return alert("Password required.");
-
-  const res = await fetch(API_BASE, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ action: "saveEmail", uid, email: user.email, password })
-  });
-
-  const result = await res.json();
-  if (result.success) {
-    alert("✅ Password updated.");
-  } else {
-    alert("❌ Failed to update password.");
+  if (!uid) {
+    alert("User not logged in.");
+    window.location.href = "index.html";
   }
-}
 
-async function updateProfile() {
-  const fullName = document.getElementById("full-name").value.trim();
-  const dob = document.getElementById("dob").value;
-  const [first, ...lastParts] = fullName.split(" ");
-  const last = lastParts.join(" ");
-
-  const phone = document.getElementById("phone").value.trim();
-
-  const profile = {
-    first, last, dob, avatar: selectedAvatar, phone
-  };
-
-  await fetch(API_BASE, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ action: "saveProfile", uid, profile })
-  });
-
-  localStorage.setItem("profile", JSON.stringify(profile));
-  alert("✅ Profile updated.");
-}
-
-async function prefillSettings() {
-  const profile = await fetchKVProfile();
-  if (!profile) return;
-
-  document.getElementById("email").value = user.email || "";
-  document.getElementById("password").value = "";
-  document.getElementById("full-name").value = `${profile.first || ""} ${profile.last || ""}`;
-  document.getElementById("dob").value = profile.dob || "";
-  document.getElementById("phone").value = profile.phone || "";
-  selectedAvatar = profile.avatar || "";
-
-  renderTray();
-}
-
-function renderTray() {
-  const tray = document.getElementById("avatar-tray");
-  tray.innerHTML = "";
-
-  const div = document.createElement("div");
-  div.className = "avatar-bubble selected-center";
-  div.innerHTML = `<img src="${selectedAvatar}" alt="Selected Avatar" />`;
-  tray.appendChild(div);
-}
-
-function toggleOverlay() {
-  document.getElementById("avatar-overlay").classList.toggle("active");
-  if (document.getElementById("avatar-overlay").classList.contains("active")) {
-    loadOverlayAvatars();
+  function showToast(msg) {
+    const toast = document.getElementById("toast");
+    toast.textContent = msg;
+    toast.classList.remove("hidden");
+    setTimeout(() => toast.classList.add("hidden"), 3000);
   }
-}
 
-async function fetchCharacters(pageNum = 1) {
-  const res = await fetch(`https://api.jikan.moe/v4/characters?page=${pageNum}&limit=25&order_by=favorites&sort=desc`);
-  const data = await res.json();
-  return data.data.map(c => ({ name: c.name, src: c.images.jpg.image_url }));
-}
+  function toggleSection(header) {
+    const section = header.parentElement;
+    section.classList.toggle("open");
+  }
 
-async function loadOverlayAvatars() {
-  const container = document.getElementById("overlay-avatars");
-  container.innerHTML = "";
-  const characters = await fetchCharacters();
-  characters.forEach(char => {
-    const div = document.createElement("div");
-    div.className = "avatar-bubble";
-    div.innerHTML = `<img src="${char.src}" alt="${char.name}" title="${char.name}" />`;
-    div.onclick = () => {
-      selectedAvatar = char.src;
-      renderTray();
-      toggleOverlay();
+  async function fetchKVProfile() {
+    const res = await fetch(API_BASE, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "getProfile", uid })
+    });
+    const data = await res.json();
+    return data.success ? data.profile : {};
+  }
+
+  async function updatePassword() {
+    const password = document.getElementById("password").value.trim();
+    if (!password) return showToast("❗ Password required");
+
+    const res = await fetch(API_BASE, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "saveEmail", uid, email: user.email, password })
+    });
+
+    const result = await res.json();
+    showToast(result.success ? "✅ Password updated" : "❌ Failed to update");
+  }
+
+  async function updateProfile() {
+    const fullName = document.getElementById("full-name").value.trim();
+    const dob = document.getElementById("dob").value;
+    const phone = document.getElementById("phone").value.trim();
+    const [first, ...lastParts] = fullName.split(" ");
+    const last = lastParts.join(" ");
+
+    const profile = {
+      first, last, dob, avatar: selectedAvatar, phone
     };
-    container.appendChild(div);
+
+    await fetch(API_BASE, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "saveProfile", uid, profile })
+    });
+
+    localStorage.setItem("profile", JSON.stringify(profile));
+    showToast("✅ Profile updated.");
+  }
+
+  function toggleOverlay() {
+    document.getElementById("avatar-overlay").classList.toggle("active");
+    if (document.getElementById("avatar-overlay").classList.contains("active")) {
+      loadOverlayAvatars();
+    }
+  }
+
+  async function fetchCharacters(pageNum = 1) {
+    const res = await fetch(`https://api.jikan.moe/v4/characters?page=${pageNum}&limit=25&order_by=favorites&sort=desc`);
+    const data = await res.json();
+    return data.data.map(c => ({ name: c.name, src: c.images.jpg.image_url }));
+  }
+
+  async function loadOverlayAvatars() {
+    const container = document.getElementById("overlay-avatars");
+    container.innerHTML = "";
+    const characters = await fetchCharacters();
+    characters.forEach(char => {
+      const div = document.createElement("div");
+      div.className = "avatar-bubble animate";
+      div.innerHTML = `<img src="${char.src}" alt="${char.name}" title="${char.name}" />`;
+      div.onclick = () => {
+        selectedAvatar = char.src;
+        renderTray();
+        toggleOverlay();
+      };
+      container.appendChild(div);
+    });
+  }
+
+  function renderTray() {
+    const tray = document.getElementById("avatar-tray");
+    tray.innerHTML = "";
+    const div = document.createElement("div");
+    div.className = "avatar-bubble selected-center animate";
+    div.innerHTML = `<img src="${selectedAvatar}" alt="Avatar" />`;
+    tray.appendChild(div);
+  }
+
+  async function prefillSettings() {
+    const profile = await fetchKVProfile();
+    document.getElementById("email").value = user.email || "";
+    document.getElementById("full-name").value = `${profile.first || ""} ${profile.last || ""}`;
+    document.getElementById("dob").value = profile.dob || "";
+    document.getElementById("phone").value = profile.phone || "";
+    selectedAvatar = profile.avatar || "";
+    renderTray();
+  }
+
+  function sendOTP() {
+    showToast("📱 OTP via Firebase not yet implemented.");
+  }
+
+  flatpickr("#dob", {
+    dateFormat: "Y-m-d",
+    maxDate: "today"
   });
-}
 
-function sendOTP() {
-  alert("📱 Firebase OTP logic not implemented yet.\nUse Firebase `signInWithPhoneNumber()` here.");
-}
-
-flatpickr("#dob", {
-  dateFormat: "Y-m-d",
-  maxDate: "today"
-});
-
-document.addEventListener("DOMContentLoaded", prefillSettings);
-  </script>
+  document.addEventListener("DOMContentLoaded", prefillSettings);
+</script>
 </body>
 </html>
