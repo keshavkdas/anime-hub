@@ -198,13 +198,21 @@
     return await res.json();
   }
 
-  async function saveFavorites(uid, type, list) {
-    await fetch(`${API_BASE}/${uid}/favorites/${type}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(list)
-    });
-  }
+  async function saveFavorites(uid, type, newList) {
+  const cleaned = deduplicateFavorites(newList);
+  const res = await fetch(`${API_BASE}/${uid}/favorites/${type}`);
+  const current = res.ok ? deduplicateFavorites(await res.json()) : [];
+
+  const changed = JSON.stringify(current) !== JSON.stringify(cleaned);
+  if (!changed) return;
+
+  await fetch(`${API_BASE}/${uid}/favorites/${type}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(cleaned)
+  });
+}
+
 
  async function syncLocalToKV() {
   const types = ["anime", "manga", "manhwa"];
@@ -271,8 +279,8 @@ async function renderFavorites(type, containerId, detailsPage) {
 
   // ✅ Clean duplicates anyway
   list = deduplicateFavorites(list);
-  await saveFavorites(user.uid, type, list); // update KV
-  localStorage.setItem(`${type}Favorites_${user.uid}`, JSON.stringify(list)); // update local
+  await saveFavorites(user.uid, type, list);
+  localStorage.setItem(`${type}Favorites_${user.uid}`, JSON.stringify(deduplicateFavorites(list)));
 
   if (!list.length) {
     container.innerHTML = `<p>No favorites yet.</p>`;
@@ -288,39 +296,25 @@ async function renderFavorites(type, containerId, detailsPage) {
   `).join('');
 }
 
- async function removeFavorite(type, index) {
+async function removeFavorite(type, index) {
   const key = `${type}Favorites_${user.uid}`;
-  let currentList = JSON.parse(localStorage.getItem(key) || "[]");
+  let list = JSON.parse(localStorage.getItem(key) || "[]");
 
-  // Remove the selected item
-  currentList.splice(index, 1);
+  // 🧹 Always deduplicate first before working on the list
+  list = deduplicateFavorites(list);
 
-  // Save cleaned list
-  localStorage.setItem(key, JSON.stringify(currentList));
-  await saveFavorites(user.uid, type, currentList);
+  // 🗑️ Remove item at the given index
+  list.splice(index, 1);
+
+  // 💾 Save to localStorage (cleaned)
+  localStorage.setItem(key, JSON.stringify(list));
+
+  // ☁️ Sync to KV (deduplicated again just to be sure)
+  await saveFavorites(user.uid, type, list);
+
+  // 🔄 Refresh to re-render
   location.reload();
 }
-
-
-  window.addEventListener("DOMContentLoaded", async () => {
-    if (user?.uid) {
-      await syncLocalToKV(); // ✅ Sync localStorage to KV first
-      await renderFavorites("anime", "animeFavorites", "anime-details.html");
-      await renderFavorites("manga", "mangaFavorites", "manga-details.html");
-      await renderFavorites("manhwa", "manhwaFavorites", "manhwa-details.html");
-    }
-
-    const msg = sessionStorage.getItem("toast");
-    if (msg) {
-      const toast = document.getElementById("toast");
-      toast.innerText = msg;
-      toast.classList.remove("hidden");
-      setTimeout(() => {
-        toast.classList.add("hidden");
-        sessionStorage.removeItem("toast");
-      }, 3000);
-    }
-  });
 </script>
 
 </body>
