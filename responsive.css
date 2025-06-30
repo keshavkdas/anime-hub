@@ -210,3 +210,56 @@
     padding: 0.6rem 1rem;
   }
 }
+@media (max-width: 768px) {
+  /* Entire carousel wrapper scaling */
+  .carousel,
+  .carousel-track,
+  #carouselTrack {
+    gap: 0.5rem;
+    padding: 0.5rem;
+    scroll-snap-type: x mandatory;
+    overflow-x: auto;
+  }
+
+  .carousel > *,
+  .carousel-track > *,
+  #carouselTrack > * {
+    flex: 0 0 auto;
+    max-width: 120px;
+    width: 120px;
+    scroll-snap-align: start;
+  }
+
+  /* Smaller images */
+  .carousel img,
+  .carousel-track img,
+  #carouselTrack img {
+    width: 100%;
+    height: auto;
+    border-radius: 5px;
+  }
+
+  /* Smaller text inside carousel */
+  .carousel .title,
+  .carousel .card-title,
+  .carousel .anime-title,
+  .carousel .item-title,
+  .carousel .description,
+  .carousel .caption,
+  .carousel p,
+  .carousel h4,
+  .carousel h3,
+  .carousel-track .title,
+  #carouselTrack .title {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.25rem;
+    text-align: center;
+  }
+
+  /* Carousel wrapper spacing */
+  .carousel-wrapper,
+  .hianime-carousel-section {
+    padding: 0.5rem;
+    margin-bottom: 1rem;
+  }
+}
