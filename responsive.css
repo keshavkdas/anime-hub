@@ -263,3 +263,11 @@
     margin-bottom: 1rem;
   }
 }
+@media (max-width: 768px) {
+  .carousel,
+  .carousel-track,
+  #carouselTrack {
+    scroll-padding-left: 1rem;
+  }
+}
+
