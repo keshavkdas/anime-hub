@@ -181,10 +181,11 @@
 <div id="toast" class="toast hidden"></div>
 
 <script>
+  
   function deduplicateFavorites(list) {
     const seen = new Set();
     return list.filter(item => {
-      const key = item.id;
+      const key = String(item.id).trim(); // always string
       if (seen.has(key)) return false;
       seen.add(key);
       return true;
