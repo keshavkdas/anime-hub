@@ -1,0 +1,171 @@
+/* responsive.css */
+/* Reset & universal scaling */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-size: 16px;
+  overflow-x: hidden;
+}
+
+/* Make media scale properly */
+img, iframe, video {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Responsive layout containers */
+.container, .main-content, .section, .carousel {
+  max-width: 100%;
+  padding: 1rem;
+  overflow-x: auto;
+}
+
+/* Header & nav responsiveness */
+header {
+  flex-wrap: wrap;
+  text-align: center;
+}
+
+header nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+}
+
+header nav a {
+  padding: 0.5rem;
+  display: inline-block;
+}
+
+/* Responsive card items */
+.favorite-item, .card, .content-box {
+  width: 100%;
+  max-width: 180px;
+  margin: auto;
+}
+
+.card-title, .username-display {
+  font-size: 0.95rem;
+}
+
+/* Carousels behave better */
+.carousel {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  padding-bottom: 1rem;
+}
+
+.carousel::-webkit-scrollbar {
+  height: 8px;
+}
+
+.carousel::-webkit-scrollbar-track {
+  background: #222;
+}
+
+.carousel::-webkit-scrollbar-thumb {
+  background: #f97316;
+  border-radius: 10px;
+}
+
+/* Form & button scaling */
+input, textarea, select, button {
+  font-size: 1rem;
+  width: 100%;
+  max-width: 100%;
+  padding: 0.6rem;
+  margin-bottom: 1rem;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+}
+
+/* Remove favorite button scaling */
+.remove-fav-btn {
+  width: 28px;
+  height: 28px;
+  font-size: 16px;
+  top: 6px;
+  right: 6px;
+}
+
+/* Responsive Toast */
+.toast {
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 300px;
+}
+
+/* Text and alignment tweaks */
+h1, h2, h3 {
+  text-align: center;
+  word-break: break-word;
+}
+
+/* Avatar menu adjustments */
+.avatar-dropdown {
+  min-width: 120px;
+}
+
+.avatar-dropdown a {
+  padding: 0.5rem;
+  font-size: 0.9rem;
+}
+
+/* Media Queries */
+@media (max-width: 768px) {
+  .favorite-item {
+    width: 140px;
+  }
+
+  .remove-fav-btn {
+    width: 24px;
+    height: 24px;
+    font-size: 14px;
+  }
+
+  header nav {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+@media (max-width: 480px) {
+  header h1 {
+    font-size: 1.5rem;
+  }
+
+  .section h2 {
+    font-size: 1.2rem;
+  }
+
+  .card-title {
+    font-size: 0.85rem;
+  }
+
+  .favorite-item {
+    width: 120px;
+  }
+
+  .remove-fav-btn {
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+  }
+
+  .toast {
+    font-size: 13px;
+    padding: 0.75rem 1rem;
+  }
+}
