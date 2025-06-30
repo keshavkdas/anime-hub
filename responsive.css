@@ -67,7 +67,7 @@
   }
 
   /* Layout containers */
-  .container, .section, .carousel {
+  .container, .section {
     padding: 1rem;
   }
 
@@ -86,12 +86,13 @@
   .carousel-track,
   #carouselTrack {
     display: flex;
-    overflow-x: auto;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem 1rem 1rem;
     scroll-snap-type: x mandatory;
+    scroll-padding-left: 1rem;
+    overflow-x: auto;
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
-    gap: 1rem;
-    padding-bottom: 1rem;
   }
 
   .carousel > *,
@@ -99,29 +100,49 @@
   #carouselTrack > * {
     flex: 0 0 auto;
     scroll-snap-align: start;
+    width: 120px;
+    max-width: 120px;
   }
 
-  /* Image styling */
+  .carousel img,
   .carousel-track img,
   #carouselTrack img {
-    max-width: 100%;
+    width: 100%;
     height: auto;
-    border-radius: 6px;
+    border-radius: 5px;
   }
 
-  /* Card sizing */
+  /* Text inside carousel */
+  .carousel .title,
+  .carousel .card-title,
+  .carousel .anime-title,
+  .carousel .item-title,
+  .carousel .description,
+  .carousel .caption,
+  .carousel p,
+  .carousel h4,
+  .carousel h3,
+  .carousel-track .title,
+  #carouselTrack .title {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.25rem;
+    text-align: center;
+    word-break: break-word;
+  }
+
+  /* Card & item sizing */
   .favorite-item,
   .card,
   .carousel-item {
     width: 100%;
-    max-width: 140px;
+    max-width: 120px;
     font-size: 0.85rem;
     margin: auto;
   }
 
-  /* Text scaling */
+  /* Headings */
   h1, h2, h3 {
-    font-size: 1.4rem;
+    font-size: 1.3rem;
     text-align: center;
     word-break: break-word;
   }
@@ -130,26 +151,7 @@
     font-size: 1.1rem;
   }
 
-  .card-title,
-  .carousel .card-title,
-  .carousel .title,
-  .carousel .anime-title,
-  .carousel .item-title,
-  .carousel .description,
-  .carousel .caption,
-  .carousel p,
-  .carousel h3,
-  .carousel h4,
-  .carousel-track .title,
-  #carouselTrack .title {
-    font-size: 0.85rem;
-    text-align: center;
-    margin-top: 0.5rem;
-    padding: 0 0.5rem;
-    word-break: break-word;
-  }
-
-  /* Remove button */
+  /* Remove favorite button */
   .remove-fav-btn {
     width: 24px;
     height: 24px;
@@ -158,7 +160,7 @@
     right: 6px;
   }
 
-  /* Forms */
+  /* Form fields */
   input, textarea, select, button {
     font-size: 1rem;
     width: 100%;
@@ -166,13 +168,20 @@
     margin-bottom: 1rem;
   }
 
-  /* Toast */
+  /* Toast messages */
   .toast {
     width: 90%;
     max-width: 280px;
     font-size: 14px;
     left: 50%;
     transform: translateX(-50%);
+  }
+
+  /* Carousel section spacing */
+  .carousel-wrapper,
+  .hianime-carousel-section {
+    padding: 0.5rem;
+    margin-bottom: 1rem;
   }
 }
 
@@ -190,13 +199,13 @@
   .carousel .card-title,
   .carousel-track .title,
   #carouselTrack .title {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
   }
 
   .favorite-item,
   .card,
   .carousel-item {
-    max-width: 110px;
+    max-width: 100px;
   }
 
   .remove-fav-btn {
@@ -210,64 +219,3 @@
     padding: 0.6rem 1rem;
   }
 }
-@media (max-width: 768px) {
-  /* Entire carousel wrapper scaling */
-  .carousel,
-  .carousel-track,
-  #carouselTrack {
-    gap: 0.5rem;
-    padding: 0.5rem;
-    scroll-snap-type: x mandatory;
-    overflow-x: auto;
-  }
-
-  .carousel > *,
-  .carousel-track > *,
-  #carouselTrack > * {
-    flex: 0 0 auto;
-    max-width: 120px;
-    width: 120px;
-    scroll-snap-align: start;
-  }
-
-  /* Smaller images */
-  .carousel img,
-  .carousel-track img,
-  #carouselTrack img {
-    width: 100%;
-    height: auto;
-    border-radius: 5px;
-  }
-
-  /* Smaller text inside carousel */
-  .carousel .title,
-  .carousel .card-title,
-  .carousel .anime-title,
-  .carousel .item-title,
-  .carousel .description,
-  .carousel .caption,
-  .carousel p,
-  .carousel h4,
-  .carousel h3,
-  .carousel-track .title,
-  #carouselTrack .title {
-    font-size: 0.75rem;
-    padding: 0.25rem 0.25rem;
-    text-align: center;
-  }
-
-  /* Carousel wrapper spacing */
-  .carousel-wrapper,
-  .hianime-carousel-section {
-    padding: 0.5rem;
-    margin-bottom: 1rem;
-  }
-}
-@media (max-width: 768px) {
-  .carousel,
-  .carousel-track,
-  #carouselTrack {
-    scroll-padding-left: 1rem;
-  }
-}
-
