@@ -157,4 +157,45 @@
     display: none !important;
   }
 }
+@media (max-width: 768px) {
+  /* Generic text size reduction for carousel content */
+  .carousel .card-title,
+  .carousel .title,
+  .carousel .anime-title,
+  .carousel .item-title,
+  .carousel .description,
+  .carousel .caption,
+  .carousel p,
+  .carousel h3,
+  .carousel h4 {
+    font-size: 0.85rem;
+    line-height: 1.2;
+    text-align: center;
+    padding: 0 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .carousel .card-title,
+  .carousel .title,
+  .carousel .anime-title,
+  .carousel .item-title,
+  .carousel .description,
+  .carousel .caption,
+  .carousel p,
+  .carousel h3,
+  .carousel h4 {
+    font-size: 0.75rem;
+  }
+}
+@media (max-width: 768px) {
+  .carousel .card,
+  .carousel .favorite-item,
+  .carousel .carousel-item {
+    padding: 0.5rem;
+  }
+}
+
+
+
 
