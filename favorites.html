@@ -202,11 +202,6 @@
 
   async function saveFavorites(uid, type, newList) {
   const cleaned = deduplicateFavorites(newList);
-  const res = await fetch(`${API_BASE}/${uid}/favorites/${type}`);
-  const current = res.ok ? deduplicateFavorites(await res.json()) : [];
-
-  const changed = JSON.stringify(current) !== JSON.stringify(cleaned);
-  if (!changed) return;
 
   await fetch(`${API_BASE}/${uid}/favorites/${type}`, {
     method: "POST",
@@ -300,13 +295,24 @@ async function renderFavorites(type, containerId, detailsPage) {
 }
 
 
-async function removeFavoriteById(type, id) {
+async function removeFavoriteById(type, idToRemove) {
   const key = `${type}Favorites_${user.uid}`;
-  let list = deduplicateFavorites(JSON.parse(localStorage.getItem(key) || "[]"));
-  list = list.filter(item => item.id !== id);
-  localStorage.setItem(key, JSON.stringify(list));
-  await saveFavorites(user.uid, type, list);
-  location.reload();
+
+  // Load & deduplicate localStorage
+  let list = JSON.parse(localStorage.getItem(key) || "[]");
+  list = deduplicateFavorites(list);
+
+  // Filter out the item
+  const updatedList = list.filter(item => item.id !== idToRemove);
+
+  // Update localStorage
+  localStorage.setItem(key, JSON.stringify(updatedList));
+
+  // Force deduped save to KV (this ensures the removed item is deleted)
+  await saveFavorites(user.uid, type, updatedList);
+
+  // Re-render without reload
+  await renderFavorites(type, `${type}Favorites`, `${type}-details.html`);
 }
 
   window.addEventListener("DOMContentLoaded", async () => {
