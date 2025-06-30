@@ -274,12 +274,10 @@ async function renderFavorites(type, containerId, detailsPage) {
     const localList = JSON.parse(localStorage.getItem(`${type}Favorites_${user.uid}`)) || [];
     console.log(`📦 Fallback to localStorage for ${type}:`, localList);
     list = deduplicateFavorites(localList);
-    await saveFavorites(user.uid, type, list);
   }
 
   list = deduplicateFavorites(list);
   localStorage.setItem(`${type}Favorites_${user.uid}`, JSON.stringify(list));
-  await saveFavorites(user.uid, type, list);
 
   if (!list.length) {
     container.innerHTML = `<p>No favorites yet.</p>`;
@@ -300,17 +298,16 @@ async function removeFavoriteById(type, id) {
   const key = `${type}Favorites_${user.uid}`;
   let list = JSON.parse(localStorage.getItem(key) || "[]");
 
-  // Deduplicate and remove the item
+  // Deduplicate and remove
   list = deduplicateFavorites(list).filter(item => item.id !== id);
 
-  // Save to localStorage
   localStorage.setItem(key, JSON.stringify(list));
-
-  // Save to KV
   await saveFavorites(user.uid, type, list);
 
-  location.reload(); // Refresh view
+  // Re-render only the section that was updated
+  await renderFavorites(type, `${type}Favorites`, `${type}-details.html`);
 }
+
 
 
   window.addEventListener("DOMContentLoaded", async () => {
