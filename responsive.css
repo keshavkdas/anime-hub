@@ -1,4 +1,4 @@
-/* Only mobile */
+/* ======== MOBILE STYLES (max-width: 768px) ======== */
 @media (max-width: 768px) {
   body {
     overflow-x: hidden;
@@ -22,6 +22,7 @@
     display: none !important;
   }
 
+  /* Hamburger button */
   .menu-toggle {
     display: block;
     font-size: 1.8rem;
@@ -35,6 +36,7 @@
     z-index: 1001;
   }
 
+  /* Drawer menu */
   .mobile-drawer {
     position: fixed;
     top: 0;
@@ -64,35 +66,90 @@
     text-align: center;
   }
 
+  /* Layout containers */
   .container, .section, .carousel {
     padding: 1rem;
   }
 
-  .carousel-arrow {
+  /* Hide carousel buttons */
+  .carousel-arrow,
+  .carousel-btn,
+  #prevBtn,
+  #nextBtn,
+  button[id^="prevBtn"],
+  button[id^="nextBtn"] {
     display: none !important;
   }
 
-  .carousel {
-    gap: 1rem;
+  /* Carousel scroll and touch */
+  .carousel,
+  .carousel-track,
+  #carouselTrack {
+    display: flex;
+    overflow-x: auto;
     scroll-snap-type: x mandatory;
     scroll-behavior: smooth;
-    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    gap: 1rem;
+    padding-bottom: 1rem;
   }
 
-  .carousel > * {
+  .carousel > *,
+  .carousel-track > *,
+  #carouselTrack > * {
+    flex: 0 0 auto;
     scroll-snap-align: start;
   }
 
-  .favorite-item, .card {
+  /* Image styling */
+  .carousel-track img,
+  #carouselTrack img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 6px;
+  }
+
+  /* Card sizing */
+  .favorite-item,
+  .card,
+  .carousel-item {
     width: 100%;
-    max-width: 150px;
+    max-width: 140px;
+    font-size: 0.85rem;
     margin: auto;
   }
 
-  .card-title {
-    font-size: 0.85rem;
+  /* Text scaling */
+  h1, h2, h3 {
+    font-size: 1.4rem;
+    text-align: center;
+    word-break: break-word;
   }
 
+  h2 {
+    font-size: 1.1rem;
+  }
+
+  .card-title,
+  .carousel .card-title,
+  .carousel .title,
+  .carousel .anime-title,
+  .carousel .item-title,
+  .carousel .description,
+  .carousel .caption,
+  .carousel p,
+  .carousel h3,
+  .carousel h4,
+  .carousel-track .title,
+  #carouselTrack .title {
+    font-size: 0.85rem;
+    text-align: center;
+    margin-top: 0.5rem;
+    padding: 0 0.5rem;
+    word-break: break-word;
+  }
+
+  /* Remove button */
   .remove-fav-btn {
     width: 24px;
     height: 24px;
@@ -101,6 +158,7 @@
     right: 6px;
   }
 
+  /* Forms */
   input, textarea, select, button {
     font-size: 1rem;
     width: 100%;
@@ -108,6 +166,7 @@
     margin-bottom: 1rem;
   }
 
+  /* Toast */
   .toast {
     width: 90%;
     max-width: 280px;
@@ -117,21 +176,27 @@
   }
 }
 
+/* ======== SMALLER PHONES (max-width: 480px) ======== */
 @media (max-width: 480px) {
   h1 {
     font-size: 1.2rem;
   }
 
-  .section h2 {
+  h2 {
     font-size: 1rem;
   }
 
-  .card-title {
-    font-size: 0.8rem;
+  .card-title,
+  .carousel .card-title,
+  .carousel-track .title,
+  #carouselTrack .title {
+    font-size: 0.75rem;
   }
 
-  .favorite-item {
-    width: 110px;
+  .favorite-item,
+  .card,
+  .carousel-item {
+    max-width: 110px;
   }
 
   .remove-fav-btn {
@@ -145,131 +210,3 @@
     padding: 0.6rem 1rem;
   }
 }
-@media (max-width: 768px) {
-  .carousel-btn {
-    display: none !important;
-  }
-}
-@media (max-width: 768px) {
-  button[id^="prevBtn"],
-  button[id^="nextBtn"],
-  .carousel-btn {
-    display: none !important;
-  }
-}
-@media (max-width: 768px) {
-  /* Generic text size reduction for carousel content */
-  .carousel .card-title,
-  .carousel .title,
-  .carousel .anime-title,
-  .carousel .item-title,
-  .carousel .description,
-  .carousel .caption,
-  .carousel p,
-  .carousel h3,
-  .carousel h4 {
-    font-size: 0.85rem;
-    line-height: 1.2;
-    text-align: center;
-    padding: 0 0.5rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .carousel .card-title,
-  .carousel .title,
-  .carousel .anime-title,
-  .carousel .item-title,
-  .carousel .description,
-  .carousel .caption,
-  .carousel p,
-  .carousel h3,
-  .carousel h4 {
-    font-size: 0.75rem;
-  }
-}
-@media (max-width: 768px) {
-  .carousel .card,
-  .carousel .favorite-item,
-  .carousel .carousel-item {
-    padding: 0.5rem;
-  }
-}
-@media (max-width: 768px) {
-  /* Hide nav arrows */
-  .carousel-btn,
-  #prevBtn,
-  #nextBtn {
-    display: none !important;
-  }
-
-  /* Touch-friendly carousels */
-  .carousel-track,
-  #carouselTrack {
-    scroll-snap-type: x mandatory;
-    overflow-x: auto;
-    display: flex;
-    scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch;
-    gap: 1rem;
-    padding-bottom: 1rem;
-  }
-
-  .carousel-track > *,
-  #carouselTrack > * {
-    flex: 0 0 auto;
-    scroll-snap-align: start;
-  }
-
-  /* Image scaling */
-  .carousel-track img,
-  #carouselTrack img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 6px;
-  }
-
-  /* Text & card sizing */
-  .card-title,
-  .carousel-track .title,
-  #carouselTrack .title {
-    font-size: 0.85rem;
-    text-align: center;
-    margin-top: 0.5rem;
-    word-break: break-word;
-  }
-
-  .favorite-item,
-  .card,
-  .carousel-item {
-    max-width: 140px;
-    font-size: 0.85rem;
-  }
-
-  h2 {
-    font-size: 1.1rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .card-title,
-  .carousel-track .title,
-  #carouselTrack .title {
-    font-size: 0.75rem;
-  }
-
-  .favorite-item,
-  .card,
-  .carousel-item {
-    max-width: 110px;
-  }
-
-  h2 {
-    font-size: 1rem;
-  }
-}
-
-
-
-
-
