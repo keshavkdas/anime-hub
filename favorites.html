@@ -270,31 +270,27 @@
 
 async function renderFavorites(type, containerId, detailsPage) {
   const container = document.getElementById(containerId);
+
   let list = await getFavorites(user.uid, type);
+  console.log(`🛠 Raw KV list (${type}):`, list);
 
-  console.log(`📦 Rendering favorites for: ${type}`);
-  console.log(`➡️ Raw list from KV:`, list);
-
-  // 🔁 If KV is empty, fallback to localStorage
   if (!list.length) {
-    console.log(`⚠️ Fallback to localStorage for ${type}`);
-    console.log(localList);
     const localList = JSON.parse(localStorage.getItem(`${type}Favorites_${user.uid}`)) || [];
+    console.log(`📦 Fallback to localStorage for ${type}:`, localList);
     list = deduplicateFavorites(localList);
     await saveFavorites(user.uid, type, list);
   }
 
-  // ✅ Clean duplicates anyway
   list = deduplicateFavorites(list);
+  localStorage.setItem(`${type}Favorites_${user.uid}`, JSON.stringify(list));
   await saveFavorites(user.uid, type, list);
-  localStorage.setItem(`${type}Favorites_${user.uid}`, JSON.stringify(deduplicateFavorites(list)));
 
   if (!list.length) {
     container.innerHTML = `<p>No favorites yet.</p>`;
     return;
   }
 
-  container.innerHTML = list.map((item, index) => `
+  container.innerHTML = list.map(item => `
     <div class="favorite-item">
       <button class="remove-fav-btn" onclick="removeFavoriteById('${type}', '${item.id}')">&times;</button>
       <img src="${item.imageUrl}" alt="${item.title}" onclick="location.href='${detailsPage}?id=${item.id}'" />
@@ -302,6 +298,7 @@ async function renderFavorites(type, containerId, detailsPage) {
     </div>
   `).join('');
 }
+
 
 async function removeFavoriteById(type, id) {
   const key = `${type}Favorites_${user.uid}`;
