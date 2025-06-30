@@ -1,11 +1,18 @@
-/* responsive.css — ONLY applies to screens below 768px */
+/* responsive.css — mobile-specific styles only */
 
+/* Hide carousel arrows on mobile */
 @media (max-width: 768px) {
-  /* Reset safe zone */
+  .carousel-arrow {
+    display: none !important;
+  }
+}
+
+/* Universal mobile adjustments */
+@media (max-width: 768px) {
   body {
     overflow-x: hidden;
-    padding: 0;
     margin: 0;
+    padding: 0;
   }
 
   img, iframe, video {
@@ -14,22 +21,32 @@
     display: block;
   }
 
-  /* Layout Containers */
-  .container, .main-content, .section, .carousel {
+  .container,
+  .main-content,
+  .section,
+  .carousel {
     padding: 1rem;
     overflow-x: auto;
   }
 
+  /* Responsive header layout */
   header {
     flex-wrap: wrap;
     text-align: center;
+    position: relative;
   }
 
   header nav {
-    display: flex;
+    display: none;
     flex-direction: column;
     align-items: center;
     gap: 0.5rem;
+    background-color: #1f1f1f;
+    padding: 1rem;
+  }
+
+  header nav.active {
+    display: flex;
   }
 
   header nav a {
@@ -40,13 +57,33 @@
   h1, h2, h3 {
     font-size: 1.4rem;
     text-align: center;
+    word-break: break-word;
   }
 
-  /* Carousel adjustments */
+  /* Hamburger menu button */
+  .menu-toggle {
+    display: block;
+    font-size: 1.8rem;
+    background: none;
+    border: none;
+    color: white;
+    padding: 0.5rem 1rem;
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 10;
+  }
+
+  /* Carousel scroll and touch behavior */
   .carousel {
     gap: 1rem;
     scroll-behavior: smooth;
+    scroll-snap-type: x mandatory;
     padding-bottom: 1rem;
+  }
+
+  .carousel > * {
+    scroll-snap-align: start;
   }
 
   .carousel::-webkit-scrollbar {
@@ -58,7 +95,7 @@
     border-radius: 10px;
   }
 
-  /* Cards */
+  /* Card & item scaling */
   .favorite-item,
   .card,
   .content-box {
@@ -92,7 +129,7 @@
     margin-bottom: 1rem;
   }
 
-  /* Toast */
+  /* Toast notifications */
   .toast {
     left: 50%;
     transform: translateX(-50%);
@@ -101,7 +138,7 @@
     font-size: 14px;
   }
 
-  /* Avatar menu adjustments */
+  /* Avatar dropdown */
   .avatar-dropdown {
     min-width: 120px;
   }
@@ -112,6 +149,7 @@
   }
 }
 
+/* Smaller phone screens */
 @media (max-width: 480px) {
   h1 {
     font-size: 1.2rem;
