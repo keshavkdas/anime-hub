@@ -1,13 +1,4 @@
-/* responsive.css — mobile-specific styles only */
-
-/* Hide carousel arrows on mobile */
-@media (max-width: 768px) {
-  .carousel-arrow {
-    display: none !important;
-  }
-}
-
-/* Universal mobile adjustments */
+/* Only mobile */
 @media (max-width: 768px) {
   body {
     overflow-x: hidden;
@@ -21,46 +12,16 @@
     display: block;
   }
 
-  .container,
-  .main-content,
-  .section,
-  .carousel {
-    padding: 1rem;
-    overflow-x: auto;
-  }
-
-  /* Responsive header layout */
   header {
     flex-wrap: wrap;
     text-align: center;
     position: relative;
   }
 
-  header nav {
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-    background-color: #1f1f1f;
-    padding: 1rem;
+  nav {
+    display: none !important;
   }
 
-  header nav.active {
-    display: flex;
-  }
-
-  header nav a {
-    display: inline-block;
-    padding: 0.5rem 1rem;
-  }
-
-  h1, h2, h3 {
-    font-size: 1.4rem;
-    text-align: center;
-    word-break: break-word;
-  }
-
-  /* Hamburger menu button */
   .menu-toggle {
     display: block;
     font-size: 1.8rem;
@@ -71,43 +32,65 @@
     position: absolute;
     top: 1rem;
     right: 1rem;
-    z-index: 10;
+    z-index: 1001;
   }
 
-  /* Carousel scroll and touch behavior */
+  .mobile-drawer {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 80%;
+    height: 100%;
+    background-color: #1f1f1f;
+    z-index: 1000;
+    padding: 2rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    transition: right 0.3s ease;
+  }
+
+  .mobile-drawer.open {
+    right: 0;
+  }
+
+  .mobile-drawer a {
+    color: white;
+    text-decoration: none;
+    font-size: 1rem;
+    padding: 0.75rem;
+    background: #333;
+    border-radius: 6px;
+    text-align: center;
+  }
+
+  .container, .section, .carousel {
+    padding: 1rem;
+  }
+
+  .carousel-arrow {
+    display: none !important;
+  }
+
   .carousel {
     gap: 1rem;
-    scroll-behavior: smooth;
     scroll-snap-type: x mandatory;
-    padding-bottom: 1rem;
+    scroll-behavior: smooth;
+    overflow-x: auto;
   }
 
   .carousel > * {
     scroll-snap-align: start;
   }
 
-  .carousel::-webkit-scrollbar {
-    height: 8px;
-  }
-
-  .carousel::-webkit-scrollbar-thumb {
-    background: #f97316;
-    border-radius: 10px;
-  }
-
-  /* Card & item scaling */
-  .favorite-item,
-  .card,
-  .content-box {
+  .favorite-item, .card {
     width: 100%;
     max-width: 150px;
     margin: auto;
   }
 
-  .card-title,
-  .username-display {
+  .card-title {
     font-size: 0.85rem;
-    text-align: center;
   }
 
   .remove-fav-btn {
@@ -118,38 +101,22 @@
     right: 6px;
   }
 
-  /* Form elements */
-  input,
-  textarea,
-  select,
-  button {
+  input, textarea, select, button {
     font-size: 1rem;
     width: 100%;
     padding: 0.6rem;
     margin-bottom: 1rem;
   }
 
-  /* Toast notifications */
   .toast {
-    left: 50%;
-    transform: translateX(-50%);
     width: 90%;
     max-width: 280px;
     font-size: 14px;
-  }
-
-  /* Avatar dropdown */
-  .avatar-dropdown {
-    min-width: 120px;
-  }
-
-  .avatar-dropdown a {
-    padding: 0.5rem;
-    font-size: 0.85rem;
+    left: 50%;
+    transform: translateX(-50%);
   }
 }
 
-/* Smaller phone screens */
 @media (max-width: 480px) {
   h1 {
     font-size: 1.2rem;
