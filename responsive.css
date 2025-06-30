@@ -145,3 +145,16 @@
     padding: 0.6rem 1rem;
   }
 }
+@media (max-width: 768px) {
+  .carousel-btn {
+    display: none !important;
+  }
+}
+@media (max-width: 768px) {
+  button[id^="prevBtn"],
+  button[id^="nextBtn"],
+  .carousel-btn {
+    display: none !important;
+  }
+}
+
