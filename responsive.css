@@ -1,21 +1,21 @@
 /* ======== MOBILE STYLES (max-width: 768px) ======== */
 @media (max-width: 768px) {
   body {
-    overflow-x: hidden;
-    margin: 0;
-    padding: 0;
+    overflow-x: hidden !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
 
   img, iframe, video {
-    max-width: 100%;
-    height: auto;
-    display: block;
+    max-width: 100% !important;
+    height: auto !important;
+    display: block !important;
   }
 
   header {
-    flex-wrap: wrap;
-    text-align: center;
-    position: relative;
+    flex-wrap: wrap !important;
+    text-align: center !important;
+    position: relative !important;
   }
 
   nav {
@@ -24,51 +24,51 @@
 
   /* Hamburger button */
   .menu-toggle {
-    display: block;
-    font-size: 1.8rem;
-    background: none;
-    border: none;
-    color: white;
-    padding: 0.5rem 1rem;
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    z-index: 1001;
+    display: block !important;
+    font-size: 1.8rem !important;
+    background: none !important;
+    border: none !important;
+    color: white !important;
+    padding: 0.5rem 1rem !important;
+    position: absolute !important;
+    top: 1rem !important;
+    right: 1rem !important;
+    z-index: 1001 !important;
   }
 
   /* Drawer menu */
   .mobile-drawer {
-    position: fixed;
-    top: 0;
-    right: -100%;
-    width: 80%;
-    height: 100%;
-    background-color: #1f1f1f;
-    z-index: 1000;
-    padding: 2rem 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    transition: right 0.3s ease;
+    position: fixed !important;
+    top: 0 !important;
+    right: -100% !important;
+    width: 80% !important;
+    height: 100% !important;
+    background-color: #1f1f1f !important;
+    z-index: 1000 !important;
+    padding: 2rem 1rem !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1rem !important;
+    transition: right 0.3s ease !important;
   }
 
   .mobile-drawer.open {
-    right: 0;
+    right: 0 !important;
   }
 
   .mobile-drawer a {
-    color: white;
-    text-decoration: none;
-    font-size: 1rem;
-    padding: 0.75rem;
-    background: #333;
-    border-radius: 6px;
-    text-align: center;
+    color: white !important;
+    text-decoration: none !important;
+    font-size: 1rem !important;
+    padding: 0.75rem !important;
+    background: #333 !important;
+    border-radius: 6px !important;
+    text-align: center !important;
   }
 
   /* Layout containers */
   .container, .section {
-    padding: 1rem;
+    padding: 1rem !important;
   }
 
   /* Hide carousel buttons */
@@ -85,31 +85,31 @@
   .carousel,
   .carousel-track,
   #carouselTrack {
-    display: flex;
-    gap: 0.5rem;
-    padding: 0.5rem 1rem 1rem 1rem;
-    scroll-snap-type: x mandatory;
-    scroll-padding-left: 1rem;
-    overflow-x: auto;
-    scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch;
+    display: flex !important;
+    gap: 0.5rem !important;
+    padding: 0.5rem 1rem 1rem 1rem !important;
+    scroll-snap-type: x mandatory !important;
+    scroll-padding-left: 1rem !important;
+    overflow-x: auto !important;
+    scroll-behavior: smooth !important;
+    -webkit-overflow-scrolling: touch !important;
   }
 
   .carousel > *,
   .carousel-track > *,
   #carouselTrack > * {
-    flex: 0 0 auto;
-    scroll-snap-align: start;
-    width: 120px;
-    max-width: 120px;
+    flex: 0 0 auto !important;
+    scroll-snap-align: start !important;
+    width: 120px !important;
+    max-width: 120px !important;
   }
 
   .carousel img,
   .carousel-track img,
   #carouselTrack img {
-    width: 100%;
-    height: auto;
-    border-radius: 5px;
+    width: 100% !important;
+    height: auto !important;
+    border-radius: 5px !important;
   }
 
   /* Text inside carousel */
@@ -124,98 +124,98 @@
   .carousel h3,
   .carousel-track .title,
   #carouselTrack .title {
-    font-size: 0.75rem;
-    padding: 0.25rem 0.25rem;
-    text-align: center;
-    word-break: break-word;
+    font-size: 0.75rem !important;
+    padding: 0.25rem 0.25rem !important;
+    text-align: center !important;
+    word-break: break-word !important;
   }
 
   /* Card & item sizing */
   .favorite-item,
   .card,
   .carousel-item {
-    width: 100%;
-    max-width: 120px;
-    font-size: 0.85rem;
-    margin: auto;
+    width: 100% !important;
+    max-width: 120px !important;
+    font-size: 0.85rem !important;
+    margin: auto !important;
   }
 
   /* Headings */
   h1, h2, h3 {
-    font-size: 1.3rem;
-    text-align: center;
-    word-break: break-word;
+    font-size: 1.3rem !important;
+    text-align: center !important;
+    word-break: break-word !important;
   }
 
   h2 {
-    font-size: 1.1rem;
+    font-size: 1.1rem !important;
   }
 
   /* Remove favorite button */
   .remove-fav-btn {
-    width: 24px;
-    height: 24px;
-    font-size: 14px;
-    top: 6px;
-    right: 6px;
+    width: 24px !important;
+    height: 24px !important;
+    font-size: 14px !important;
+    top: 6px !important;
+    right: 6px !important;
   }
 
   /* Form fields */
   input, textarea, select, button {
-    font-size: 1rem;
-    width: 100%;
-    padding: 0.6rem;
-    margin-bottom: 1rem;
+    font-size: 1rem !important;
+    width: 100% !important;
+    padding: 0.6rem !important;
+    margin-bottom: 1rem !important;
   }
 
   /* Toast messages */
   .toast {
-    width: 90%;
-    max-width: 280px;
-    font-size: 14px;
-    left: 50%;
-    transform: translateX(-50%);
+    width: 90% !important;
+    max-width: 280px !important;
+    font-size: 14px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
   }
 
   /* Carousel section spacing */
   .carousel-wrapper,
   .hianime-carousel-section {
-    padding: 0.5rem;
-    margin-bottom: 1rem;
+    padding: 0.5rem !important;
+    margin-bottom: 1rem !important;
   }
 }
 
 /* ======== SMALLER PHONES (max-width: 480px) ======== */
 @media (max-width: 480px) {
   h1 {
-    font-size: 1.2rem;
+    font-size: 1.2rem !important;
   }
 
   h2 {
-    font-size: 1rem;
+    font-size: 1rem !important;
   }
 
   .card-title,
   .carousel .card-title,
   .carousel-track .title,
   #carouselTrack .title {
-    font-size: 0.7rem;
+    font-size: 0.7rem !important;
   }
 
   .favorite-item,
   .card,
   .carousel-item {
-    max-width: 100px;
+    max-width: 100px !important;
   }
 
   .remove-fav-btn {
-    width: 20px;
-    height: 20px;
-    font-size: 12px;
+    width: 20px !important;
+    height: 20px !important;
+    font-size: 12px !important;
   }
 
   .toast {
-    font-size: 12px;
-    padding: 0.6rem 1rem;
+    font-size: 12px !important;
+    padding: 0.6rem 1rem !important;
   }
 }
