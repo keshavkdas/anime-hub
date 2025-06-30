@@ -182,15 +182,16 @@
 
 <script>
   
-  function deduplicateFavorites(list) {
-    const seen = new Set();
-    return list.filter(item => {
-      const key = String(item.id).trim(); // always string
-      if (seen.has(key)) return false;
-      seen.add(key);
-      return true;
-    });
-  }
+ function deduplicateFavorites(list) {
+  const seen = new Set();
+  return list.filter(item => {
+    const key = `${item.id}-${item.type}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
 
   const API_BASE = "https://anime-hub-auth.keshavkdas23.workers.dev";
 
@@ -200,15 +201,15 @@
     return await res.json();
   }
 
-  async function saveFavorites(uid, type, newList) {
+ async function saveFavorites(uid, type, newList) {
   const cleaned = deduplicateFavorites(newList);
-
   await fetch(`${API_BASE}/${uid}/favorites/${type}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(cleaned)
   });
 }
+
 
 
  async function syncLocalToKV() {
@@ -295,25 +296,22 @@ async function renderFavorites(type, containerId, detailsPage) {
 }
 
 
-async function removeFavoriteById(type, idToRemove) {
+async function removeFavoriteById(type, id) {
   const key = `${type}Favorites_${user.uid}`;
-
-  // Load & deduplicate localStorage
   let list = JSON.parse(localStorage.getItem(key) || "[]");
-  list = deduplicateFavorites(list);
 
-  // Filter out the item
-  const updatedList = list.filter(item => item.id !== idToRemove);
+  // Deduplicate and remove the item
+  list = deduplicateFavorites(list).filter(item => item.id !== id);
 
-  // Update localStorage
-  localStorage.setItem(key, JSON.stringify(updatedList));
+  // Save to localStorage
+  localStorage.setItem(key, JSON.stringify(list));
 
-  // Force deduped save to KV (this ensures the removed item is deleted)
-  await saveFavorites(user.uid, type, updatedList);
+  // Save to KV
+  await saveFavorites(user.uid, type, list);
 
-  // Re-render without reload
-  await renderFavorites(type, `${type}Favorites`, `${type}-details.html`);
+  location.reload(); // Refresh view
 }
+
 
   window.addEventListener("DOMContentLoaded", async () => {
   if (user?.uid) {
