@@ -1,15 +1,10 @@
-/* ======== MOBILE STYLES (max-width: 768px) ======== */
+
+/* ======== RESPONSIVE.CSS — MOBILE ONLY (max-width: 768px) ======== */
 @media (max-width: 768px) {
   body {
-    overflow-x: hidden !important;
     margin: 0 !important;
     padding: 0 !important;
-  }
-
-  img, iframe, video {
-    max-width: 100% !important;
-    height: auto !important;
-    display: block !important;
+    overflow-x: hidden !important;
   }
 
   header {
@@ -22,7 +17,6 @@
     display: none !important;
   }
 
-  /* Hamburger button */
   .menu-toggle {
     display: block !important;
     font-size: 1.8rem !important;
@@ -36,7 +30,6 @@
     z-index: 1001 !important;
   }
 
-  /* Drawer menu */
   .mobile-drawer {
     position: fixed !important;
     top: 0 !important;
@@ -66,33 +59,28 @@
     text-align: center !important;
   }
 
-  /* Layout containers */
-  .container, .section {
+  img, iframe, video {
+    max-width: 100% !important;
+    height: auto !important;
+    display: block !important;
+  }
+
+  .container,
+  .section {
     padding: 1rem !important;
   }
 
-  /* Hide carousel buttons */
-  .carousel-arrow,
-  .carousel-btn,
-  #prevBtn,
-  #nextBtn,
-  button[id^="prevBtn"],
-  button[id^="nextBtn"] {
-    display: none !important;
-  }
-
-  /* Carousel scroll and touch */
   .carousel,
   .carousel-track,
   #carouselTrack {
     display: flex !important;
+    overflow-x: auto !important;
+    scroll-snap-type: x mandatory !important;
+    scroll-behavior: smooth !important;
     gap: 0.5rem !important;
     padding: 0.5rem 1rem 1rem 1rem !important;
-    scroll-snap-type: x mandatory !important;
-    scroll-padding-left: 1rem !important;
-    overflow-x: auto !important;
-    scroll-behavior: smooth !important;
     -webkit-overflow-scrolling: touch !important;
+    scroll-padding-left: 1rem !important;
   }
 
   .carousel > *,
@@ -100,8 +88,8 @@
   #carouselTrack > * {
     flex: 0 0 auto !important;
     scroll-snap-align: start !important;
-    width: 120px !important;
-    max-width: 120px !important;
+    width: 110px !important;
+    max-width: 110px !important;
   }
 
   .carousel img,
@@ -109,10 +97,9 @@
   #carouselTrack img {
     width: 100% !important;
     height: auto !important;
-    border-radius: 5px !important;
+    border-radius: 6px !important;
   }
 
-  /* Text inside carousel */
   .carousel .title,
   .carousel .card-title,
   .carousel .anime-title,
@@ -125,42 +112,38 @@
   .carousel-track .title,
   #carouselTrack .title {
     font-size: 0.75rem !important;
-    padding: 0.25rem 0.25rem !important;
+    padding: 0.25rem !important;
     text-align: center !important;
     word-break: break-word !important;
   }
 
-  /* Card & item sizing */
   .favorite-item,
   .card,
   .carousel-item {
     width: 100% !important;
-    max-width: 120px !important;
+    max-width: 110px !important;
     font-size: 0.85rem !important;
     margin: auto !important;
   }
 
-  /* Headings */
   h1, h2, h3 {
-    font-size: 1.3rem !important;
+    font-size: 1.2rem !important;
     text-align: center !important;
     word-break: break-word !important;
   }
 
   h2 {
-    font-size: 1.1rem !important;
+    font-size: 1rem !important;
   }
 
-  /* Remove favorite button */
   .remove-fav-btn {
-    width: 24px !important;
-    height: 24px !important;
-    font-size: 14px !important;
+    width: 20px !important;
+    height: 20px !important;
+    font-size: 12px !important;
     top: 6px !important;
     right: 6px !important;
   }
 
-  /* Form fields */
   input, textarea, select, button {
     font-size: 1rem !important;
     width: 100% !important;
@@ -168,54 +151,26 @@
     margin-bottom: 1rem !important;
   }
 
-  /* Toast messages */
   .toast {
+    font-size: 13px !important;
     width: 90% !important;
     max-width: 280px !important;
-    font-size: 14px !important;
     left: 50% !important;
     transform: translateX(-50%) !important;
   }
 
-  /* Carousel section spacing */
+  .carousel-arrow,
+  .carousel-btn,
+  #prevBtn,
+  #nextBtn,
+  button[id^="prevBtn"],
+  button[id^="nextBtn"] {
+    display: none !important;
+  }
+
   .carousel-wrapper,
   .hianime-carousel-section {
     padding: 0.5rem !important;
     margin-bottom: 1rem !important;
-  }
-}
-
-/* ======== SMALLER PHONES (max-width: 480px) ======== */
-@media (max-width: 480px) {
-  h1 {
-    font-size: 1.2rem !important;
-  }
-
-  h2 {
-    font-size: 1rem !important;
-  }
-
-  .card-title,
-  .carousel .card-title,
-  .carousel-track .title,
-  #carouselTrack .title {
-    font-size: 0.7rem !important;
-  }
-
-  .favorite-item,
-  .card,
-  .carousel-item {
-    max-width: 100px !important;
-  }
-
-  .remove-fav-btn {
-    width: 20px !important;
-    height: 20px !important;
-    font-size: 12px !important;
-  }
-
-  .toast {
-    font-size: 12px !important;
-    padding: 0.6rem 1rem !important;
   }
 }
