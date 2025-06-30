@@ -268,10 +268,11 @@
 
 
 async function renderFavorites(type, containerId, detailsPage) {
-  console.log(`📦 Rendering favorites for: ${type}`);
-  console.log(`➡️ Raw list from KV:`, list);
   const container = document.getElementById(containerId);
   let list = await getFavorites(user.uid, type);
+
+  console.log(`📦 Rendering favorites for: ${type}`);
+  console.log(`➡️ Raw list from KV:`, list);
 
   // 🔁 If KV is empty, fallback to localStorage
   if (!list.length) {
@@ -309,6 +310,26 @@ async function removeFavoriteById(type, id) {
   await saveFavorites(user.uid, type, list);
   location.reload();
 }
+
+  window.addEventListener("DOMContentLoaded", async () => {
+  if (user?.uid) {
+    await syncLocalToKV(); // ☁️ local -> KV sync
+    await renderFavorites("anime", "animeFavorites", "anime-details.html");
+    await renderFavorites("manga", "mangaFavorites", "manga-details.html");
+    await renderFavorites("manhwa", "manhwaFavorites", "manhwa-details.html");
+  }
+
+  const msg = sessionStorage.getItem("toast");
+  if (msg) {
+    const toast = document.getElementById("toast");
+    toast.innerText = msg;
+    toast.classList.remove("hidden");
+    setTimeout(() => {
+      toast.classList.add("hidden");
+      sessionStorage.removeItem("toast");
+    }, 3000);
+  }
+});
 
 </script>
 
