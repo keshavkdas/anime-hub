@@ -1,19 +1,177 @@
 console.log("browse.js loaded");
 
+// DOM Elements
 const searchBtn = document.getElementById("searchBtn");
 const searchInput = document.getElementById("searchInput");
 const genreSelect = document.getElementById("genre");
 const resultsContainer = document.getElementById("results");
 const typeSelect = document.getElementById("typeSelect");
+const loadingIndicator = document.getElementById("loading");
 
+// State Management
 let currentPage = 1;
 let isLoading = false;
 let hasMore = true;
 let currentQuery = "";
 let currentGenre = "";
 let currentType = "all";
+let searchTimeout = null;
+let requestController = null;
 
-const blockedGenres = ["Hentai", "Erotica", "Ecchi","Harem"];
+// Cache for better performance
+const genreCache = new Map();
+const resultsCache = new Map();
+
+// Configuration
+const CONFIG = {
+  SEARCH_DELAY: 300, // ms delay for search debouncing
+  CACHE_TIMEOUT: 5 * 60 * 1000, // 5 minutes cache
+  RETRY_ATTEMPTS: 3,
+  REQUEST_TIMEOUT: 10000, // 10 seconds
+  ITEMS_PER_PAGE: 12,
+  BLOCKED_GENRES: ["Hentai", "Erotica", "Ecchi", "Harem"]
+};
+
+// Utility Functions
+const Utils = {
+  // Enhanced fetch with timeout and retries
+  async fetchWithRetry(url, options = {}, retries = CONFIG.RETRY_ATTEMPTS) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), CONFIG.REQUEST_TIMEOUT);
+    
+    try {
+      const response = await fetch(url, {
+        ...options,
+        signal: controller.signal
+      });
+      
+      clearTimeout(timeoutId);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      return response;
+    } catch (error) {
+      clearTimeout(timeoutId);
+      
+      if (retries > 0 && error.name !== 'AbortError') {
+        console.log(`Retrying request... (${retries} attempts left)`);
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        return this.fetchWithRetry(url, options, retries - 1);
+      }
+      
+      throw error;
+    }
+  },
+
+  // Debounce function for search
+  debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+      const later = () => {
+        clearTimeout(timeout);
+        func.apply(this, args);
+      };
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+    };
+  },
+
+  // Cache management
+  setCache(key, data, timeout = CONFIG.CACHE_TIMEOUT) {
+    const cacheData = {
+      data,
+      timestamp: Date.now(),
+      timeout
+    };
+    resultsCache.set(key, cacheData);
+  },
+
+  getCache(key) {
+    const cached = resultsCache.get(key);
+    if (!cached) return null;
+    
+    if (Date.now() - cached.timestamp > cached.timeout) {
+      resultsCache.delete(key);
+      return null;
+    }
+    
+    return cached.data;
+  },
+
+  // Enhanced loading indicator
+  showLoading(message = 'Loading...') {
+    const existingLoader = document.getElementById('enhanced-loading');
+    if (existingLoader) return;
+
+    const loader = document.createElement('div');
+    loader.id = 'enhanced-loading';
+    loader.innerHTML = `
+      <div style="
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        color: #f97316;
+        font-size: 1.1rem;
+        gap: 0.5rem;
+      ">
+        <div class="loading-spinner"></div>
+        <span>${message}</span>
+      </div>
+      <style>
+        .loading-spinner {
+          width: 20px;
+          height: 20px;
+          border: 2px solid #333;
+          border-top: 2px solid #f97316;
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      </style>
+    `;
+    resultsContainer.appendChild(loader);
+  },
+
+  hideLoading() {
+    const loader = document.getElementById('enhanced-loading');
+    if (loader) loader.remove();
+    
+    const oldLoader = document.getElementById('loading');
+    if (oldLoader) oldLoader.remove();
+  },
+
+  // Error display
+  showError(message, isRetryable = false) {
+    this.hideLoading();
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'error-message';
+    errorDiv.innerHTML = `
+      <div style="
+        padding: 2rem;
+        text-align: center;
+        color: #ff6b6b;
+        background: rgba(255, 107, 107, 0.1);
+        border-radius: 8px;
+        margin: 1rem;
+        border: 1px solid rgba(255, 107, 107, 0.3);
+      ">
+        <h3>⚠️ ${message}</h3>
+        ${isRetryable ? '<button onclick="location.reload()" style="background: #f97316; color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; margin-top: 1rem; cursor: pointer;">Try Again</button>' : ''}
+      </div>
+    `;
+    
+    if (currentPage === 1) {
+      resultsContainer.innerHTML = '';
+      resultsContainer.appendChild(errorDiv);
+    }
+  }
+};
 
 typeSelect.addEventListener("change", () => {
   currentType = typeSelect.value;
@@ -48,15 +206,28 @@ genreSelect.addEventListener("change", () => {
   loadItems();
 });
 
+// Enhanced content filtering
 function isAdult(item) {
   const allGenres = [...(item.genres || []), ...(item.themes || []), ...(item.demographics || [])]
     .map(g => g.name?.toLowerCase());
-  return allGenres.some(g =>
-    blockedGenres.includes(g) ||
+  
+  return allGenres.some(g => 
+    CONFIG.BLOCKED_GENRES.map(bg => bg.toLowerCase()).includes(g) ||
     g.includes("love") ||
-    g.includes("sex")
+    g.includes("sex") ||
+    g.includes("adult") ||
+    g.includes("mature")
   );
 }
+
+// Enhanced search with debouncing
+const debouncedSearch = Utils.debounce(() => {
+  currentQuery = searchInput.value.trim();
+  currentPage = 1;
+  hasMore = true;
+  resultsContainer.innerHTML = "";
+  loadItems();
+}, CONFIG.SEARCH_DELAY);
 
 async function loadGenres() {
   genreSelect.innerHTML = `<option value="">All Genres</option>`;

@@ -1,6 +1,140 @@
 const WORKER_URL = "https://anime-hub-auth.keshavkdas23.workers.dev/";
 let googleCredResponse = null;
 
+// Enhanced utility functions for better UX
+const AuthUtils = {
+  // Show loading state
+  setLoading(isLoading, buttonId = null) {
+    const button = buttonId ? document.getElementById(buttonId) : null;
+    if (button) {
+      button.disabled = isLoading;
+      button.textContent = isLoading ? 'Loading...' : button.getAttribute('data-original-text') || button.textContent;
+      if (!button.getAttribute('data-original-text')) {
+        button.setAttribute('data-original-text', button.textContent);
+      }
+    }
+    
+    // Show global loading indicator
+    const loader = document.getElementById('global-loader');
+    if (loader) {
+      loader.style.display = isLoading ? 'flex' : 'none';
+    }
+  },
+
+  // Enhanced error display with animations
+  showError(elementId, message) {
+    const errorElement = document.getElementById(elementId);
+    if (errorElement) {
+      errorElement.textContent = message;
+      errorElement.style.opacity = '0';
+      errorElement.style.transform = 'translateY(-10px)';
+      errorElement.style.transition = 'all 0.3s ease';
+      
+      requestAnimationFrame(() => {
+        errorElement.style.opacity = '1';
+        errorElement.style.transform = 'translateY(0)';
+      });
+    }
+  },
+
+  // Clear all errors
+  clearErrors() {
+    const errorElements = document.querySelectorAll('[id^="error-"]');
+    errorElements.forEach(el => {
+      el.textContent = '';
+      el.style.opacity = '0';
+    });
+  },
+
+  // Enhanced validation
+  validateEmail(email) {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+  },
+
+  validatePassword(password) {
+    return {
+      minLength: password.length >= 6,
+      hasNumber: /\d/.test(password),
+      hasSpecial: /[!@#$%^&*]/.test(password),
+      hasUpper: /[A-Z]/.test(password),
+      isValid: password.length >= 6 && /\d/.test(password) && /[!@#$%^&*]/.test(password) && /[A-Z]/.test(password)
+    };
+  },
+
+  // Enhanced fetch with retry logic
+  async makeRequest(data, retries = 3) {
+    for (let i = 0; i < retries; i++) {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000);
+        
+        const response = await fetch(WORKER_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+          signal: controller.signal
+        });
+        
+        clearTimeout(timeoutId);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        return await response.json();
+      } catch (error) {
+        console.error(`Request attempt ${i + 1} failed:`, error);
+        
+        if (i === retries - 1) {
+          throw new Error(`Request failed after ${retries} attempts: ${error.message}`);
+        }
+        
+        // Exponential backoff
+        await new Promise(resolve => setTimeout(resolve, Math.pow(2, i) * 1000));
+      }
+    }
+  },
+
+  // Show success toast
+  showToast(message, type = 'success', duration = 3000) {
+    // Remove existing toast
+    const existingToast = document.getElementById('auth-toast');
+    if (existingToast) existingToast.remove();
+    
+    const toast = document.createElement('div');
+    toast.id = 'auth-toast';
+    toast.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: ${type === 'success' ? '#10b981' : '#ef4444'};
+      color: white;
+      padding: 1rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 500;
+      z-index: 10000;
+      transform: translateX(100%);
+      transition: transform 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    `;
+    toast.textContent = message;
+    
+    document.body.appendChild(toast);
+    
+    // Animate in
+    requestAnimationFrame(() => {
+      toast.style.transform = 'translateX(0)';
+    });
+    
+    // Auto remove
+    setTimeout(() => {
+      toast.style.transform = 'translateX(100%)';
+      setTimeout(() => toast.remove(), 300);
+    }, duration);
+  }
+};
+
 // Fetch and store profile in localStorage
 async function fetchAndStoreProfile(uid) {
   const res = await fetch(WORKER_URL, {
